@@ -1,0 +1,48 @@
+.landing-wrapper {
+  display: flex;
+  justify-content: center;
+  
+  background: #f5f6fa;
+  padding: 2rem;
+}
+
+.card-1 {
+  background-color: #ffffff;
+  padding: 2rem 2.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+  max-width: 50rem;
+  width: 100%;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.01);
+}
+
+.welcome {
+  font-size: 1.6rem;
+  color: #2e3a59;
+  margin-bottom: 0.8rem;
+  font-weight: 500;
+}
+
+.title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #1a237e;
+  margin: 0.5rem 0 1rem;
+}
+
+.description {
+  font-size: 1.1rem;
+  color: #4a4a4a;
+  line-height: 1.6;
+}
+
+.logo {
+  width: 500px;   /* increase as needed */
+  height: auto;
+  margin-bottom: 1rem;
+}
