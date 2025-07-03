@@ -4,7 +4,6 @@ A web-based application designed to help researchers efficiently manage, organiz
 
 ## 📌 Features
 
-- Upload and store research papers
 - Keyword-based search and advanced filtering
 - Role-based access (Admin, Researcher)
 - Personalized dashboard and reading status tracking
