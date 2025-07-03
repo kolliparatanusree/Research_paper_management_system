@@ -1,5 +1,3 @@
-# Research_paper_management_system
-
 # Smart Research Paper Management System
 
 A web-based application designed to help researchers efficiently manage, organize, search, and annotate research papers using a structured and user-friendly interface.
