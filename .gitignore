@@ -7,9 +7,14 @@ yarn-error.log*
 # Build output
 dist/
 build/
+frontend/build/
 
 # Environment variables
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Logs
 logs/
@@ -24,21 +29,94 @@ pids/
 # Optional npm cache directory
 .npm/
 
-# VS Code
-.vscode/
-*.code-workspace
+# React-specific
+frontend/node_modules/
 
-# OS-specific
+# IDEs and editors
+.vscode/
+.idea/
+*.code-workspace
+*.sublime-workspace
+*.sublime-project
+
+# OS-specific files
 .DS_Store
 Thumbs.db
 
-node_modules/
-# React-specific
-frontend/node_modules/
-frontend/build/
-frontend/.env
+# Others
+/coverage
+/.pnp
+.pnp.js
 
-# IDEs
-.idea/
-*.sublime-workspace
-*.sublime-project
+
+
+# <<<<<<< HEAD
+# # Node.js dependencies
+# node_modules/
+# npm-debug.log*
+# yarn-debug.log*
+# yarn-error.log*
+
+# # Build output
+# dist/
+# build/
+
+# # Environment variables
+# .env
+
+# # Logs
+# logs/
+# *.log
+
+# # Runtime data
+# pids/
+# *.pid
+# *.seed
+# *.pid.lock
+
+# # Optional npm cache directory
+# .npm/
+
+# # VS Code
+# .vscode/
+# *.code-workspace
+
+# # OS-specific
+# .DS_Store
+# Thumbs.db
+
+# node_modules/
+# # React-specific
+# frontend/node_modules/
+# frontend/build/
+# frontend/.env
+
+# # IDEs
+# .idea/
+# *.sublime-workspace
+# *.sublime-project
+# =======
+# # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# # dependencies
+# /node_modules
+# /.pnp
+# .pnp.js
+
+# # testing
+# /coverage
+
+# # production
+# /build
+
+# # misc
+# .DS_Store
+# .env.local
+# .env.development.local
+# .env.test.local
+# .env.production.local
+
+# npm-debug.log*
+# yarn-debug.log*
+# yarn-error.log*
+# >>>>>>> 5dec5610 (changes made in frontend)

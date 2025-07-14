@@ -6,31 +6,56 @@ const documentSchema = new mongoose.Schema({
   paperTitle: String,
   type: String,
   target: String,
-  abstract: String, 
-  acceptanceLetter: {
-    filename: String,
-    contentType: String,
-    data: Buffer
+  abstract: String,
+
+  publishedPaper: {
+    pdf: {
+      filename: String,
+      contentType: {
+        type: String,
+        enum: ['application/pdf'], // Only allow PDFs
+        default: 'application/pdf'
+      },
+      data: Buffer
+    },
+    doi: {
+      type: String,
+      default: ''
+    }
   },
+
   indexingProof: {
     filename: String,
     contentType: String,
     data: Buffer
   },
+
   uploadedAt: {
     type: Date,
     default: Date.now
   },
-  adminAccept:{
-    type:Boolean,
-    default:false
+
+  adminAccept: {
+    type: Boolean,
+    default: false
   },
+
   adminRejectReason: {
-  type: String,
-  default: ''
-},
-isRejected: { type: Boolean, default: false },
-pid: { type: String, default: null },
+    type: String,
+    default: ''
+  },
+
+  scopusLink: { type: String, default: '' },
+  issn: String,
+
+  paymentReceipt: {
+    filename: String,
+    contentType: String,
+    data: Buffer
+  },
+
+  isRejected: { type: Boolean, default: false },
+  pid: { type: String, default: null }
 });
 
 module.exports = mongoose.model('DocumentUpload', documentSchema);

@@ -1,5 +1,12 @@
-MIT License
 
-Copyright (c) 2025 Kollipara Tanu Sree
+---
 
-Permission is hereby granted, free of charge, to any person obtaining a copy...
+### ✅ After updating:
+
+1. Replace your `README.md` content with this version.
+2. Save it.
+3. Then run:
+   ```bash
+   git add README.md
+   git rebase --continue
+   git push origin main

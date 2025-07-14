@@ -173,7 +173,6 @@ SVECW Admin`
   }
 });
 
-// ✅ Get All Submitted Documents
 router.get('/all-submitted-documents', async (req, res) => {
   try {
     const docs = await DocumentUpload.find({
@@ -191,16 +190,23 @@ router.get('/all-submitted-documents', async (req, res) => {
       abstract: doc.abstract,
       uploadedAt: doc.uploadedAt,
       adminAccept: doc.adminAccept,
-      acceptanceLetter: {
+      issn: doc.issn,
+      scopusLink: doc.scopusLink, // ✅ Add scopus link
+      acceptanceLetter: doc.acceptanceLetter?.data ? {
         filename: doc.acceptanceLetter.filename,
         contentType: doc.acceptanceLetter.contentType,
         base64: doc.acceptanceLetter.data.toString('base64')
-      },
-      indexingProof: {
+      } : null,
+      indexingProof: doc.indexingProof?.data ? {
         filename: doc.indexingProof.filename,
         contentType: doc.indexingProof.contentType,
         base64: doc.indexingProof.data.toString('base64')
-      }
+      } : null,
+      paymentReceipt: doc.paymentReceipt?.data ? { // ✅ Fixed typo from "paymentReciept"
+        filename: doc.paymentReceipt.filename,
+        contentType: doc.paymentReceipt.contentType,
+        base64: doc.paymentReceipt.data.toString('base64')
+      } : null
     }));
 
     res.status(200).json(formatted);
@@ -208,6 +214,53 @@ router.get('/all-submitted-documents', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch documents', error: err.message });
   }
 });
+
+
+// ✅ Get All Submitted Documents
+// router.get('/all-submitted-documents', async (req, res) => {
+//   try {
+//     const docs = await DocumentUpload.find({
+//       adminAccept: false,
+//       isRejected: false
+//     });
+
+//     const formatted = docs.map(doc => ({
+//       _id: doc._id,
+//       facultyId: doc.facultyId,
+//       uid: doc.uid,
+//       paperTitle: doc.paperTitle,
+//       type: doc.type,
+//       target: doc.target,
+//       abstract: doc.abstract,
+//       uploadedAt: doc.uploadedAt,
+//       adminAccept: doc.adminAccept,
+//       issn: doc.issn,
+//       doc1: doc.doc1,
+//       acceptanceLetter: {
+//         filename: doc.acceptanceLetter.filename,
+//         contentType: doc.acceptanceLetter.contentType,
+//         base64: doc.acceptanceLetter.data.toString('base64')
+//       },
+//       indexingProof: {
+//         filename: doc.indexingProof.filename,
+//         contentType: doc.indexingProof.contentType,
+//         base64: doc.indexingProof.data.toString('base64')
+//       },
+//       paymentReciept: {
+//       filename: doc.paymentReciept?.filename,
+//       contentType: doc.paymentReciept?.contentType,
+//       base64: doc.paymentReciept?.data?.toString('base64')
+//     }
+//     }));
+
+//     res.status(200).json(formatted);
+//   } catch (err) {
+//     res.status(500).json({ message: 'Failed to fetch documents', error: err.message });
+//   }
+// });
+
+
+// console.log('Fetched Documents:', docs);
 
 // ✅ Accept Document Submission
 // ✅ Accept Document Submission and Send Email with PID

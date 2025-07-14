@@ -59,30 +59,71 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Submit UID Request from Faculty (with duplicate paperTitle check)
 router.post('/uid-request', async (req, res) => {
   try {
-    const { facultyId, paperTitle } = req.body;
-
-    // Check for duplicate paperTitle for the same faculty (case insensitive)
-    const existing = await HodUidRequest.findOne({
+    const {
       facultyId,
-      paperTitle: { $regex: new RegExp(`^${paperTitle}$`, 'i') }
-    });
+      facultyName,
+      department,
+      paperTitle,
+      type,
+      abstract,
+      target
+    } = req.body;
 
-    if (existing) {
-      return res.status(400).json({ message: 'This paper title already exists' });
+    if (!facultyId || !paperTitle || !type || !abstract || !target) {
+      return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    const newRequest = new HodUidRequest(req.body);
-    await newRequest.save();
+    const newRequest = new HodUidRequest({
+      facultyId,
+      facultyName,
+      department,
+      paperTitle,
+      type,
+      abstract,
+      target,
+      submittedAt: new Date(),
+      hodAccept: false,
+      principalAccept: false,
+      adminAccept: false,
+      status: 'Pending'
+    });
 
+    await newRequest.save();
     res.status(201).json({ message: 'UID request submitted successfully' });
-  } catch (err) {
-    console.error('Error creating UID request:', err);
-    res.status(500).json({ message: 'Failed to submit UID request' });
+  } catch (error) {
+    console.error("Error creating UID request:", error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+
+
+// Submit UID Request from Faculty (with duplicate paperTitle check)
+// router.post('/uid-request', async (req, res) => {
+//   try {
+//     const { facultyId, paperTitle } = req.body;
+
+//     // Check for duplicate paperTitle for the same faculty (case insensitive)
+//     const existing = await HodUidRequest.findOne({
+//       facultyId,
+//       paperTitle: { $regex: new RegExp(`^${paperTitle}$`, 'i') }
+//     });
+
+//     if (existing) {
+//       return res.status(400).json({ message: 'This paper title already exists' });
+//     }
+
+//     const newRequest = new HodUidRequest(req.body);
+//     await newRequest.save();
+
+//     res.status(201).json({ message: 'UID request submitted successfully' });
+//   } catch (err) {
+//     console.error('Error creating UID request:', err);
+//     res.status(500).json({ message: 'Failed to submit UID request' });
+//   }
+// });
 
 // Get all UID requests (sorted newest first)
 router.get('/uid-requests', async (req, res) => {

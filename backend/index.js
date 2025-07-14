@@ -9,10 +9,14 @@ const facultyRoutes = require('./routes/facultyRoutes');
 const hodRoutes = require('./routes/hodRoutes');
 const principalRoutes = require('./routes/principalRoutes');
 const mainAdminRoutes = require('./routes/mainadminRoutes');
+// const HodUidRequest = require('./models/hodUidRequest'); 
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+
+
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {

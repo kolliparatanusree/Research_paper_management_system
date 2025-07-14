@@ -1,29 +1,51 @@
+
+
 const mongoose = require('mongoose');
+const DocumentUpload = require('./DocumentUpload');
+
+const coAuthorSchema = new mongoose.Schema({
+  name: String,
+  affiliation: String
+}, { _id: false }); // _id: false to prevent auto-generating _id for each co-author
+
 
 const hodUidRequestSchema = new mongoose.Schema({
-  facultyId: { type: String, required: true },
-  facultyName: { type: String, required: true },
-  department: { type: String, required: true },
-  paperTitle: { type: String, required: true },
-  type: { type: String, required: true },
-  abstract: { type: String, required: true },
-  target: { type: String, required: true },
- uid: {
+  facultyId: String,
+  facultyName: String,
+  department: String,
+  paperTitle: String,
   type: String,
-  unique: true,
-  sparse: true, // ✅ allows many nulls without duplication
-  default: null
-},
-// ✅ Fix here
+  abstract: String,
+  target: String,
+//   status: { type: String, default: 'Pending' },
+  submittedAt: { type: Date, default: Date.now },
+  RDCordinatorAccept: { type: Boolean, default: false },
   hodAccept: { type: Boolean, default: false },
   principalAccept: { type: Boolean, default: false },
   adminAccept: { type: Boolean, default: false },
-  submittedAt: { type: Date, default: Date.now },
-  documentsUpload: {
-  type: Boolean,
-  default: false
-}
+  uid: { type: String, default: null },
+  documentsUpload: { type: Boolean, default: false },
+   coAuthors: {
+    hasCoAuthors: { type: Boolean, default: false },
+    authors: [coAuthorSchema]
+  }
 
+
+//   remarks: { type: String, default: '' }
 });
 
 module.exports = mongoose.model('HodUidRequest', hodUidRequestSchema);
+// const mongoose = require('mongoose');
+
+// const hodUidRequestSchema = new mongoose.Schema({
+//     facultyId: String,
+//     title: String,
+//     date: String,
+//     doc: String,
+//     status: String,
+//     remarks: String
+// });
+
+// const HodUidRequest = mongoose.models.HodUidRequest || mongoose.model('HodUidRequest', hodUidRequestSchema);
+
+// module.exports = HodUidRequest;

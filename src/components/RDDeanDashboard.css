@@ -1,0 +1,48 @@
+.admin-dashboard-container {
+  display: flex;
+  font-family: sans-serif;
+}
+
+.sidebar {
+  width: 230px;
+  /* background-color: #f0f0f0; */
+  background-color: #182a4d;
+  padding: 20px;
+  min-height: 100vh;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar h3 {
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.sidebar li {
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.sidebar li.active,
+.sidebar li:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 30px;
+}
+
+.card {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+}

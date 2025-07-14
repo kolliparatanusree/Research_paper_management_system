@@ -1,0 +1,120 @@
+/* Container styles */
+.navbar-header {
+  background-color: white;
+  padding: 20px 30px;
+  font-family: 'Segoe UI', sans-serif;
+  position: relative;
+}
+
+.logo-line-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.navbar-logo {
+  height: 90px;
+  margin-right: 80px;
+}
+
+/* Title above line */
+.line-with-title {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.system-title {
+  position: absolute;
+  top: -20px;
+  background-color: white;
+  padding: 0 12px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #800080;
+  white-space: nowrap;
+}
+
+/* Horizontal line */
+.horizontal-line-only {
+  height: 2px;
+  background-color: #c088c0;
+  width: 100%;
+  border: none;
+  margin: 25px 0 10px 0;
+}
+
+/* Flex container for nav + login button */
+.nav-bar-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+/* Left links */
+.nav-links {
+  display: flex;
+  gap: 50px;
+  font-size: 18px;
+  font-weight: 500;
+  margin-left: 60px; 
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #800080;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: #c088c0;
+}
+
+/* Login button dropdown */
+.login-dropdown {
+  position: relative;
+}
+
+.login-button {
+  background-color: transparent;
+  border: none;
+  color: #800080;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: 60px;
+}
+
+.login-button:hover {
+  color: #c088c0;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 35px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #c088c0;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 999;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.dropdown-menu a {
+  padding: 5px 10px;
+  text-decoration: none;
+  color: #800080;
+  font-weight: 500;
+}
+
+.dropdown-menu a:hover {
+  background-color: #f3e1f3;
+  border-radius: 4px;
+}

@@ -1,0 +1,35 @@
+
+
+.form-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.faculty-form input,
+.faculty-form select {
+  width: 50%;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 15px;
+  margin-left: 20%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.submit-btn {
+  width: 50%;
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  margin-left: 20%;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background: #0056b3;
+}
