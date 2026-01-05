@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const HodUidRequest = require('../models/HodUidRequest');
+const HodUidRequest = require('../models/UidRequests');
 const RejectedUid = require('../models/RejectedUid');
 const nodemailer = require('nodemailer');
 const Faculty = require('../models/Faculty'); // make sure the path is correct

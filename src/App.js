@@ -35,7 +35,7 @@ import HODLogin from './components/HODLogin.js';
 import HODRegister from './components/HODRegister.js';
 import HodDashboard from './components/HodDashboard.js';
 // import CustomNavbar from './components/CustomNavbar.js';
-import UIDRequestsPage from './components/UIDRequestsPage.js';
+import HodUidApproval from './components/HodUidApproval.js';
 import PrincipalLogin from './components/PrincipalLogin.js';
 import PrincipalDashboard from './components/PrincipalDashboard.js';
 import AdminDashboard from './components/AdminDashboard.js';
@@ -57,7 +57,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/faculty-dashboard" element={<FacultyDashboard />} />
         <Route path="/hod-dashboard" element={<HodDashboard/>} />
-        <Route path="/hod-uid-requests" element={<UIDRequestsPage/>} />
+        <Route path="/hod-uid-requests" element={<HodUidApproval/>} />
         <Route path="/mainAdmin-dashboard" element={<AdminDashboard/>} />
         <Route path="/instructions" element={<Instructions/>} />
       </Routes>

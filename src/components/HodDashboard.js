@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HodDashboard.css';
-import UIDRequestsPage from './UIDRequestsPage';
+import HodUidApproval from './HodUidApproval';
 import CustomNavbar from './CustomNavbar'; 
 import logo from './logo2.jpeg';
 
@@ -76,7 +76,7 @@ export default function HodDashboard() {
 
       {/* Main Content */}
       <div className="main-content">
-        {activeSection === 'requests' && <UIDRequestsPage />}
+        {activeSection === 'requests' && <HodUidApproval />}
 
         {activeSection === 'profile' && (
           <div className="profile-section">

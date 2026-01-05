@@ -9,7 +9,7 @@ const coAuthorSchema = new mongoose.Schema({
 }, { _id: false }); // _id: false to prevent auto-generating _id for each co-author
 
 
-const hodUidRequestSchema = new mongoose.Schema({
+const UidRequestsScheme = new mongoose.Schema({
   facultyId: String,
   facultyName: String,
   department: String,
@@ -34,10 +34,10 @@ const hodUidRequestSchema = new mongoose.Schema({
 //   remarks: { type: String, default: '' }
 });
 
-module.exports = mongoose.model('HodUidRequest', hodUidRequestSchema);
+module.exports = mongoose.model('HodUidRequest', UidRequestsScheme);
 // const mongoose = require('mongoose');
 
-// const hodUidRequestSchema = new mongoose.Schema({
+// const UidRequestsScheme = new mongoose.Schema({
 //     facultyId: String,
 //     title: String,
 //     date: String,
@@ -46,6 +46,6 @@ module.exports = mongoose.model('HodUidRequest', hodUidRequestSchema);
 //     remarks: String
 // });
 
-// const HodUidRequest = mongoose.models.HodUidRequest || mongoose.model('HodUidRequest', hodUidRequestSchema);
+// const HodUidRequest = mongoose.models.HodUidRequest || mongoose.model('HodUidRequest', UidRequestsScheme);
 
 // module.exports = HodUidRequest;

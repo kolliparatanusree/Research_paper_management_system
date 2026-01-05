@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './HodDashboard.css';
 
-export default function UIDRequestsPage() {
+export default function HodUidApproval() {
   const [requests, setRequests] = useState([]);
   const [department, setDepartment] = useState('hod');
   const [loading, setLoading] = useState(true);
@@ -148,7 +148,7 @@ export default function UIDRequestsPage() {
 // import React, { useEffect, useState } from 'react';
 // import './HodDashboard.css';
 
-// export default function UIDRequestsPage() {
+// export default function HodUidApproval() {
 //   const [requests, setRequests] = useState([]);
 //   const [department, setDepartment] = useState('hod');
 //   const [loading, setLoading] = useState(true);

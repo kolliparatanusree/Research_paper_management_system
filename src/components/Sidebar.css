@@ -1,0 +1,35 @@
+.sidebar {
+  width: 220px;
+  background-color: #111827;
+  color: white;
+  padding: 20px;
+  height: calc(100vh - 64px); /* Adjust if you have navbar */
+  position: fixed;
+  top: 64px; /* Height of navbar */
+  left: 0;
+  overflow-y: auto;
+}
+
+.sidebar-title {
+  font-size: 22px;
+  margin-bottom: 30px;
+}
+
+.sidebar button {
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  background-color: transparent;
+  color: white;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.sidebar button:hover,
+.sidebar button.active {
+  background-color: #2563eb;
+  border-radius: 8px;
+}

@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const Faculty = require('../models/Faculty');
-const HodUidRequest = require('../models/HodUidRequest');
+const HodUidRequest = require('../models/UidRequests');
 const DocumentUpload = require('../models/DocumentUpload');
 const RejectedUid = require('../models/RejectedUid');
 
