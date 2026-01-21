@@ -6,6 +6,8 @@ const Faculty = require('../models/Faculty');
 const HodUidRequest = require('../models/UidRequests');
 const DocumentUpload = require('../models/DocumentUpload');
 const RejectedUid = require('../models/RejectedUid');
+const User = require('../models/User');
+// import User from "../models/User.js";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -72,32 +74,35 @@ router.post('/register', async (req, res) => {
 
 
 // 2️⃣ Faculty Login
-router.post('/login', async (req, res) => {
+
+
+router.post("/login", async (req, res) => {
   try {
-    const { facultyId, password } = req.body;
-    const faculty = await Faculty.findOne({ facultyId });
-    if (!faculty) return res.status(404).json({ message: 'Faculty not found' });
+    const { userId, password } = req.body;
 
-    const isMatch = await bcrypt.compare(password, faculty.password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    const user = await User.findOne({ userId });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.status(200).json({ message: 'Login successful', faculty });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+
+    res.status(200).json({
+      message: "Login successful",
+      faculty: {
+        fullName: user.fullName,
+        userId: user.userId,
+        department: user.department,
+        role: user.role
+      }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 
-// 3️⃣ Get Faculty Details
-router.get('/:id', async (req, res) => {
-  try {
-    const faculty = await Faculty.findOne({ facultyId: req.params.id });
-    if (!faculty) return res.status(404).json({ message: 'Faculty not found' });
-    res.json(faculty);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+
+
 
 
 // 4️⃣ UID Requests for a Faculty
@@ -132,6 +137,7 @@ const uploadFields = upload.fields([
 router.post('/upload-documents', uploadFields, async (req, res) => {
   try {
     const {
+      
       facultyId,
       uid,
       paperTitle,
@@ -154,8 +160,15 @@ router.post('/upload-documents', uploadFields, async (req, res) => {
     if (!uidDetails) {
       return res.status(404).json({ error: "UID not found in HodUidRequest" });
     }
+    const { userId } = req.body;
+
+// ✅ Ensure both IDs exist
+if (userId && !facultyId) facultyId = userId;
+else if (!userId && facultyId) userId = facultyId;
+
 
     const docUpload = new DocumentUpload({
+      userId,
       facultyId,
       uid,
       paperTitle,
@@ -446,6 +459,67 @@ router.post('/upload-documents', uploadFields, async (req, res) => {
 //   }
 // });
 
+router.post('/uid-request', async (req, res) => {
+  try {
+    let {
+      userId,
+      facultyId,
+      facultyName,
+      department,
+      paperTitle,
+      type,
+      abstract,
+      target,
+      coAuthors
+    } = req.body;
+
+    if (userId && !facultyId) facultyId = userId;
+    else if (!userId && facultyId) userId = facultyId;
+
+    // ✅ FORCE correct coAuthors structure
+    if (!coAuthors || typeof coAuthors !== "object") {
+      coAuthors = {
+        hasCoAuthors: false,
+        authors: []
+      };
+    }
+
+    if (!Array.isArray(coAuthors.authors)) {
+      coAuthors.authors = [];
+    }
+
+    const uidRequest = new HodUidRequest({
+      facultyId,
+      facultyName,
+      department,
+      paperTitle,
+      type,
+      abstract,
+      target,
+      coAuthors,
+
+      RDCordinatorAccept: false,
+      hodAccept: false,
+      principalAccept: false,
+      adminAccept: false,
+      uid: null,
+      documentsUpload: false,
+      submittedAt: new Date()
+    });
+
+    await uidRequest.save();
+
+    res.status(201).json({
+      message: "UID request submitted successfully"
+    });
+  } catch (error) {
+    console.error("UID REQUEST ERROR:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+
 
 // 7️⃣ Approved UID Requests (Documents Upload Pending)
 router.get('/approved-uid-requests/:facultyId', async (req, res) => {
@@ -570,6 +644,38 @@ router.get('/pid-status/:facultyId', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch PID status' });
   }
 });
+
+
+router.get('/:id', async (req, res) => {
+  try {
+    const user = await User.findOne(
+      { userId: req.params.id },
+      { password: 0 } // hide password
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: 'Faculty not found' });
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// 3️⃣ Get Faculty Details
+// router.get('/:id', async (req, res) => {
+//   try {
+//     // facultyRoutes.js
+// const user = await User.findOne({ userId: req.params.id });
+
+//     // const faculty = await Faculty.findOne({ facultyId: req.params.id });
+//     if (!faculty) return res.status(404).json({ message: 'Faculty not found' });
+//     res.json(faculty);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
 
 module.exports = router;
 

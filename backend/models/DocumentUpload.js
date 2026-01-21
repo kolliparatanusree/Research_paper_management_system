@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const documentSchema = new mongoose.Schema({
+  userId: { type: String, required: true },
   facultyId: { type: String, required: true },
   uid: { type: String, required: true },
   paperTitle: String,

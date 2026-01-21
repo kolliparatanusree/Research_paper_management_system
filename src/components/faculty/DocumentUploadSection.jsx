@@ -23,7 +23,11 @@ export default function DocumentUploadSection({ facultyId }) {
 
         const fetchUploadedUIDs = async () => {
             try {
-                const response = await fetch(`/api/faculty/fetch-uploads/${facultyId}`);
+                const response = await fetch(
+  `http://localhost:5000/api/faculty/approved-uid-requests/${facultyId}`
+);
+
+                // const response = await fetch(`/api/faculty/fetch-uploads/${facultyId}`);
                 const data = await response.json();
                 setUploadedUIDs(data.uploadedUIDs || []);
             } catch (error) {

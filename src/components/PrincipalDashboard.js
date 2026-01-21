@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HodDashboard.css';
 import logo from './logo2.jpeg';
+import CustomNavbar from './CustomNavbar';
 
 export default function PrincipalDashboard() {
   const [requests, setRequests] = useState([]);
@@ -92,11 +93,13 @@ export default function PrincipalDashboard() {
   };
 
   return (
+    <>
+    <CustomNavbar />
     <div className="dashboard-container">
       {/* Sidebar */}
       <div className="sidebar">
         <h3>
-          <img src={logo} alt="Logo" className="sidebar-logo" />
+          {/* <img src={logo} alt="Logo" className="sidebar-logo" /> */}
           Principal Panel
         </h3>
 
@@ -196,5 +199,6 @@ export default function PrincipalDashboard() {
         )}
       </div>
     </div>
+    </>
   );
 }

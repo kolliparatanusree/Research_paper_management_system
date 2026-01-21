@@ -14,22 +14,40 @@ import ProfileSection from './faculty/ProfileSection';
 export default function FacultyDashboard() {
   const [activeSection, setActiveSection] = useState('request-uid');
   const [facultyDetails, setFacultyDetails] = useState(null);
-  const facultyId = localStorage.getItem('facultyId');
+  const facultyId = localStorage.getItem('userId');
+console.log("facultyId from localStorage:", facultyId);
+
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        const res = await fetch(`http://localhost:5000/api/faculty/${facultyId}`);
-        const data = await res.json();
-        setFacultyDetails(data);
-      } catch (err) {
-        console.error('Error fetching faculty data:', err);
-      }
-    };
+useEffect(() => {
+  const fetchDetails = async () => {
+    const res = await fetch(`http://localhost:5000/api/faculty/${facultyId}`);
+    const data = await res.json();
 
-    if (facultyId) fetchDetails();
-  }, [facultyId]);
+    // normalize
+    setFacultyDetails({
+      ...data,
+      facultyId: data.userId
+    });
+  };
+
+  if (facultyId) fetchDetails();
+}, [facultyId]);
+
+
+  // useEffect(() => {
+  //   const fetchDetails = async () => {
+  //     try {
+  //       const res = await fetch(`http://localhost:5000/api/faculty/${facultyId}`);
+  //       const data = await res.json();
+  //       setFacultyDetails(data);
+  //     } catch (err) {
+  //       console.error('Error fetching faculty data:', err);
+  //     }
+  //   };
+
+  //   if (facultyId) fetchDetails();
+  // }, [facultyId]);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -42,7 +60,7 @@ export default function FacultyDashboard() {
         <div className="dashboard-container">
           <div className="sidebar1">
             <div className="logo-section">
-              <img src={logo} alt="Logo" className="logo" />
+              {/* <img src={logo} alt="Logo" className="logo" /> */}
             </div>
             <nav className="menu">
               <ul>
@@ -60,9 +78,9 @@ export default function FacultyDashboard() {
             <p style={{ color: 'purple', fontSize: '25px' }}>Welcome, {facultyDetails?.fullName || 'Faculty'}</p>
 
             {activeSection === 'request-uid' && <RequestUIDForm facultyDetails={facultyDetails} />}
-            {activeSection === 'uid-status' && facultyDetails && <UIDStatusList facultyId={facultyDetails.facultyId} />}
+            {activeSection === 'uid-status' && facultyDetails && <UIDStatusList facultyId={facultyId} />}
             {activeSection === 'indexing' && facultyDetails && <DocumentUploadSection facultyId={facultyId} />}
-            {activeSection === 'my-submissions' && facultyDetails && <PIDStatusList facultyId={facultyDetails.facultyId} />}
+            {activeSection === 'my-submissions' && facultyDetails && <PIDStatusList facultyId={facultyDetails.userId} />}
             {activeSection === 'profile' && <ProfileSection facultyDetails={facultyDetails} />}
           </div>
         </div>

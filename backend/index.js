@@ -9,6 +9,8 @@ const facultyRoutes = require('./routes/facultyRoutes');
 const hodRoutes = require('./routes/hodRoutes');
 const principalRoutes = require('./routes/principalRoutes');
 const mainAdminRoutes = require('./routes/mainadminRoutes');
+const authRoutes = require('./routes/authRoutes');
+
 
 const app = express();
 app.use(cors());
@@ -20,6 +22,9 @@ mongoose.connect(process.env.MONGO_URI)
   .catch((err) => console.error('MongoDB connection error:', err));
 
 // Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+
+
 app.use('/api/admin', adminRoutes);
 app.use('/api/faculty', facultyRoutes);
 app.use('/api/hod', hodRoutes);

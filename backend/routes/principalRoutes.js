@@ -13,6 +13,20 @@ const transporter = nodemailer.createTransport({
              // Use Gmail App Password
   }
 });
+
+router.get('/uid-requests', async (req, res) => {
+  try {
+    const requests = await UIDRequest.find({
+      hodAccept: true,
+      principalAccept: false
+    }).sort({ submittedAt: -1 });
+
+    res.json(requests);
+  } catch (err) {
+    console.error('Principal UID fetch error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 // Accept UID request by Principal
 // PUT /api/principal/uid-request/:id/accept
 router.put('/uid-request/:id/accept', async (req, res) => {

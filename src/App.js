@@ -50,7 +50,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/hod-login" element={<HODLogin/>} />
         <Route path="/admin-register" element={<AdminRegister />} />
-        <Route path="/admin-dashboard" element={<RDDeanDashboard />} />
+        <Route path="/rd-dean-dashboard" element={<RDDeanDashboard />} />
         <Route path="/principal-dashboard" element={<PrincipalDashboard />} />  
         <Route path="/hod-register" element={<HODRegister />} />
         <Route path="/faculty-login" element={<FacultyLogin />} />

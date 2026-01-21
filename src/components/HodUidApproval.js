@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './HodDashboard.css';
 
-export default function HodUidApproval() {
+export default function HodUidApproval({ hodId: propHodId }){
   const [requests, setRequests] = useState([]);
   const [department, setDepartment] = useState('hod');
   const [loading, setLoading] = useState(true);
@@ -9,34 +9,48 @@ export default function HodUidApproval() {
   const [rejectReason, setRejectReason] = useState('');
   const [customReason, setCustomReason] = useState('');
 
-  const hodId = localStorage.getItem('hodId');
+const hodId = propHodId || JSON.parse(localStorage.getItem("user"))?.userId;
 
-  useEffect(() => {
-    const fetchHodAndRequests = async () => {
-      try {
-        const hodRes = await fetch(`http://localhost:5000/api/hod/${hodId}`);
-        const hodData = await hodRes.json();
-        setDepartment(hodData.department);
+useEffect(() => {
+  const fetchHodAndRequests = async () => {
+    if (!hodId) {
+      alert('HoD not logged in');
+      setLoading(false);
+      return;
+    }
 
-        const requestRes = await fetch('http://localhost:5000/api/hod/uid-requests');
-        const allRequests = await requestRes.json();
+    try {
+      const hodRes = await fetch(`http://localhost:5000/api/hod/${hodId}`);
+      const hodData = await hodRes.json();
+      setDepartment(hodData.department);
 
-        const filtered = allRequests.filter(
-          req => req.department?.toLowerCase() === hodData.department?.toLowerCase() && req.hodAccept !== true
-        );
+const requestRes = await fetch('http://localhost:5000/api/hod/uid-requests');
+if (!requestRes.ok) throw new Error('Failed to fetch UID requests');
 
-        setRequests(filtered);
-      } catch (err) {
-        console.error('Error:', err);
-        alert('Failed to load data');
-      } finally {
-        setLoading(false);
-      }
-    };
+const allRequests = await requestRes.json();
+if (!Array.isArray(allRequests)) throw new Error('UID requests should be an array');
 
-    if (hodId) fetchHodAndRequests();
-    else alert('HoD not logged in');
-  }, [hodId]);
+
+      // const requestRes = await fetch('http://localhost:5000/api/hod/uid-requests');
+      // const allRequests = await requestRes.json();
+
+      const filtered = allRequests.filter(
+  req => req.department?.toLowerCase() === hodData.department?.toLowerCase() && req.hodAccept !== true
+);
+
+setRequests(filtered);
+
+    } catch (err) {
+      console.error('Error fetching UID requests:', err);
+      alert('Failed to load UID requests');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchHodAndRequests();
+}, [hodId]);
+
 
   const handleAction = async (id, status) => {
     try {

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 
-export default function RequestUIDForm({ facultyDetails }) {
+const facultyDetails = JSON.parse(localStorage.getItem("user"));
+
+export default function RequestUIDForm() {
     const [formValues, setFormValues] = useState({
         paperTitle: '',
         type: '',
@@ -26,18 +28,22 @@ export default function RequestUIDForm({ facultyDetails }) {
         e.preventDefault();
 
         const requestData = {
-            facultyId: facultyDetails?.facultyId,
+            // facultyId: facultyDetails?._id,
+
+            facultyId: facultyDetails?.userId,
             facultyName: facultyDetails?.fullName,
-            department: facultyDetails?.department,
+            department: facultyDetails?.department || '',
             ...formValues,
             coAuthors: {
         hasCoAuthors,
         authors: hasCoAuthors ? coAuthors : []
     }
         };
+        console.log("facultyDetails:", facultyDetails);
+
 
         try {
-            const res = await fetch('http://localhost:5000/api/hod/uid-request', {
+            const res = await fetch('http://localhost:5000/api/faculty/uid-request', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestData)
@@ -59,9 +65,29 @@ export default function RequestUIDForm({ facultyDetails }) {
             <div className="uid-form-card">
                 <h3>Request UID</h3>
                 <form onSubmit={handleFormSubmit}>
-                    <input type="text" value={`Faculty Name: ${facultyDetails?.fullName || ''}`} readOnly />
-                    <input type="text" value={`Faculty ID: ${facultyDetails?.facultyId || ''}`} readOnly />
-                    <input type="text" value={`Department: ${facultyDetails?.department || ''}`} readOnly />
+                    <input
+                        type="text"
+                        value={`Faculty Name: ${facultyDetails?.fullName || ''}`}
+                        readOnly
+                        />
+
+                        <input
+                        type="text"
+                        value={`Faculty ID: ${facultyDetails?.userId || ''}`}
+                        readOnly
+                        />
+
+                        <input
+                        type="text"
+                        value={`Department: ${facultyDetails?.department || ''}`}
+                        readOnly
+                        />
+
+                    {/* <input type="text" value={`Faculty Name: ${facultyDetails?.fullName || ''}`} readOnly /> */}
+                    {/* <input type="text" value={`Faculty ID: ${facultyDetails?.userId || ''}`} readOnly /> */}
+
+                    {/* <input type="text" value={`Faculty ID: ${facultyDetails?.facultyId || ''}`} readOnly /> */}
+                    {/* <input type="text" value={`Department: ${facultyDetails?.department || ''}`} readOnly /> */}
 
                     <input type="text" name="paperTitle" placeholder="Tentative Paper Title" value={formValues.paperTitle} onChange={handleFormChange} required />
 

@@ -10,6 +10,7 @@ const coAuthorSchema = new mongoose.Schema({
 
 
 const UidRequestsScheme = new mongoose.Schema({
+  userId: String,
   facultyId: String,
   facultyName: String,
   department: String,
