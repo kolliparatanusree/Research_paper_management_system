@@ -13,17 +13,35 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 
-router.get('/uploaded-uids/:facultyId', async (req, res) => {
+// routes/faculty.js
+router.get('/uploaded-uids/:userId', async (req, res) => {
   try {
-    const { facultyId } = req.params;
-    const uploads = await DocumentUpload.find({ facultyId }, 'uid');
-    const uidList = uploads.map(doc => doc.uid);
-    res.json(uidList);
+    const { userId } = req.params;
+
+    // fetch uploaded documents for this user
+    const uploads = await DocumentUpload.find({ userId });
+
+    // return just the UIDs
+    const uploadedUIDs = uploads.map((doc) => ({ uid: doc.uid }));
+
+    res.json(uploadedUIDs);
   } catch (err) {
-    console.error("Error fetching uploaded UIDs:", err);
-    res.status(500).json({ error: "Internal server error" });
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
+
+// router.get('/uploaded-uids/:facultyId', async (req, res) => {
+//   try {
+//     const { facultyId } = req.params;
+//     const uploads = await DocumentUpload.find({ facultyId }, 'uid');
+//     const uidList = uploads.map(doc => doc.uid);
+//     res.json(uidList);
+//   } catch (err) {
+//     console.error("Error fetching uploaded UIDs:", err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 
 router.get('/faculty/:uid/upload-status', async (req, res) => {
@@ -134,77 +152,74 @@ const uploadFields = upload.fields([
   { name: 'paymentReceipt', maxCount: 1 }
 ]);
 
+
+
 router.post('/upload-documents', uploadFields, async (req, res) => {
+  console.log("req.body:", req.body);
+console.log("req.files:", req.files);
   try {
+    console.log("Uploading document for userId:", req.body.userId, "uid:", req.body.uid);
     const {
-      
-      facultyId,
+      userId,
       uid,
-      paperTitle,
-      type,
-      target,
-      abstract,
       scopusLink,
       issn,
+      doi
     } = req.body;
 
-    console.log("Received values:", { scopusLink, issn });
-    console.log("Files received:", req.files);
+    if (!userId || !uid) {
+      return res.status(400).json({ error: "userId and uid are required" });
+    }
+
+    // 🔒 Prevent duplicate uploads
+    const alreadyUploaded = await DocumentUpload.findOne({ userId, uid });
+    if (alreadyUploaded) {
+      return res.status(409).json({
+        message: "Documents already uploaded for this UID"
+      });
+    }
+
+    const uidDetails = await HodUidRequest.findOne({ uid });
+    if (!uidDetails) {
+      return res.status(404).json({ error: "UID not found in HodUidRequest" });
+    }
 
     const indexingProof = req.files['indexingProof']?.[0];
     const paymentReceipt = req.files['paymentReceipt']?.[0];
     const publishedPaperPdf = req.files['publishedPaperPdf']?.[0];
 
-    const uidDetails = await HodUidRequest.findOne({ uid });
-
-    if (!uidDetails) {
-      return res.status(404).json({ error: "UID not found in HodUidRequest" });
-    }
-    const { userId } = req.body;
-
-// ✅ Ensure both IDs exist
-if (userId && !facultyId) facultyId = userId;
-else if (!userId && facultyId) userId = facultyId;
-
-
     const docUpload = new DocumentUpload({
       userId,
-      facultyId,
       uid,
-      paperTitle,
+      paperTitle: uidDetails.paperTitle,
       type: uidDetails.type,
       target: uidDetails.target,
       abstract: uidDetails.abstract,
       scopusLink: scopusLink || "",
       issn: issn || "",
-      indexingProof: indexingProof
-        ? {
-            filename: indexingProof.originalname,
-            contentType: indexingProof.mimetype,
-            data: indexingProof.buffer,
-          }
-        : undefined,
-      paymentReceipt: paymentReceipt
-        ? {
-            filename: paymentReceipt.originalname,
-            contentType: paymentReceipt.mimetype,
-            data: paymentReceipt.buffer,
-          }
-        : undefined,
-      publishedPaper: publishedPaperPdf
-        ? {
-            pdf: {
-              filename: publishedPaperPdf.originalname,
-              contentType: publishedPaperPdf.mimetype,
-              data: publishedPaperPdf.buffer,
-            },
-            doi: req.body.doi || "",
-          }
-        : undefined,
+      indexingProof: indexingProof && {
+        filename: indexingProof.originalname,
+        contentType: indexingProof.mimetype,
+        data: indexingProof.buffer,
+      },
+      paymentReceipt: paymentReceipt && {
+        filename: paymentReceipt.originalname,
+        contentType: paymentReceipt.mimetype,
+        data: paymentReceipt.buffer,
+      },
+      publishedPaper: publishedPaperPdf && {
+        pdf: {
+          filename: publishedPaperPdf.originalname,
+          contentType: publishedPaperPdf.mimetype,
+          data: publishedPaperPdf.buffer,
+        },
+        doi: doi || "",
+      }
     });
 
     await docUpload.save();
-    await HodUidRequest.findOneAndUpdate(
+
+    await HodUidRequest.updateOne(
       { uid },
       { $set: { documentUpload: true } }
     );
@@ -216,6 +231,91 @@ else if (!userId && facultyId) userId = facultyId;
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
+
+// router.post('/upload-documents', uploadFields, async (req, res) => {
+//   try {
+//     const {
+      
+//       // facultyId,
+//       uid,
+//       paperTitle,
+//       type,
+//       target,
+//       abstract,
+//       scopusLink,
+//       issn,
+//     } = req.body;
+
+//     console.log("Received values:", { scopusLink, issn });
+//     console.log("Files received:", req.files);
+
+//     const indexingProof = req.files['indexingProof']?.[0];
+//     const paymentReceipt = req.files['paymentReceipt']?.[0];
+//     const publishedPaperPdf = req.files['publishedPaperPdf']?.[0];
+
+//     const uidDetails = await HodUidRequest.findOne({ uid });
+
+//     if (!uidDetails) {
+//       return res.status(404).json({ error: "UID not found in HodUidRequest" });
+//     }
+//     const { userId } = req.body;
+
+// // // ✅ Ensure both IDs exist
+// // if (userId && !facultyId) facultyId = userId;
+// // else if (!userId && facultyId) userId = facultyId;
+
+
+//     const docUpload = new DocumentUpload({
+//       userId,
+//       // facultyId,
+//       uid,
+//       paperTitle,
+//       type: uidDetails.type,
+//       target: uidDetails.target,
+//       abstract: uidDetails.abstract,
+//       scopusLink: scopusLink || "",
+//       issn: issn || "",
+//       indexingProof: indexingProof
+//         ? {
+//             filename: indexingProof.originalname,
+//             contentType: indexingProof.mimetype,
+//             data: indexingProof.buffer,
+//           }
+//         : undefined,
+//       paymentReceipt: paymentReceipt
+//         ? {
+//             filename: paymentReceipt.originalname,
+//             contentType: paymentReceipt.mimetype,
+//             data: paymentReceipt.buffer,
+//           }
+//         : undefined,
+//       publishedPaper: publishedPaperPdf
+//         ? {
+//             pdf: {
+//               filename: publishedPaperPdf.originalname,
+//               contentType: publishedPaperPdf.mimetype,
+//               data: publishedPaperPdf.buffer,
+//             },
+//             doi: req.body.doi || "",
+//           }
+//         : undefined,
+//     });
+
+//     await docUpload.save();
+//     await HodUidRequest.findOneAndUpdate(
+//       { uid },
+//       { $set: { documentUpload: true } }
+//     );
+
+//     res.status(200).json({ message: "Document uploaded successfully" });
+
+//   } catch (error) {
+//     console.error("Error uploading document:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 
 // const upload = multer({ storage: multer.memoryStorage() });

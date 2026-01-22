@@ -79,7 +79,7 @@ useEffect(() => {
 
             {activeSection === 'request-uid' && <RequestUIDForm facultyDetails={facultyDetails} />}
             {activeSection === 'uid-status' && facultyDetails && <UIDStatusList facultyId={facultyId} />}
-            {activeSection === 'indexing' && facultyDetails && <DocumentUploadSection facultyId={facultyId} />}
+            {activeSection === 'indexing' && facultyDetails && <DocumentUploadSection userId={facultyId} />}
             {activeSection === 'my-submissions' && facultyDetails && <PIDStatusList facultyId={facultyDetails.userId} />}
             {activeSection === 'profile' && <ProfileSection facultyDetails={facultyDetails} />}
           </div>

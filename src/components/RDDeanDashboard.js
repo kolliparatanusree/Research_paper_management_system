@@ -200,24 +200,26 @@ export default function RDDeanDashboard() {
                   <p><strong>Abstract:</strong>{doc.abstract}</p>
                   <p><strong>Uploaded:</strong> {new Date(doc.uploadedAt).toLocaleDateString()}</p>
                   <p><strong>Faculty:</strong> {doc.facultyId}</p>
-                  <p><strong>Acceptance Letter:</strong> {doc.acceptanceLetter.filename}</p>
-                  <a
-                    href={`data:${doc.acceptanceLetter.contentType};base64,${doc.acceptanceLetter.base64}`}
-                    download={doc.acceptanceLetter.filename}
-                  >
-                    📥 Download Acceptance Letter
-                  </a>
+                  <p><strong>Acceptance Letter:</strong> {doc.acceptanceLetter?.filename || "--"}</p>
+                  {doc.acceptanceLetter && doc.acceptanceLetter.filename && (
+  <a
+    href={`data:${doc.acceptanceLetter.contentType};base64,${doc.acceptanceLetter.base64}`}
+    download={doc.acceptanceLetter.filename}
+  >
+    📥 Download Acceptance Letter
+  </a>
+)}
 
-                  <p><strong>Indexing Proof:</strong> {doc.indexingProof.filename}</p>
-                  <a
-                    href={`data:${doc.indexingProof.contentType};base64,${doc.indexingProof.base64}`}
-                    download={doc.indexingProof.filename}
-                  >
-                    📥 Download Indexing Proof
-                  </a>
+{doc.indexingProof && doc.indexingProof.filename && (
+  <a
+    href={`data:${doc.indexingProof.contentType};base64,${doc.indexingProof.base64}`}
+    download={doc.indexingProof.filename}
+  >
+    📥 Download Indexing Proof
+  </a>
+)}
 
-                  <p><strong>Payment Receipt:</strong> {doc.paymentReceipt?.filename || 'N/A'}</p>
-{doc.paymentReceipt?.base64 && (
+{doc.paymentReceipt && doc.paymentReceipt.filename && (
   <a
     href={`data:${doc.paymentReceipt.contentType};base64,${doc.paymentReceipt.base64}`}
     download={doc.paymentReceipt.filename}
@@ -225,6 +227,7 @@ export default function RDDeanDashboard() {
     📥 Download Payment Receipt
   </a>
 )}
+
 
 
 <p><strong>ISSN:</strong> {doc.issn || 'N/A'}</p>
@@ -269,22 +272,50 @@ export default function RDDeanDashboard() {
                   <p><strong>Target:</strong> {doc.target}</p>
                   <p><strong>Uploaded:</strong> {new Date(doc.uploadedAt).toLocaleDateString()}</p>
                   <p><strong>Faculty:</strong> {doc.facultyId}</p>
+                  <p><strong>Acceptance Letter:</strong> {doc.acceptanceLetter?.filename || "--"}</p>
+<a
+  href={doc.acceptanceLetter?.base64 ? `data:${doc.acceptanceLetter?.contentType};base64,${doc.acceptanceLetter?.base64}` : '#'}
+  download={doc.acceptanceLetter?.filename || "--"}
+>
+  📥 Download Acceptance Letter
+</a>
 
-                  <p><strong>Acceptance Letter:</strong> {doc.acceptanceLetter.filename}</p>
+<p><strong>Indexing Proof:</strong> {doc.indexingProof?.filename || "--"}</p>
+<a
+  href={doc.indexingProof?.base64 ? `data:${doc.indexingProof?.contentType};base64,${doc.indexingProof?.base64}` : '#'}
+  download={doc.indexingProof?.filename || "--"}
+>
+  📥 Download Indexing Proof
+</a>
+
+<p><strong>Payment Receipt:</strong> {doc.paymentReceipt?.filename || 'N/A'}</p>
+{doc.paymentReceipt?.base64 && (
+  <a
+    href={`data:${doc.paymentReceipt?.contentType};base64,${doc.paymentReceipt?.base64}`}
+    download={doc.paymentReceipt?.filename || "--"}
+  >
+    📥 Download Payment Receipt
+  </a>
+)}
+
+                  {/* <p><strong>Acceptance Letter:</strong> {doc.acceptanceLetter.filename || "--"}</p>
                   <a
                     href={`data:${doc.acceptanceLetter.contentType};base64,${doc.acceptanceLetter.base64}`}
-                    download={doc.acceptanceLetter.filename}
+                    download={doc.acceptanceLetter.filename || "--"}
                   >
                     📥 Download Acceptance Letter
                   </a>
 
-                  <p><strong>Indexing Proof:</strong> {doc.indexingProof.filename}</p>
+                  <p><strong>Indexing Proof:</strong> {doc.indexingProof.filename || "--"}</p>
                   <a
                     href={`data:${doc.indexingProof.contentType};base64,${doc.indexingProof.base64}`}
-                    download={doc.indexingProof.filename}
+                    download={doc.indexingProof.filename || "--"
+
+                    
+                    }
                   >
                     📥 Download Indexing Proof
-                  </a>
+                  </a> */}
                 </div>
               ))
             )}

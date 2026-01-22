@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const documentSchema = new mongoose.Schema({
   userId: { type: String, required: true },
-  facultyId: { type: String, required: true },
+  // facultyId: { type: String, required: true },
   uid: { type: String, required: true },
   paperTitle: String,
   type: String,
@@ -58,5 +58,5 @@ const documentSchema = new mongoose.Schema({
   isRejected: { type: Boolean, default: false },
   pid: { type: String, default: null }
 });
-
+documentSchema.index({ userId: 1, uid: 1 }, { unique: true });
 module.exports = mongoose.model('DocumentUpload', documentSchema);

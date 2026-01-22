@@ -1,7 +1,7 @@
 /* File: src/components/faculty/DocumentUploadSection.jsx */
 import React, { useEffect, useState } from 'react';
 
-export default function DocumentUploadSection({ facultyId }) {
+export default function DocumentUploadSection({ userId }) {
     const [approvedUIDs, setApprovedUIDs] = useState([]);
     const [uploadedUIDs, setUploadedUIDs] = useState([]);
     const [documents, setDocuments] = useState({});
@@ -10,10 +10,21 @@ export default function DocumentUploadSection({ facultyId }) {
     const [publishedPaperPdf, setPublishedPaperPdf] = useState(null);
 
 
+//     useEffect(() => {
+//   if (!userId) {
+//     console.warn("userId not available yet");
+//     return;
+//   }
+
+//   fetchApprovedUIDs();
+//   fetchUploadedUIDs();
+// }, [userId]);
+
+
     useEffect(() => {
         const fetchApprovedUIDs = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/faculty/approved-uid-requests/${facultyId}`);
+                const res = await fetch(`http://localhost:5000/api/faculty/approved-uid-requests/${userId}`);
                 const data = await res.json();
                 setApprovedUIDs(data);
             } catch (err) {
@@ -22,22 +33,23 @@ export default function DocumentUploadSection({ facultyId }) {
         };
 
         const fetchUploadedUIDs = async () => {
-            try {
-                const response = await fetch(
-  `http://localhost:5000/api/faculty/approved-uid-requests/${facultyId}`
-);
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/faculty/uploaded-uids/${userId}`
+    );
+    const data = await response.json();
 
-                // const response = await fetch(`/api/faculty/fetch-uploads/${facultyId}`);
-                const data = await response.json();
-                setUploadedUIDs(data.uploadedUIDs || []);
-            } catch (error) {
-                console.error('Error fetching uploaded UIDs:', error);
-            }
-        };
+    // Backend returns an array of uploaded documents
+    setUploadedUIDs(data || []); 
+  } catch (error) {
+    console.error('Error fetching uploaded UIDs:', error);
+  }
+};
+
 
         fetchApprovedUIDs();
         fetchUploadedUIDs();
-    }, [facultyId]);
+    }, [userId]);
 
     const handleFileChange = (uid, field, value) => {
         setDocuments((prev) => ({
@@ -52,7 +64,7 @@ export default function DocumentUploadSection({ facultyId }) {
     const handleDocumentUpload = async (uid) => {
         setLoadingUid(uid);
         const formData = new FormData();
-        formData.append('facultyId', facultyId);
+        formData.append('userId', userId);
         formData.append('uid', uid);
 
         const docData = documents[uid] || {};
@@ -88,17 +100,24 @@ export default function DocumentUploadSection({ facultyId }) {
         }
     };
 
-    const filteredApprovedUIDs = approvedUIDs
-        .filter((uid) => !uploadedUIDs.includes(uid.uid))
-        .filter((uid) => {
-            const q = searchQuery.toLowerCase();
-            return (
-                uid.uid?.toLowerCase().includes(q) ||
-                uid.paperTitle?.toLowerCase().includes(q) ||
-                uid.type?.toLowerCase().includes(q) ||
-                uid.target?.toLowerCase().includes(q)
-            );
-        });
+   console.log("DocumentUploadSection userId:", userId);
+
+// Map uploadedUIDs to just UID strings
+const uploadedUIDStrings = uploadedUIDs.map((u) => u.uid);
+
+const filteredApprovedUIDs = approvedUIDs
+    .filter((uid) => !uploadedUIDStrings.includes(uid.uid)) // exclude uploaded
+    .filter((uid) => {
+        const q = searchQuery.toLowerCase();
+        return (
+            uid.uid?.toLowerCase().includes(q) ||
+            uid.paperTitle?.toLowerCase().includes(q) ||
+            uid.type?.toLowerCase().includes(q) ||
+            uid.target?.toLowerCase().includes(q)
+        );
+    });
+
+console.log("Uploaded UIDs:", uploadedUIDs);
 
     return (
         <div className="approved-uid-section">
