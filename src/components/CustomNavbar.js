@@ -1,14 +1,24 @@
 import './CustomNavbar.css';
 import logo from './logo2.jpeg';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
+
+
 
 const CustomNavbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
+   const location = useLocation();
+
+  const showLoginButton =
+    location.pathname === "/" ||
+    location.pathname === "/instructions";
+
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
+  const navigate = useNavigate();
 
   return (
     <header className="navbar-header">
@@ -25,10 +35,17 @@ const CustomNavbar = () => {
               <Link to="/">🏠 Home</Link>
               <Link to="/instructions">📄 Instructions</Link>
             </nav>
+            {showLoginButton && (
+        <div className="dropdown-menu">
+          <Link to="/login" className="login-btn">
+            Login
+          </Link>
+        </div>
+      )}
 
             {/* Login dropdown on right */}
-            <div className="login-dropdown">
-              <button className="login-button" onClick={toggleDropdown}>🔑 Login As</button>
+            {/* <div className="login-dropdown">
+              <button className="login-button" onClick={toggleDropdown}>🔑 Login</button>
               {showDropdown && (
                 <div className="dropdown-menu">
                   <Link to="/login">Admin</Link>
@@ -38,7 +55,7 @@ const CustomNavbar = () => {
                   <Link to="/faculty-login">Faculty</Link>
                 </div>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

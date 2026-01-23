@@ -118,3 +118,12 @@
   background-color: #f3e1f3;
   border-radius: 4px;
 }
+.login-btn {
+  padding: 1px 1px;
+  border: none;
+  background-color: #a9bbe2;
+  color: white;
+  border-radius: 1px;
+  cursor: pointer;
+  text-decoration: none;
+}

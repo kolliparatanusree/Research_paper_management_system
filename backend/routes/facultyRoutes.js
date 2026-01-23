@@ -733,10 +733,10 @@ router.put('/documents/:id/:action', async (req, res) => {
 });
 
 // GET /api/faculty/pid-status/:facultyId
-router.get('/pid-status/:facultyId', async (req, res) => {
-  const { facultyId } = req.params;
+router.get('/pid-status/:userId', async (req, res) => {
+  const { userId } = req.params;
   try {
-    const submissions = await DocumentUpload.find({ facultyId });
+    const submissions = await DocumentUpload.find({ userId });
     console.log(submissions);
     res.json(submissions);
   } catch (err) {

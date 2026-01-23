@@ -89,7 +89,7 @@ export default function PrincipalDashboard() {
   };
 
   const handleLogout = () => {
-    navigate('/principal-login');
+    navigate('/login');
   };
 
   return (

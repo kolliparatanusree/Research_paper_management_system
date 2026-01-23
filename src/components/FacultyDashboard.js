@@ -51,7 +51,7 @@ useEffect(() => {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate('/faculty-login');
+    navigate('/login');
   };
 
   return (

@@ -4,10 +4,14 @@ import RemoveFaculty from './RemoveFaculty';
 import RemoveHod from './RemoveHOD';
 import './AdminDashboard.css';
 import CustomNavbar from './CustomNavbar';
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState('addUser');
-
+  const handleLogout = () => {
+    navigate('/login');
+  };
+const navigate = useNavigate();
   return (
     <>
       <CustomNavbar />
@@ -37,6 +41,7 @@ const AdminDashboard = () => {
           >
             🧑‍💼 View HOD Details
           </button>
+          <li className="btn" onClick={handleLogout} style={{ color: 'white', marginTop: '0px', cursor: 'pointer', fontSize: '20px' }}>🔚 Logout</li>
         </aside>
 
         {/* Main Content */}

@@ -129,7 +129,7 @@ export default function RDDeanDashboard() {
   const handleLogout = () => {
     // Clear any auth tokens/localStorage if used
     // localStorage.removeItem('admin');
-    navigate('/admin-login');
+    navigate('/login');
   };
 
   return (

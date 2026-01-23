@@ -43,7 +43,7 @@ export default function HodDashboard() {
   const handleNavigation = (section) => {
     if (section === 'logout') {
       localStorage.clear();
-      navigate('/hod-login');
+      navigate('/login');
       return;
     }
     setActiveSection(section);
