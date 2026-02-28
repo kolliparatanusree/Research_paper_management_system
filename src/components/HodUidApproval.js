@@ -26,21 +26,30 @@ useEffect(() => {
       const hodData = await hodRes.json();
       setDepartment(hodData.department);
 
-const requestRes = await fetch('http://localhost:5000/api/hod/uid-requests');
-if (!requestRes.ok) throw new Error('Failed to fetch UID requests');
-
-const allRequests = await requestRes.json();
-if (!Array.isArray(allRequests)) throw new Error('UID requests should be an array');
-
-
-      // const requestRes = await fetch('http://localhost:5000/api/hod/uid-requests');
-      // const allRequests = await requestRes.json();
-
-      const filtered = allRequests.filter(
-  req => req.department?.toLowerCase() === hodData.department?.toLowerCase() && req.hodAccept !== true
+      const requestRes = await fetch(
+  `http://localhost:5000/api/hod/uid-requests/${hodId}`
 );
 
-setRequests(filtered);
+if (!requestRes.ok) throw new Error('Failed to fetch UID requests');
+
+const deptRequests = await requestRes.json();
+setRequests(deptRequests);
+
+// const requestRes = await fetch('http://localhost:5000/api/hod/uid-requests');
+// if (!requestRes.ok) throw new Error('Failed to fetch UID requests');
+
+// const allRequests = await requestRes.json();
+// if (!Array.isArray(allRequests)) throw new Error('UID requests should be an array');
+
+
+//       // const requestRes = await fetch('http://localhost:5000/api/hod/uid-requests');
+//       // const allRequests = await requestRes.json();
+
+//       const filtered = allRequests.filter(
+//   req => req.department?.toLowerCase() === hodData.department?.toLowerCase() && req.hodAccept !== true
+// );
+
+// setRequests(filtered);
 
     } catch (err) {
       console.error('Error fetching UID requests:', err);
@@ -56,13 +65,15 @@ setRequests(filtered);
 
   const handleAction = async (id, status) => {
   try {
-    let url = `http://localhost:5000/api/hod/uid-request/${id}/${status}`;
+    let url = `http://localhost:5000/api/hod/uid-request/${id}/accept/${hodId}`;
+    // let url = `http://localhost:5000/api/hod/uid-request/${id}/${status}`;
     let body = null;
 
     if (status === 'reject') {
       const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
       if (!finalReason) return Swal.fire('Error', 'Please provide a reason', 'error');
-      url = `http://localhost:5000/api/hod/uid-request/${id}/reject`;
+        url = `http://localhost:5000/api/hod/uid-request/${id}/reject/${hodId}`;
+      // url = `http://localhost:5000/api/hod/uid-request/${id}/reject`;
       body = JSON.stringify({ reason: finalReason });
     }
 

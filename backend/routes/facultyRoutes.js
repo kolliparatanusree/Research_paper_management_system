@@ -13,6 +13,69 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 
+router.get('/uid-requests/:facultyId', async (req, res) => {
+  try {
+    const { facultyId } = req.params;
+
+    const requests = await HodUidRequest.find({ facultyId })
+      .sort({ submittedAt: -1 });
+
+    res.json(requests);
+  } catch (err) {
+    res.status(500).json({
+      message: 'Failed to fetch UID requests',
+      error: err.message
+    });
+  }
+});
+
+router.put('/uid-request/:id/edit/:facultyId', async (req, res) => {
+  try {
+    const { id, facultyId } = req.params;
+
+    // 🔍 find request
+    const request = await HodUidRequest.findById(id);
+
+    if (!request) {
+      return res.status(404).json({ message: 'Request not found' });
+    }
+
+    // 🚨 SECURITY: only owner can edit
+    if (request.facultyId !== facultyId) {
+      return res.status(403).json({
+        message: 'You can edit only your own request'
+      });
+    }
+
+    // 🚨 LOCK after HOD approval
+    if (request.hodAccept === true) {
+      return res.status(400).json({
+        message: 'Cannot edit after HOD approval'
+      });
+    }
+
+    // ✅ update allowed fields only
+    const { paperTitle, abstract, target, type } = req.body;
+
+    request.paperTitle = paperTitle;
+    request.abstract = abstract;
+    request.target = target;
+    request.type = type;
+
+    await request.save();
+
+    res.json({ message: 'UID request updated successfully' });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: 'Failed to update UID request',
+      error: err.message
+    });
+  }
+});
+
+
 // routes/faculty.js
 router.get('/uploaded-uids/:userId', async (req, res) => {
   try {

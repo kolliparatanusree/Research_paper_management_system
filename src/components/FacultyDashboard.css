@@ -453,3 +453,78 @@ SweetAlert Loading Popup
   box-shadow: 0 10px 20px rgba(0,0,0,0.25), 
               inset 0 2px 4px rgba(255,255,255,0.2);
 }
+
+/* 🔥 DARK BACKDROP */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999; /* VERY IMPORTANT */
+}
+
+/* 🔥 POPUP CARD */
+.edit-modal-card {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 14px;
+  width: 420px;
+  max-width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: popupFade 0.25s ease;
+}
+
+/* inputs */
+.edit-modal-card input,
+.edit-modal-card textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* buttons row */
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+/* buttons */
+.update-btn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* animation */
+@keyframes popupFade {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

@@ -35,3 +35,91 @@
 .uid-request-card strong {
   color: #333;
 }
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* ===== MODAL CARD ===== */
+.edit-modal-card {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 14px;
+  width: 420px;
+  max-width: 90%;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
+  animation: popupFade 0.25s ease;
+}
+
+/* ===== LABELS ===== */
+.edit-modal-card label {
+  display: block;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+/* ===== INPUTS ===== */
+.edit-modal-card input,
+.edit-modal-card textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* ===== BUTTON AREA ===== */
+.modal-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ===== BUTTONS ===== */
+.update-btn {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ===== ANIMATION ===== */
+@keyframes popupFade {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
