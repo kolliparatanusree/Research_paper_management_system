@@ -1,10 +1,237 @@
 const express = require('express');
 const router = express.Router();
 const { login } = require('../controllers/authController');
+const User = require('../models/User');
+// const crypto = require('crypto'); // ✅ REQUIRED
+const bcrypt = require('bcryptjs');
+
+const otpStore = {};
+
 
 router.post('/login', login);
 
+
+const sendMail = require('../utils/sendMail');
+
+// Change Password
+router.post('/change-password', async (req, res) => {
+  try {
+    const { userId, currentPassword, newPassword } = req.body;
+
+    if (!userId || !currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Find user
+    const user = await User.findOne({ userId });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Check current password (plain text for simplicity; hash if using bcrypt)
+    if (user.password !== currentPassword) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+/* FORGOT PASSWORD – SEND EMAIL */
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log("BODY:", req.body);
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'Email not registered' });
+    }
+
+    // generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log("OTP for testing:", otp);
+    // store in memory
+    otpStore[email] = {
+      otp,
+      expiry: Date.now() + 10 * 60 * 1000 // 10 min
+    };
+
+    await sendMail(
+  email,
+  'Your OTP for Password Reset',
+  `<h2>Your OTP is: ${otp}</h2>`
+);
+
+    res.json({ message: 'OTP sent to email' });
+  } catch (err) {
+  console.error("Forgot password error:", err); // 👈 ADD THIS
+  res.status(500).json({ message: 'Server error' });
+}
+});
+
+// router.post('/forgot-password', async (req, res) => {
+//   try {
+//     const { userId } = req.body;
+
+//     const user = await User.findOne({ userId });
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     const token = crypto
+//       .createHash('sha256')
+//       .update(user.userId + user.email)
+//       .digest('hex');
+
+//     const resetLink = `http://localhost:3000/reset-password/${user.userId}/${token}`;
+
+//     await sendMail(
+//       user.email,
+//       'Reset Your Password',
+//       `
+//       <p>Dear ${user.fullName},</p>
+//       <p>Click the link below to reset your password:</p>
+//       <a href="${resetLink}">Reset Password</a>
+//       <p>If you did not request this, please ignore this email.</p>
+//       `
+//     );
+
+//     res.json({ message: 'Reset link sent to email' });
+//   } catch (err) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+
+
+router.post('/reset-password', async (req, res) => {
+  try {
+    let { email, otp, newPassword } = req.body;
+
+    // ✅ basic validation
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // ✅ normalize email
+    email = email.trim().toLowerCase();
+
+    // ✅ check OTP record
+    const record = otpStore[email];
+    if (!record) {
+      return res.status(400).json({ message: 'OTP not found or expired' });
+    }
+
+    // ✅ check OTP match
+    if (record.otp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    // ✅ check expiry
+    if (record.expiry < Date.now()) {
+      delete otpStore[email];
+      return res.status(400).json({ message: 'OTP expired' });
+    }
+
+    // ✅ find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // ✅ optional password strength check
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        message: 'Password must be at least 6 characters'
+      });
+    }
+
+    // ✅ update password (NO HASHING — as per your request)
+    user.password = newPassword;
+    await user.save();
+
+    // ✅ clear OTP after success
+    delete otpStore[email];
+
+    res.json({ message: 'Password reset successful' });
+
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+// router.post('/reset-password', async (req, res) => {
+//   try {
+//     const { email, otp, newPassword } = req.body;
+
+//     const record = otpStore[email];
+
+//     if (!record) {
+//       return res.status(400).json({ message: 'OTP not found' });
+//     }
+
+//     if (record.otp !== otp) {
+//       return res.status(400).json({ message: 'Invalid OTP' });
+//     }
+
+//     if (record.expiry < Date.now()) {
+//       return res.status(400).json({ message: 'OTP expired' });
+//     }
+
+//     const user = await User.findOne({ email });
+
+// if (!user) {
+//   return res.status(404).json({ message: 'User not found' });
+// }
+
+// user.password = newPassword;
+// await user.save();
+
+//     // clear OTP
+//     delete otpStore[email];
+
+//     res.json({ message: 'Password reset successful' });
+//   } catch (err) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+
+/* RESET PASSWORD */
+// router.post('/reset-password', async (req, res) => {
+//   try {
+//     const { userId, token, newPassword } = req.body;
+
+//     const user = await User.findOne({ userId });
+//     if (!user) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     const expectedToken = crypto
+//       .createHash('sha256')
+//       .update(user.userId + user.email)
+//       .digest('hex');
+
+//     if (token !== expectedToken) {
+//       return res.status(400).json({ message: 'Invalid reset link' });
+//     }
+
+//     user.password = newPassword;
+//     await user.save();
+
+//     res.json({ message: 'Password reset successful' });
+//   } catch (err) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
 module.exports = router;
+
 
 
 // const express = require('express');

@@ -338,3 +338,118 @@
   margin-bottom: 10px;
 }
 
+SweetAlert Loading Popup
+.swal-loading-popup {
+  border-radius: 14px;
+  padding: 30px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Title */
+.swal-loading-title {
+  font-size: 22px;
+  color: #2563eb; /* blue */
+  font-weight: 600;
+}
+
+/* Text */
+.swal-loading-text {
+  font-size: 15px;
+  color: #555;
+  margin-top: 10px;
+}
+
+/* Spinner */
+.swal2-loader {
+  border-color: #2563eb transparent #2563eb transparent !important;
+  width: 3.2em !important;
+  height: 3.2em !important;
+}
+/* Loading popup background */
+.swal-loading-popup {
+  background-color: #f3f4f6; /* light gray */
+  border-radius: 15px;
+  padding: 25px;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Title styling */
+.swal-loading-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #1f2937; /* dark gray */
+  margin-bottom: 15px;
+}
+
+/* Text styling */
+.swal-loading-text {
+  font-size: 18px;
+  color: #374151; /* gray */
+}
+
+/* Animated dots */
+.swal-loader {
+  display: inline-block;
+}
+.custom-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.custom-spinner .circle {
+  width: 15px;       /* circle size */
+  height: 15px;
+  background-color: #2563eb; /* blue color */
+  border-radius: 50%;
+  animation: bounce 0.6s infinite alternate;
+}
+
+/* Add delay for each circle */
+.custom-spinner .circle:nth-child(2) { animation-delay: 0.2s; }
+.custom-spinner .circle:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0); }
+}
+
+
+.swal-loader .dot {
+  display: inline-block;
+  animation: blink 1.4s infinite;
+  font-weight: bold;
+  color: #2563eb; /* blue dots */
+  margin-left: 2px;
+}
+
+.swal-loader .dot:nth-child(1) { animation-delay: 0s; }
+.swal-loader .dot:nth-child(2) { animation-delay: 0.2s; }
+.swal-loader .dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0; }
+  40% { opacity: 1; }
+}
+
+.dashboard-counts {
+  display: flex;
+  flex-wrap: wrap;           /* allow cards to go to next row */
+  gap: 2rem;                 /* space between cards */
+  justify-content: center;   /* center the cards horizontally */
+}
+
+.count-card {
+  flex: 1 1 45%;             /* 45% width → 2 cards per row */
+  min-width: 300px;          /* prevents them from getting too small */
+  padding: 2rem;             /* bigger card padding */
+  border-radius: 20px;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.25), 
+              inset 0 2px 4px rgba(255,255,255,0.2);
+}

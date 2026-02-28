@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './RemoveFaculty.css';
+import Swal from 'sweetalert2'; // <-- import SweetAlert2
 
 const RemoveHOD = () => {
   const [hods, setHods] = useState([]);
@@ -15,6 +16,11 @@ const RemoveHOD = () => {
         setFilteredHods(data);
       } catch (err) {
         console.error('Error fetching HODs:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to fetch HODs'
+        });
       }
     };
 
@@ -31,30 +37,53 @@ const RemoveHOD = () => {
     setFilteredHods(filtered);
   }, [search, hods]);
 
-  const handleRemove = async (hodId) => {
-    if (!window.confirm('Are you sure you want to remove this HOD?')) return;
+  const handleRemove = async (userId) => {
+    // SweetAlert2 confirmation
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "This will permanently remove the HOD.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, remove',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/main-admin/remove-hod/${hodId}`, {
+      const response = await fetch(`http://localhost:5000/api/main-admin/remove-faculty/${userId}`, {
         method: 'DELETE',
       });
       const data = await response.json();
 
       if (response.ok) {
-        alert('HOD removed successfully');
-        setHods(prev => prev.filter(hod => hod._id !== hodId));
+        Swal.fire({
+          icon: 'success',
+          title: 'Removed!',
+          text: 'HOD removed successfully'
+        });
+        setHods(prev => prev.filter(hod => hod.userId !== userId));
       } else {
-        alert(data.message || 'Failed to remove HOD');
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: data.message || 'Failed to remove HOD'
+        });
       }
     } catch (err) {
       console.error('Error removing HOD:', err);
-      alert('Something went wrong while removing HOD.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Something went wrong while removing HOD.'
+      });
     }
   };
 
   return (
     <div className="remove-hod-container">
-
       <input
         type="text"
         placeholder="Search by any detail (name, email, ID...)"
@@ -68,14 +97,14 @@ const RemoveHOD = () => {
           <div key={hod._id} className="hod-card">
             <h4>{hod.fullName}</h4>
             <p><strong>Email:</strong> {hod.email}</p>
-            <p><strong>HOD ID:</strong> {hod.hodId}</p>
+            <p><strong>HOD ID:</strong> {hod.userId}</p>
             <p><strong>Phone:</strong> {hod.phoneNumber}</p>
             <p><strong>Gender:</strong> {hod.gender}</p>
             <p><strong>Department:</strong> {hod.department}</p>
 
             <button
               className="remove-btn"
-              onClick={() => handleRemove(hod._id)}
+              onClick={() => handleRemove(hod.userId)}
             >
               Remove
             </button>
@@ -87,3 +116,95 @@ const RemoveHOD = () => {
 };
 
 export default RemoveHOD;
+
+
+
+// import React, { useEffect, useState } from 'react';
+// import './RemoveFaculty.css';
+
+// const RemoveHOD = () => {
+//   const [hods, setHods] = useState([]);
+//   const [search, setSearch] = useState('');
+//   const [filteredHods, setFilteredHods] = useState([]);
+
+//   useEffect(() => {
+//     const fetchHods = async () => {
+//       try {
+//         const response = await fetch('http://localhost:5000/api/main-admin/hods');
+//         const data = await response.json();
+//         setHods(data);
+//         setFilteredHods(data);
+//       } catch (err) {
+//         console.error('Error fetching HODs:', err);
+//       }
+//     };
+
+//     fetchHods();
+//   }, []);
+
+//   useEffect(() => {
+//     const lowerSearch = search.toLowerCase();
+//     const filtered = hods.filter(hod =>
+//       Object.values(hod).some(value =>
+//         String(value).toLowerCase().includes(lowerSearch)
+//       )
+//     );
+//     setFilteredHods(filtered);
+//   }, [search, hods]);
+
+//   const handleRemove = async (hodId) => {
+//     if (!window.confirm('Are you sure you want to remove this HOD?')) return;
+
+//     try {
+//       const response = await fetch(`http://localhost:5000/api/main-admin/remove-hod/${hodId}`, {
+//         method: 'DELETE',
+//       });
+//       const data = await response.json();
+
+//       if (response.ok) {
+//         alert('HOD removed successfully');
+//         setHods(prev => prev.filter(hod => hod._id !== hodId));
+//       } else {
+//         alert(data.message || 'Failed to remove HOD');
+//       }
+//     } catch (err) {
+//       console.error('Error removing HOD:', err);
+//       alert('Something went wrong while removing HOD.');
+//     }
+//   };
+
+//   return (
+//     <div className="remove-hod-container">
+
+//       <input
+//         type="text"
+//         placeholder="Search by any detail (name, email, ID...)"
+//         value={search}
+//         onChange={(e) => setSearch(e.target.value)}
+//         className="search-input"
+//       />
+
+//       <div className="hod-card-list">
+//         {filteredHods.map(hod => (
+//           <div key={hod._id} className="hod-card">
+//             <h4>{hod.fullName}</h4>
+//             <p><strong>Email:</strong> {hod.email}</p>
+//             <p><strong>HOD ID:</strong> {hod.hodId}</p>
+//             <p><strong>Phone:</strong> {hod.phoneNumber}</p>
+//             <p><strong>Gender:</strong> {hod.gender}</p>
+//             <p><strong>Department:</strong> {hod.department}</p>
+
+//             <button
+//               className="remove-btn"
+//               onClick={() => handleRemove(hod._id)}
+//             >
+//               Remove
+//             </button>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default RemoveHOD;

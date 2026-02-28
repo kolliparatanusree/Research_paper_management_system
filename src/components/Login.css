@@ -1,0 +1,117 @@
+/* .login-page-wrapper {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+/* Page background */
+.login-page-wrapper {
+height: 100vh;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+} */
+
+/* Card top accent */
+.login-page-wrapper .login-card {
+  border-top: 5px solid #10b981;
+}
+
+/* Heading text gradient */
+.login-page-wrapper .login-card h2 {
+  background: linear-gradient(90deg, #10b981, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Input background */
+.login-page-wrapper .login-card input[type="text"],
+.login-page-wrapper .login-card input[type="password"],
+.login-page-wrapper .login-card input[type="email"] {
+  background: #f3f4f6;
+}
+
+.login-page-wrapper .login-card input:focus {
+  background: #fff;
+}
+
+/* Button gradient */
+.login-page-wrapper .login-card button {
+  background: linear-gradient(90deg, #10b981, #3b82f6);
+}
+
+.login-page-wrapper .login-card button:hover {
+  background: linear-gradient(90deg, #3b82f6, #10b981);
+}
+
+/* Forgot password link color */
+.login-page-wrapper .login-card .forgot-link {
+  color: #fbbf24;
+}
+
+.login-page-wrapper .login-card .forgot-link:hover {
+  color: #f59e0b;
+}
+
+.login-page-wrapper .login-card {
+  max-width: 360px;
+  border-top: 5px solid #10b981;
+  margin: 60px auto;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-page-wrapper .login-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.login-page-wrapper .login-card h2 {
+  font-size: 26px;
+  color: #1f2937;
+  margin-bottom: 20px;
+}
+
+.login-page-wrapper .login-card input[type="text"],
+.login-page-wrapper .login-card input[type="password"],
+.login-page-wrapper .login-card input[type="email"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.login-page-wrapper .login-card input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+.login-page-wrapper .login-card button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  margin-top: 10px;
+}
+
+.login-page-wrapper .login-card button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Forgot password link */
+.login-page-wrapper .login-card .forgot-link {
+  display: block;
+  margin: 10px 0;
+  font-size: 14px;
+  color: #3b82f6;
+  cursor: pointer;
+  text-align: right;
+}

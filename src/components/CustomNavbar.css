@@ -73,25 +73,6 @@
   color: #c088c0;
 }
 
-/* Login button dropdown */
-.login-dropdown {
-  position: relative;
-}
-
-.login-button {
-  background-color: transparent;
-  border: none;
-  color: #800080;
-  font-size: 18px;
-  font-weight: 500;
-  cursor: pointer;
-  margin-right: 60px;
-}
-
-.login-button:hover {
-  color: #c088c0;
-}
-
 .dropdown-menu {
   position: absolute;
   top: 35px;
@@ -118,12 +99,17 @@
   background-color: #f3e1f3;
   border-radius: 4px;
 }
-.login-btn {
-  padding: 1px 1px;
-  border: none;
-  background-color: #a9bbe2;
-  color: white;
-  border-radius: 1px;
-  cursor: pointer;
-  text-decoration: none;
+.login-link {
+  text-decoration: none;      /* remove underline */
+  color: #3b82f6;             /* nice blue link color */
+  font-weight: 500;
+  font-size: 18px;
+  display: inline-flex;       /* align icon + text nicely */
+  align-items: center;
+  gap: 0.4rem;                /* space between key and text */
+  transition: color 0.2s;
+}
+
+.login-link:hover {
+  color: #1e40af;             /* darker blue on hover */
 }

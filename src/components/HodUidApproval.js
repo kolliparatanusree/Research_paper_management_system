@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './HodDashboard.css';
+import Swal from 'sweetalert2';
+
 
 export default function HodUidApproval({ hodId: propHodId }){
   const [requests, setRequests] = useState([]);
@@ -53,34 +55,61 @@ setRequests(filtered);
 
 
   const handleAction = async (id, status) => {
-    try {
-      let url = `http://localhost:5000/api/hod/uid-request/${id}/${status}`;
-      let body = null;
+  try {
+    let url = `http://localhost:5000/api/hod/uid-request/${id}/${status}`;
+    let body = null;
 
-      if (status === 'reject') {
-        const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
-        if (!finalReason) return alert('Please provide a reason for rejection.');
-        url = `http://localhost:5000/api/hod/uid-request/${id}/reject`;
-        body = JSON.stringify({ reason: finalReason });
-      }
-
-      const res = await fetch(url, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: body,
-      });
-
-      const data = await res.json();
-      alert(data.message);
-      setRequests(prev => prev.filter(r => r._id !== id));
-      setRejectingId(null);
-      setRejectReason('');
-      setCustomReason('');
-    } catch (err) {
-      console.error(err);
-      alert('Action failed');
+    if (status === 'reject') {
+      const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
+      if (!finalReason) return Swal.fire('Error', 'Please provide a reason', 'error');
+      url = `http://localhost:5000/api/hod/uid-request/${id}/reject`;
+      body = JSON.stringify({ reason: finalReason });
     }
-  };
+
+    const res = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body });
+    const data = await res.json();
+
+    Swal.fire('Success', data.message, 'success');
+    setRequests(prev => prev.filter(r => r._id !== id));
+    setRejectingId(null);
+    setRejectReason('');
+    setCustomReason('');
+  } catch (err) {
+    console.error(err);
+    Swal.fire('Error', 'Action failed', 'error');
+  }
+};
+
+
+  // const handleAction = async (id, status) => {
+  //   try {
+  //     let url = `http://localhost:5000/api/hod/uid-request/${id}/${status}`;
+  //     let body = null;
+
+  //     if (status === 'reject') {
+  //       const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
+  //       if (!finalReason) return alert('Please provide a reason for rejection.');
+  //       url = `http://localhost:5000/api/hod/uid-request/${id}/reject`;
+  //       body = JSON.stringify({ reason: finalReason });
+  //     }
+
+  //     const res = await fetch(url, {
+  //       method: 'PUT',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: body,
+  //     });
+
+  //     const data = await res.json();
+  //     alert(data.message);
+  //     setRequests(prev => prev.filter(r => r._id !== id));
+  //     setRejectingId(null);
+  //     setRejectReason('');
+  //     setCustomReason('');
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert('Action failed');
+  //   }
+  // };
 
   const rejectionOptions = [
     'Insufficient Details',

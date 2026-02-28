@@ -40,6 +40,9 @@ import PrincipalLogin from './components/PrincipalLogin.js';
 import PrincipalDashboard from './components/PrincipalDashboard.js';
 import AdminDashboard from './components/AdminDashboard.js';
 import Instructions from './components/Instructions.js';
+import ResetPassword from './components/ResetPassword.js';
+import DashboardCounts from './components/faculty/DashboardCounts.jsx';
+
 function App() {
   return (
     <Router>
@@ -60,6 +63,8 @@ function App() {
         <Route path="/hod-uid-requests" element={<HodUidApproval/>} />
         <Route path="/mainAdmin-dashboard" element={<AdminDashboard/>} />
         <Route path="/instructions" element={<Instructions/>} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/dashboard" element={<DashboardCounts />} />
       </Routes>
     </Router>
   );

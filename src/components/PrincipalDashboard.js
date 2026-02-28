@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './HodDashboard.css';
+import './RDDeanDashboard.css';
 import logo from './logo2.jpeg';
 import CustomNavbar from './CustomNavbar';
+import Swal from 'sweetalert2';
 
 export default function PrincipalDashboard() {
   const [requests, setRequests] = useState([]);
@@ -10,8 +11,43 @@ export default function PrincipalDashboard() {
   const [rejectingId, setRejectingId] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
   const [customReason, setCustomReason] = useState('');
-
   const navigate = useNavigate();
+
+  const [approvedPids, setApprovedPids] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+const [startDate, setStartDate] = useState('');
+const [endDate, setEndDate] = useState('');
+
+const filteredPids = approvedPids.filter(doc => {
+  // Filter by date range
+  if (startDate && endDate) {
+    const uploaded = new Date(doc.uploadedAt);
+    if (!(uploaded >= new Date(startDate) && uploaded <= new Date(endDate))) return false;
+  }
+
+  // Filter by search term
+  if (searchTerm.trim() === '') return true;
+
+  const term = searchTerm.toLowerCase();
+  return (
+    (doc.facultyId && doc.facultyId.toLowerCase().includes(term)) ||
+    (doc.paperTitle && doc.paperTitle.toLowerCase().includes(term)) ||
+    (doc.uid && doc.uid.toLowerCase().includes(term)) ||
+    (doc.pid && doc.pid.toLowerCase().includes(term))
+  );
+});
+
+useEffect(() => {
+  fetch('http://localhost:5000/api/admin/approved-pids')
+    .then(res => res.json())
+    .then(data => setApprovedPids(data))
+    .catch(err => {
+      console.error(err);
+      setApprovedPids([]);
+      Swal.fire('Error', 'Failed to load approved PIDs.', 'error');
+    });
+}, []);
+
 
   useEffect(() => {
     if (activeSection === 'uid-approval') {
@@ -32,8 +68,10 @@ export default function PrincipalDashboard() {
     if (status === 'reject') {
       const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
       if (!finalReason.trim()) {
-        alert('Please provide a reason for rejection.');
-        return;
+        return Swal.fire('Error', 'Please provide a reason for rejection.', 'error');
+        
+        // alert('Please provide a reason for rejection.');
+        // return;
       }
 
       try {
@@ -44,14 +82,17 @@ export default function PrincipalDashboard() {
         });
 
         const data = await res.json();
-        alert(data.message);
+        
+        Swal.fire('Rejected',  'success');
+        // alert(data.message);
         setRequests(prev => prev.filter(r => r._id !== id));
         setRejectingId(null);
         setRejectReason('');
         setCustomReason('');
       } catch (err) {
         console.error(err);
-        alert('Rejection failed');
+        Swal.fire('Error', 'Rejection failed', 'error');
+       // alert('Rejection failed');
       }
     } else {
       try {
@@ -59,11 +100,13 @@ export default function PrincipalDashboard() {
           method: 'PUT',
         });
         const data = await res.json();
-        alert(data.message);
+        Swal.fire('Accepted', data.message, 'success');
+        // alert(data.message);
         setRequests(prev => prev.filter(r => r._id !== id));
       } catch (err) {
         console.error(err);
-        alert('Acceptance failed');
+        Swal.fire('Error', 'Acceptance failed', 'error');
+        // alert('Acceptance failed');
       }
     }
   };
@@ -89,7 +132,31 @@ export default function PrincipalDashboard() {
   };
 
   const handleLogout = () => {
-    navigate('/login');
+    localStorage.clear();
+  
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you really want to log out?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, log me out',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#10b981', // green
+      cancelButtonColor: '#f87171',  // red
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // ✅ User confirmed logout
+        Swal.fire({
+          icon: 'success',
+          title: 'Logged Out',
+          text: 'You have successfully logged out!',
+          timer: 2000,
+          showConfirmButton: false
+        }).then(() => {
+          navigate('/login'); // Redirect after success message
+        });
+      }
+    });
   };
 
   return (
@@ -119,6 +186,13 @@ export default function PrincipalDashboard() {
             👤 Profile
           </li>
           <li
+  className={activeSection === 'approved-pids' ? 'active' : ''}
+  onClick={() => setActiveSection('approved-pids')}
+  style={{ cursor: 'pointer' }}
+>
+  ✅ Approved PIDs
+</li>
+          <li
             onClick={handleLogout}
             style={{ cursor: 'pointer', color: 'white' }}
           >
@@ -131,7 +205,7 @@ export default function PrincipalDashboard() {
       <div className="main-content">
         {activeSection === 'uid-approval' && (
           <>
-            <h2>Requests Approved by HoD</h2>
+            <h2>Pending UID Requests</h2>
             {requests.length === 0 ? (
               <p>No requests pending final approval.</p>
             ) : (
@@ -189,12 +263,87 @@ export default function PrincipalDashboard() {
           </>
         )}
 
+       {activeSection === 'approved-pids' && (
+  <div className="uid-requests-container">
+    <h2>Approved PIDs</h2>
+
+    {/* Search + Date Filters */}
+    <div className="filters-container" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+      <input
+        type="text"
+        placeholder="Search by Faculty, Paper Title, UID or PID"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ flex: '1 1 300px', padding: '0.5rem', fontSize: '1rem' }}
+      />
+
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <label>
+          From:
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            style={{ marginLeft: '0.25rem', padding: '0.25rem' }}
+          />
+        </label>
+        <label>
+          To:
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            style={{ marginLeft: '0.25rem', padding: '0.25rem' }}
+          />
+        </label>
+      </div>
+    </div>
+
+    {/* Display filtered PIDs */}
+    {filteredPids.length === 0 ? (
+      <p>No approved documents found.</p>
+    ) : (
+      filteredPids.map(doc => (
+        <div className="uid-request-card" key={doc._id}>
+          <h4>{doc.paperTitle}</h4>
+          <p><strong>Faculty:</strong> {doc.facultyId}</p>
+          <p><strong>PID:</strong> {doc.pid}</p>
+          <p><strong>UID:</strong> {doc.uid}</p>
+          <p><strong>Type:</strong> {doc.type}</p>
+          <p><strong>Abstract:</strong> {doc.abstract}</p>
+          <p><strong>Target:</strong> {doc.target}</p>
+          <p><strong>Uploaded:</strong> {new Date(doc.uploadedAt).toLocaleDateString()}</p>
+
+          <p><strong>Acceptance Letter:</strong>
+            <a
+              href={doc.acceptanceLetter?.base64 ? `data:${doc.acceptanceLetter?.contentType};base64,${doc.acceptanceLetter?.base64}` : '#'}
+              download={doc.acceptanceLetter?.filename || "--"}
+            >
+              📥 Download
+            </a>
+          </p>
+
+          <p><strong>Indexing Proof:</strong>
+            <a
+              href={doc.indexingProof?.base64 ? `data:${doc.indexingProof?.contentType};base64,${doc.indexingProof?.base64}` : '#'}
+              download={doc.indexingProof?.filename || "--"}
+            >
+              📥 Download
+            </a>
+          </p>
+        </div>
+      ))
+    )}
+  </div>
+)}
+
         {activeSection === 'profile' && (
           <div className="profile-view">
             <h2>Profile Details</h2>
             <p><strong>Name:</strong> {defaultProfile.name}</p>
             <p><strong>Email:</strong> {defaultProfile.email}</p>
             <p><strong>Phone:</strong> {defaultProfile.phone}</p>
+            
           </div>
         )}
       </div>

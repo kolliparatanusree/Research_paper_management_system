@@ -6,6 +6,9 @@ import HodUidApproval from './HodUidApproval';
 import CustomNavbar from './CustomNavbar';
 import logo from './logo2.jpeg';
 import axios from 'axios';
+import Swal from 'sweetalert2';
+import ProfileSection from './faculty/ProfileSection';
+
 
 export default function HodDashboard() {
   const [activeSection, setActiveSection] = useState('requests');
@@ -14,10 +17,10 @@ export default function HodDashboard() {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
-  const hodId = localStorage.getItem('hodId'); // read HOD ID
+  const userId = localStorage.getItem('userId'); // read HOD ID
 
   useEffect(() => {
-    if (!hodId) {
+    if (!userId) {
       console.error('No HOD ID found in localStorage');
       setError('No HOD ID found. Please login again.');
       setLoadingProfile(false);
@@ -25,29 +28,109 @@ export default function HodDashboard() {
     }
 
     const fetchHodProfile = async () => {
-      try {
-        setLoadingProfile(true);
-        const res = await axios.get(`http://localhost:5000/api/hod/${hodId}`);
-        setHodProfile(res.data);
-      } catch (err) {
-        console.error('Error fetching HOD profile:', err);
-        setError('Failed to fetch HOD profile. Please try again.');
-      } finally {
-        setLoadingProfile(false);
+  try {
+    // 🔵 SHOW LOADING POPUP
+    Swal.fire({
+      title: 'Loading Profile...',
+      text: 'Please wait',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
       }
-    };
+    });
+
+    setLoadingProfile(true);
+
+    const res = await axios.get(`http://localhost:5000/api/faculty/${userId}`);
+    const data = res.data;
+
+    setHodProfile({
+  fullName: data.fullName,
+  userId: data.userId,       // ProfileSection expects userId
+  department: data.department,
+  email: data.email,
+  phoneNumber: data.phoneNumber,
+  gender: data.gender
+});
+
+    Swal.close(); // ✅ CLOSE LOADER after success
+  } catch (err) {
+    console.error('Error fetching HOD profile:', err);
+
+    Swal.close(); // close loader if error
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to fetch HOD profile'
+    });
+
+    setError('Failed to fetch HOD profile.');
+  } finally {
+    setLoadingProfile(false);
+  }
+};
+
+
+    // const fetchHodProfile = async () => {
+    //   try {
+    //     setLoadingProfile(true);
+    //     const res = await axios.get(`http://localhost:5000/api/hod/${hodId}`);
+    //     setHodProfile(res.data);
+    //   } catch (err) {
+    //     console.error('Error fetching HOD profile:', err);
+    //     setError('Failed to fetch HOD profile. Please try again.');
+    //   } finally {
+    //     setLoadingProfile(false);
+    //   }
+    // };
 
     fetchHodProfile();
-  }, [hodId]);
+  }, [userId]);
 
-  const handleNavigation = (section) => {
-    if (section === 'logout') {
-      localStorage.clear();
-      navigate('/login');
-      return;
+const handleNavigation = (section) => {
+  if (section === 'logout') {
+    localStorage.clear();
+
+    Swal.fire({
+    title: 'Are you sure?',
+    text: "Do you really want to log out?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, log me out',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#10b981', // green
+    cancelButtonColor: '#f87171',  // red
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // ✅ User confirmed logout
+      Swal.fire({
+        icon: 'success',
+        title: 'Logged Out',
+        text: 'You have successfully logged out!',
+        timer: 2000,
+        showConfirmButton: false
+      }).then(() => {
+        navigate('/login'); // Redirect after success message
+      });
     }
-    setActiveSection(section);
-  };
+});
+
+
+    return;
+  }
+  setActiveSection(section);
+};
+
+
+  // const handleNavigation = (section) => {
+  //   if (section === 'logout') {
+  //     localStorage.clear();
+  //     navigate('/login');
+  //     return;
+  //   }
+  //   setActiveSection(section);
+  // };
 
   return (
     <>
@@ -84,12 +167,13 @@ export default function HodDashboard() {
         {/* Main Content */}
         <div className="main-content">
           {activeSection === 'requests' && <HodUidApproval />}
-
-          {activeSection === 'profile' && (
+          {activeSection === 'profile' && hodProfile && (
+  <ProfileSection facultyDetails={hodProfile} />
+)}
+          {/* {activeSection === 'profile' && (
             <div className="profile-section">
               <h2>HOD Profile</h2>
 
-              {loadingProfile && <p>Loading profile...</p>}
 
               {error && <p style={{ color: 'red' }}>{error}</p>}
 
@@ -104,7 +188,7 @@ export default function HodDashboard() {
                 </div>
               )}
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </>

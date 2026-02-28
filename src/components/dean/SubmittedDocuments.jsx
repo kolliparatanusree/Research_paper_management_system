@@ -15,13 +15,13 @@ export default function SubmittedDocuments({ documents }) {
             <p><strong>Type:</strong> {doc.type}</p>
             <p><strong>Target:</strong> {doc.target}</p>
             <p><strong>Abstract:</strong> {doc.abstract}</p>
-            <p><strong>Faculty:</strong> {doc.facultyId}</p>
+            <p><strong>Faculty:</strong> {doc.userId}</p>
 
-            <p><strong>Acceptance Letter:</strong> {doc.acceptanceLetter.filename}</p>
+            {/* <p><strong>Acceptance Letter:</strong> {doc.acceptanceLetter.filename}</p>
             <a
               href={`data:${doc.acceptanceLetter.contentType};base64,${doc.acceptanceLetter.base64}`}
               download={doc.acceptanceLetter.filename}
-            >📥 Download</a>
+            >📥 Download</a> */}
 
             <p><strong>Indexing Proof:</strong> {doc.indexingProof.filename}</p>
             <a

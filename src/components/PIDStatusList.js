@@ -1,29 +1,101 @@
 import React, { useEffect, useState } from 'react';
 import './FacultyDashboard.css';
-
+import Swal from 'sweetalert2';
 export default function PIDStatusList({ facultyId }) {
   const [submissions, setSubmissions] = useState([]);
   const [filter, setFilter] = useState('approved'); // 'approved' | 'pending' | 'rejected'
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSubmissions = async () => {
-      setLoading(true); // Start loading
-      try {
-        const res = await fetch(`http://localhost:5000/api/faculty/pid-status/${facultyId}`);
-        const data = await res.json();
-        setSubmissions(data);
-      } catch (err) {
-        console.error('Error fetching PID status:', err);
-      } finally {
-        setLoading(false); // Done loading
-      }
-    };
+  const fetchSubmissions = async () => {
+Swal.fire({
+  title: 'Loading...',
+  html: `
+    <div class="custom-spinner">
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+    </div>
+    <p>Fetching PID details, please wait...</p>
+  `,
+  showConfirmButton: false,
+  allowOutsideClick: false,
+  customClass: {
+    popup: 'swal-loading-popup'
+  }
+});
 
-    if (facultyId) {
-      fetchSubmissions();
+
+
+//     Swal.fire({
+//   title: 'Loading...',
+//   html: `<div class="swal-loader">
+//            Fetching PID details<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+//          </div>`,
+//   allowOutsideClick: false,
+//   didOpen: () => {
+//     Swal.showLoading();
+//   },
+//   customClass: {
+//     popup: 'swal-loading-popup',
+//     title: 'swal-loading-title',
+//     htmlContainer: 'swal-loading-text'
+//   }
+// });
+
+
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/faculty/pid-status/${facultyId}`);
+      const data = await res.json();
+      setSubmissions(data);
+    } catch (err) {
+      console.error('Error fetching PID status:', err);
+      Swal.fire({
+  icon: 'error',
+  title: 'Oops!',
+  text: 'Failed to load PID details. Please try again.',
+  confirmButtonText: 'OK',
+  confirmButtonColor: '#e11d48', // red
+  background: '#fff',
+  color: '#111',
+});
+
+      // Swal.fire({
+      //   icon: 'error',
+      //   title: 'Error',
+      //   text: 'Failed to load PID Details.'
+      // });
+    } finally {
+      Swal.close(); // ✅ CLOSE LOADING
+      setLoading(false);
     }
-  }, [facultyId]);
+  };
+
+  if (facultyId) {
+    fetchSubmissions();
+  }
+}, [facultyId]);
+
+
+  // useEffect(() => {
+  //   const fetchSubmissions = async () => {
+  //     setLoading(true); // Start loading
+  //     try {
+  //       const res = await fetch(`http://localhost:5000/api/faculty/pid-status/${facultyId}`);
+  //       const data = await res.json();
+  //       setSubmissions(data);
+  //     } catch (err) {
+  //       console.error('Error fetching PID status:', err);
+  //     } finally {
+  //       setLoading(false); // Done loading
+  //     }
+  //   };
+
+  //   if (facultyId) {
+  //     fetchSubmissions();
+  //   }
+  // }, [facultyId]);
 
   const filteredSubmissions = () => {
     if (filter === 'approved') {
@@ -50,7 +122,14 @@ export default function PIDStatusList({ facultyId }) {
 
       <div className="uid-status-list">
         {loading ? (
-          <p className="loading-text">🌀 Loading.....<span className="dots"></span></p>
+          <p className="loading-text">
+  
+  <span className="dot one"></span>
+  <span className="dot two"></span>
+  <span className="dot three"></span>
+</p>
+
+          // <p className="loading-text">🌀 Loading.....<span className="dots"></span></p>
         ) : filtered.length === 0 ? (
           <p>No {filter} documents found.</p>
         ) : (
@@ -69,7 +148,7 @@ export default function PIDStatusList({ facultyId }) {
               )}
 
               {filter === 'pending' && (
-                <p style={{ color: 'orange' }}><strong>Status:</strong> Waiting for admin review</p>
+                <p style={{ color: 'orange' }}><strong>Status:</strong> Waiting for R&D dean review</p>
               )}
 
               {filter === 'approved' && (

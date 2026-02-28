@@ -734,8 +734,9 @@ router.put('/documents/:id/:action', async (req, res) => {
 
 // GET /api/faculty/pid-status/:facultyId
 router.get('/pid-status/:userId', async (req, res) => {
-  const { userId } = req.params;
+  
   try {
+    const { userId } = req.params;
     const submissions = await DocumentUpload.find({ userId });
     console.log(submissions);
     res.json(submissions);

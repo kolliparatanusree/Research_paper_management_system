@@ -15,6 +15,8 @@ const authRoutes = require('./routes/authRoutes');
 const app = express();
 app.use(cors());
 app.use(express.json());
+const dashboardRoutes = require('./routes/dashboard');
+app.use('/api/dashboard', dashboardRoutes);
 
 // MongoDB Connection (NO deprecated options)
 mongoose.connect(process.env.MONGO_URI)
@@ -23,6 +25,8 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
+const approvedPidsRoute = require('./routes/approvedPids');
+app.use('/api/approvedPids', approvedPidsRoute);
 
 
 app.use('/api/admin', adminRoutes);

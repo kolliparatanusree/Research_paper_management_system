@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 
 const facultyDetails = JSON.parse(localStorage.getItem("user"));
 
@@ -49,14 +50,26 @@ export default function RequestUIDForm() {
                 body: JSON.stringify(requestData)
             });
             const data = await res.json();
-            alert(data.message);
+            // alert(data.message);
+            Swal.fire({
+            title: 'UID Request Submitted!',
+            text: data.message || 'Your UID request has been submitted to HoD.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
             setFormValues({ paperTitle: '', type: '', abstract: '', target: '' });
             setHasCoAuthors(false);
             setCoAuthorCount(0);
             setCoAuthors([]);
         } catch (err) {
             console.error(err);
-            alert('Submission failed');
+             Swal.fire({
+            title: 'Submission Failed',
+            text: err?.message || 'Something went wrong. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'Retry'
+        });
+            // alert('Submission failed');
         }
     };
 

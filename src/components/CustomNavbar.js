@@ -38,7 +38,7 @@ const CustomNavbar = () => {
             {showLoginButton && (
         <div className="dropdown-menu">
           <Link to="/login" className="login-btn">
-            Login
+            🔑 Login
           </Link>
         </div>
       )}

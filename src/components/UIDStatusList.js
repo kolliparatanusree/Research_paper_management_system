@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './FacultyDashboard.css';
+import Swal from 'sweetalert2';
 
 export default function UIDStatusList({ facultyId }) {
   const [allRequests, setAllRequests] = useState([]);
@@ -19,8 +20,14 @@ export default function UIDStatusList({ facultyId }) {
         const rejectedData = await rejRes.json();
         setRejectedRequests(rejectedData);
       } catch (err) {
-        console.error('Error fetching UID status:', err);
-      } finally {
+  console.error('Error fetching UID status:', err);
+  Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: 'Failed to load UID status. Please try again later.'
+  });
+}
+finally {
         setLoading(false); // Done loading
       }
     };

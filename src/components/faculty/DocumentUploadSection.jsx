@@ -1,5 +1,6 @@
 /* File: src/components/faculty/DocumentUploadSection.jsx */
 import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 
 export default function DocumentUploadSection({ userId }) {
     const [approvedUIDs, setApprovedUIDs] = useState([]);
@@ -86,7 +87,14 @@ export default function DocumentUploadSection({ userId }) {
             });
 
             const data = await res.json();
-            alert(data?.message || 'Upload successful');
+            
+             Swal.fire({
+            title: 'Upload Successful!',
+            text: data?.message || 'Your documents have been uploaded.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+            // alert(data?.message || 'Upload successful');
             setDocuments((prev) => ({
                 ...prev,
                 [uid]: { issn: '', scopusLink: '', doi: '', acceptanceLetter: null, indexingProof: null, paymentReceipt: null }
@@ -94,7 +102,13 @@ export default function DocumentUploadSection({ userId }) {
             setApprovedUIDs((prev) => prev.filter((r) => r.uid !== uid));
         } catch (err) {
             console.error(err);
-            alert('Upload failed');
+            Swal.fire({
+            title: 'Upload Failed',
+            text: err?.message || 'Something went wrong while uploading documents.',
+            icon: 'error',
+            confirmButtonText: 'Retry'
+        });
+            // alert('Upload failed');
         } finally {
             setLoadingUid(null);
         }
@@ -141,19 +155,23 @@ console.log("Uploaded UIDs:", uploadedUIDs);
                         <p><strong>Type:</strong> {uid.type}</p>
                         <p><strong>Abstract:</strong> {uid.abstract}</p>
                         <p><strong>Target:</strong> {uid.target}</p>
-
+                        <label>ISSN</label>
                         <input
                             type="text"
                             placeholder="Enter ISSN"
                             value={documents[uid.uid]?.issn || ''}
                             onChange={(e) => handleFileChange(uid.uid, 'issn', e.target.value)}
                         />
+                        <div>
+                        <label>Scopus link</label>
                         <input
                             type="text"
                             placeholder="Enter Scopus Link"
                             value={documents[uid.uid]?.scopusLink || ''}
                             onChange={(e) => handleFileChange(uid.uid, 'scopusLink', e.target.value)}
                         />
+                        </div>
+                        <label>DOI</label>
                         <input
                             type="text"
                             placeholder="Enter DOI"
@@ -171,13 +189,15 @@ console.log("Uploaded UIDs:", uploadedUIDs);
                             <label>📑 Indexing Proof (PDF only)</label>
                             <input type="file" accept=".pdf" onChange={(e) => handleFileChange(uid.uid, 'indexingProof', e.target.files[0])} />
                         </div>
+                        <div>
+                        <label>📄 Published Paper PDF (PDF only)</label>
                         <input
-  type="file"
-  accept="application/pdf"
-  onChange={(e) => handleFileChange(uid.uid, 'publishedPaperPdf', e.target.files[0])}
-/>
+                            type="file"
+                            accept="application/pdf"
+                            onChange={(e) => handleFileChange(uid.uid, 'publishedPaperPdf', e.target.files[0])}
+                            />
 
-
+                        </div>
 
                         <button onClick={() => handleDocumentUpload(uid.uid)} disabled={loadingUid === uid.uid}>
                             {loadingUid === uid.uid ? 'Uploading...' : 'Submit Documents'}

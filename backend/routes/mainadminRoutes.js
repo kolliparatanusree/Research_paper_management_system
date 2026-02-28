@@ -5,7 +5,25 @@ const bcrypt = require('bcryptjs');
 
 
 
+// Assuming you have Faculty model
+// backend/routes/main-admin.js
+router.delete('/remove-faculty/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
 
+    // Make sure the field matches exactly your schema
+    const deletedFaculty = await User.findOneAndDelete({ userId });
+
+    if (!deletedFaculty) {
+      return res.status(404).json({ message: 'Faculty not found' });
+    }
+
+    res.json({ message: 'Faculty removed successfully' });
+  } catch (err) {
+    console.error('Error removing faculty:', err);
+    res.status(500).json({ message: 'Internal Server Error while removing faculty' });
+  }
+});
 // Route to add user
 router.post('/add-user', async (req, res) => {
   try {
