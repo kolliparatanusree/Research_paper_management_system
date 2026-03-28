@@ -2,19 +2,39 @@ const mongoose = require('mongoose');
 
 const documentSchema = new mongoose.Schema({
   userId: { type: String, required: true },
-  // facultyId: { type: String, required: true },
   uid: { type: String, required: true },
+
   paperTitle: String,
   type: String,
   target: String,
   abstract: String,
 
+  // ===== Publication Fields =====
+  journalName: String,
+  conferenceName: String,
+  bookTitle: String,
+
+  issn: String,
+  isbn: String,
+
+  publisher: String,
+  indexing: String,
+
+  location: String,
+  dates: String,
+
+  patentNumber: String,
+  patentOffice: String,
+
+  scopusLink: { type: String, default: '' },
+
+  // ===== Published Paper =====
   publishedPaper: {
     pdf: {
       filename: String,
       contentType: {
         type: String,
-        enum: ['application/pdf'], // Only allow PDFs
+        enum: ['application/pdf'],
         default: 'application/pdf'
       },
       data: Buffer
@@ -25,7 +45,15 @@ const documentSchema = new mongoose.Schema({
     }
   },
 
+  // ===== Indexing Proof =====
   indexingProof: {
+    filename: String,
+    contentType: String,
+    data: Buffer
+  },
+
+  // ===== Payment Receipt =====
+  paymentReceipt: {
     filename: String,
     contentType: String,
     data: Buffer
@@ -46,17 +74,78 @@ const documentSchema = new mongoose.Schema({
     default: ''
   },
 
-  scopusLink: { type: String, default: '' },
-  issn: String,
-
-  paymentReceipt: {
-    filename: String,
-    contentType: String,
-    data: Buffer
-  },
-
   isRejected: { type: Boolean, default: false },
+
   pid: { type: String, default: null }
+
 });
+
+// Prevent duplicate UID upload by same user
 documentSchema.index({ userId: 1, uid: 1 }, { unique: true });
+
 module.exports = mongoose.model('DocumentUpload', documentSchema);
+
+
+
+// const mongoose = require('mongoose');
+
+// const documentSchema = new mongoose.Schema({
+//   userId: { type: String, required: true },
+//   // facultyId: { type: String, required: true },
+//   uid: { type: String, required: true },
+//   paperTitle: String,
+//   type: String,
+//   target: String,
+//   abstract: String,
+
+//   publishedPaper: {
+//     pdf: {
+//       filename: String,
+//       contentType: {
+//         type: String,
+//         enum: ['application/pdf'], // Only allow PDFs
+//         default: 'application/pdf'
+//       },
+//       data: Buffer
+//     },
+//     doi: {
+//       type: String,
+//       default: ''
+//     }
+//   },
+
+//   indexingProof: {
+//     filename: String,
+//     contentType: String,
+//     data: Buffer
+//   },
+
+//   uploadedAt: {
+//     type: Date,
+//     default: Date.now
+//   },
+
+//   adminAccept: {
+//     type: Boolean,
+//     default: false
+//   },
+
+//   adminRejectReason: {
+//     type: String,
+//     default: ''
+//   },
+
+//   scopusLink: { type: String, default: '' },
+//   issn: String,
+
+//   paymentReceipt: {
+//     filename: String,
+//     contentType: String,
+//     data: Buffer
+//   },
+
+//   isRejected: { type: Boolean, default: false },
+//   pid: { type: String, default: null }
+// });
+// documentSchema.index({ userId: 1, uid: 1 }, { unique: true });
+// module.exports = mongoose.model('DocumentUpload', documentSchema);

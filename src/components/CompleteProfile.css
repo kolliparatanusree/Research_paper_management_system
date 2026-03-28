@@ -1,0 +1,182 @@
+/* Wrapper for the whole page */
+.complete-profile-wrapper {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+}
+
+/* Page Title */
+.complete-profile-wrapper h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #1f2937; /* dark gray */
+}
+
+/* Section titles */
+.complete-profile-wrapper h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #3b82f6; /* blue */
+  font-size: 18px;
+}
+
+/* Each input row */
+.entry-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+/* Inputs */
+.entry-row input {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+/* Buttons */
+.complete-profile-wrapper button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #3b82f6; /* blue */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s ease-in-out;
+}
+
+.complete-profile-wrapper button:hover {
+  background-color: #2563eb; /* darker blue */
+}
+
+/* Add button styling */
+.complete-profile-wrapper button[type="button"] {
+  background-color: #10b981; /* green for add buttons */
+}
+
+.complete-profile-wrapper button[type="button"]:hover {
+  background-color: #059669;
+}
+
+/* Submit button styling */
+.complete-profile-wrapper button[type="submit"] {
+  background-color: #3b82f6; /* blue */
+  width: 100%;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.complete-profile-wrapper button[type="submit"]:hover {
+  background-color: #2563eb;
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 600px) {
+  .entry-row {
+    flex-direction: column;
+  }
+}
+
+.profile-card {
+  max-width: 650px;
+  margin: auto;
+  padding: 30px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.nav-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.remove-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: fit-content;
+  margin-top: 5px;
+}
+
+.remove-btn:hover {
+  background: #dc2626;
+}
+
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 0 20px;
+}
+
+.stepper-item {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.circle {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #d1d5db;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  z-index: 2;
+}
+
+.circle.active {
+  background: #3b82f6;
+  color: white;
+}
+
+.line {
+  height: 4px;
+  background: #d1d5db;
+  flex: 1;
+}
+
+.line.active {
+  background: #3b82f6;
+}
+
+.step-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  font-size: 13px;
+  margin-bottom: 25px;
+}
+
+.entry-block {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.entry-block input {
+  margin-bottom: 10px;
+  padding: 8px;
+}
+
+.step-section {
+  margin-top: 20px;
+}

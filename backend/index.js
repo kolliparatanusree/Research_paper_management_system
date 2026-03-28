@@ -10,14 +10,16 @@ const hodRoutes = require('./routes/hodRoutes');
 const principalRoutes = require('./routes/principalRoutes');
 const mainAdminRoutes = require('./routes/mainadminRoutes');
 const authRoutes = require('./routes/authRoutes');
-
+const notificationRoutes = require("./routes/notificationRoutes");
+const rdcoordinatorRoutes = require('./routes/rdcoordinatorRoutes');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 const dashboardRoutes = require('./routes/dashboard');
 app.use('/api/dashboard', dashboardRoutes);
-
+app.use("/api/notifications", notificationRoutes);
+app.use('/api/rdcoordinator', rdcoordinatorRoutes);
 // MongoDB Connection (NO deprecated options)
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
@@ -27,7 +29,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/auth', require('./routes/authRoutes'));
 const approvedPidsRoute = require('./routes/approvedPids');
 app.use('/api/approvedPids', approvedPidsRoute);
-
+app.use('/uploads', express.static('uploads'));
 
 app.use('/api/admin', adminRoutes);
 app.use('/api/faculty', facultyRoutes);

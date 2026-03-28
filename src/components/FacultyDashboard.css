@@ -1,4 +1,32 @@
 
+
+
+.main-content,
+.dashboard-content,
+.page-content {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 24px 32px;
+  box-sizing: border-box;
+}
+
+
+.dashboard-wrapper {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+}
 /* Overall Layout */
 .dashboard-container {
   display: flex;
@@ -52,12 +80,12 @@
 }
 
 /* Main Content Area */
-.main-content {
-  flex: 1; /* This makes it stretch */
+/* .main-content {
+  flex: 1; 
   padding: 10px;
   background: #fff;
   overflow-y: auto;
-}
+} */
 
 /* Dashboard Headings */
 .main-content h2 {
@@ -517,6 +545,71 @@ SweetAlert Loading Popup
   cursor: pointer;
 }
 
+/* Header container */
+.top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Welcome text */
+.welcome-text {
+  font-size: 22px;
+  font-weight: 600;
+  color: purple;
+  margin: 0;
+}
+
+/* Right-side items */
+.right-section {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Notification button */
+.notification-btn {
+  position: relative;
+  background: #4b3dbb;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 18px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+/* Notification badge */
+.notif-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #ff3b3b;
+  color: white;
+  font-size: 11px;
+  padding: 2px 5px;
+  border-radius: 50%;
+}
+
+/* Small profile image */
+.profile-small {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #4b3dbb;
+  cursor: pointer;
+}
+
+
+.logo {
+  width: 250px;
+  height: auto;
+}
 /* animation */
 @keyframes popupFade {
   from {

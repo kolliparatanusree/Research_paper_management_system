@@ -8,16 +8,23 @@ const DocumentUpload = require('../models/DocumentUpload');
 const bcrypt = require('bcryptjs');
 const Document = require('../models/DocumentUpload');
 const nodemailer = require('nodemailer');
+const Notification = require('../models/Notification');
+const user = require('../models/User');
+
 
 // ✅ Email Transporter Setup
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'tanusreekollipara@gmail.com',
-    pass: 'wtes romt gffu boib' // Use App Password
+    user: 'rpmssvecw@gmail.com',
+    pass: 'opdh fgkm seaa qsvy' // Use App Password
   }
 });
 const emailToSend = '22b01a4625@svecw.edu.in';
+
+
+
+
 // ✅ Register Route
 router.post('/register', async (req, res) => {
   try {
@@ -68,111 +75,247 @@ const generateUID = () => {
   return 'UID-' + Math.floor(100000 + Math.random() * 900000);
 };
 
-// ✅ UID Accept/Reject Route
+
 router.put('/uid-request/:id/:status', async (req, res) => {
   const { id, status } = req.params;
   const { reason } = req.body;
 
   try {
     const request = await HodUidRequest.findById(id);
-    if (!request) return res.status(404).json({ message: 'Request not found' });
+    const faculty = await user.findOne({ userId: request.facultyId });
 
+  if (!faculty) {
+    return res.status(404).json({ message: "Faculty not found" });
+  }
+
+  const facultyEmail = faculty.email;
+    if (!request) {
+      return res.status(404).json({ message: 'Request not found' });
+    }
+
+    // ✅ ACCEPT
     if (status === 'accept') {
+
       if (!request.uid) {
         request.uid = generateUID();
       }
+
       request.adminAccept = true;
       await request.save();
 
-      // ✅ Get faculty email from Faculty collection
-      const faculty = await Faculty.findOne({ facultyId: request.facultyId });
-      // if (!faculty || !faculty.email) {
-        // console.error("Faculty email not found for:", request.facultyId);
-        // return res.status(400).json({ message: 'Faculty email not found' });
-      // }
-
       const mailOptions = {
-        from: 'tanusreekollipara@gmail.com',
-        to: emailToSend,
-        subject: 'UID Generated Successfully',
-        text: `Dear ${request.facultyName},
+    from: "rpmssvecw@gmail.com",
+    to: facultyEmail,
+    subject: "UID Generated - RPMS SVECW",
+    text: `
+UID Generated Successfully
 
-Your UID request has been accepted. Your generated UID is: ${request.uid}
+Paper Title: ${request.paperTitle}
+Faculty: ${request.facultyName}
+Department: ${request.department}
 
-Thank you,
-SVECW`
-      };
+Generated UID: ${request.uid}
 
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Error sending email:', error);
-        } else {
-          console.log('Email sent: ' + info.response);
-        }
+Regards,
+RPMS SVECW
+`
+  };
+
+  await transporter.sendMail(mailOptions);
+
+      // ✅ Send notification to Faculty
+      await Notification.create({
+        receiverId: request.facultyId,
+        receiverRole: "faculty",
+        message: `Your UID request for "${request.paperTitle}" has been approved. UID: ${request.uid}`,
+        isRead: false
       });
 
-      return res.status(200).json({ message: 'UID accepted and UID generated', uid: request.uid });
+      return res.status(200).json({
+        message: 'UID accepted and generated',
+        uid: request.uid
+      });
+    }
 
-    } else if (status === 'reject') {
-  if (!reason || reason.trim() === '') {
-    return res.status(400).json({ message: 'Rejection reason is required' });
-  }
+    // ❌ REJECT
+    else if (status === 'reject') {
 
-  const rejectedDoc = new RejectedUid({
-    facultyId: request.facultyId,
-    facultyName: request.facultyName,
-    department: request.department,
-    paperTitle: request.paperTitle,
-    type: request.type,
-    abstract: request.abstract,
-    target: request.target,
-    submittedAt: request.submittedAt,
-    rejectedAt: new Date(),
-    rejectedBy: 'admin',
-    reason
-  });
+      if (!reason || reason.trim() === '') {
+        return res.status(400).json({ message: 'Rejection reason is required' });
+      }
+      
 
-  await rejectedDoc.save();
+      const rejectedDoc = new RejectedUid({
+        facultyId: request.facultyId,
+        facultyName: request.facultyName,
+        department: request.department,
+        paperTitle: request.paperTitle,
+        type: request.type,
+        abstract: request.abstract,
+        target: request.target,
+        submittedAt: request.submittedAt,
+        rejectedAt: new Date(),
+        rejectedBy: 'admin',
+        reason
+      });
+
+      await rejectedDoc.save();
+    
+
+const mailOptions = {
+    from: "rpmssvecw@gmail.com",
+    to: facultyEmail,
+    subject: "UID Rejected  RPMS SVECW",
+    text: `UID Request Rejected
+
+Paper Title: ${request.paperTitle}
+Faculty: ${request.facultyName}
+Department: ${request.department}
+Your UID request has been rejected by the R&D Dean for the following reason:${reason}
+
+Regards,
+RPMS SVECW
+`
+  };
+
+  await transporter.sendMail(mailOptions);
   await request.deleteOne();
 
-  // ✅ Fetch faculty email
-  const faculty = await Faculty.findOne({ facultyId: request.facultyId });
-  // if (faculty && faculty.email) {
-  if (emailToSend){
-    const mailOptions = {
-      from: 'tanusreekollipara@gmail.com',
-      to: emailToSend,
-      subject: 'UID Request Rejected',
-      text: `Dear ${request.facultyName},
+      // ✅ Send rejection notification
+      await Notification.create({
+        receiverId: request.facultyId,
+        receiverRole: "faculty",
+        message: `Your UID request for "${request.paperTitle}" was rejected. Reason: ${reason}`,
+        isRead: false
+      });
 
-We regret to inform you that your UID request has been rejected by the Admin for the following reason:
+      return res.status(200).json({
+        message: 'UID request rejected and moved to RejectedUids'
+      });
+    }
 
-"${reason}"
-
-Please make the necessary corrections and resubmit your request if applicable.
-
-Regards,  
-SVECW Admin`
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error('UID Rejection Email Error:', error);
-      } else {
-        console.log('UID Rejection email sent:', info.response);
-      }
-    });
-  }
-
-  return res.status(200).json({ message: 'UID request rejected and moved to RejectedUids' });
-} else {
+    else {
       return res.status(400).json({ message: 'Invalid status' });
     }
+
   } catch (err) {
     console.error('Admin UID decision error:', err);
     return res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
+
+// ✅ UID Accept/Reject Route
+// router.put('/uid-request/:id/:status', async (req, res) => {
+//   const { id, status } = req.params;
+//   const { reason } = req.body;
+
+//   try {
+//     const request = await HodUidRequest.findById(id);
+//     if (!request) return res.status(404).json({ message: 'Request not found' });
+
+//     if (status === 'accept') {
+//       if (!request.uid) {
+//         request.uid = generateUID();
+//       }
+//       request.adminAccept = true;
+//       await request.save();
+
+//       // ✅ Get faculty email from Faculty collection
+//       const user = await User.findOne({ userId: request.userId });
+//       // if (!faculty || !faculty.email) {
+//         // console.error("Faculty email not found for:", request.facultyId);
+//         // return res.status(400).json({ message: 'Faculty email not found' });
+//       // }
+//        if (status === "approved") {
+//       await Notification.create({
+//         recipient: request.facultyId,
+//         message: `Your UID request ${request.uid} has been approved by RD Dean`,
+//         isRead: false
+//       });
+//     }
+
+//       const mailOptions = {
+//         from: 'tanusreekollipara@gmail.com',
+//         to: emailToSend,
+//         subject: 'UID Generated Successfully',
+//         text: `Dear ${request.fullName},
+
+// Your UID request has been accepted. Your generated UID is: ${request.uid}
+
+// Thank you,
+// SVECW`
+//       };
+
+//       transporter.sendMail(mailOptions, (error, info) => {
+//         if (error) {
+//           console.error('Error sending email:', error);
+//         } else {
+//           console.log('Email sent: ' + info.response);
+//         }
+//       });
+
+//       return res.status(200).json({ message: 'UID accepted and UID generated', uid: request.uid });
+
+//     } else if (status === 'reject') {
+//   if (!reason || reason.trim() === '') {
+//     return res.status(400).json({ message: 'Rejection reason is required' });
+//   }
+
+//   const rejectedDoc = new RejectedUid({
+//     facultyId: request.facultyId,
+//     facultyName: request.facultyName,
+//     department: request.department,
+//     paperTitle: request.paperTitle,
+//     type: request.type,
+//     abstract: request.abstract,
+//     target: request.target,
+//     submittedAt: request.submittedAt,
+//     rejectedAt: new Date(),
+//     rejectedBy: 'admin',
+//     reason
+//   });
+
+//   await rejectedDoc.save();
+//   await request.deleteOne();
+
+//   // ✅ Fetch faculty email
+//   const faculty = await Faculty.findOne({ facultyId: request.facultyId });
+//   // if (faculty && faculty.email) {
+//   if (emailToSend){
+//     const mailOptions = {
+//       from: 'tanusreekollipara@gmail.com',
+//       to: emailToSend,
+//       subject: 'UID Request Rejected',
+//       text: `Dear ${request.facultyName},
+
+// We regret to inform you that your UID request has been rejected by the Admin for the following reason:
+
+// "${reason}"
+
+// Please make the necessary corrections and resubmit your request if applicable.
+
+// Regards,  
+// SVECW Admin`
+//     };
+
+//     transporter.sendMail(mailOptions, (error, info) => {
+//       if (error) {
+//         console.error('UID Rejection Email Error:', error);
+//       } else {
+//         console.log('UID Rejection email sent:', info.response);
+//       }
+//     });
+//   }
+
+//   return res.status(200).json({ message: 'UID request rejected and moved to RejectedUids' });
+// } else {
+//       return res.status(400).json({ message: 'Invalid status' });
+//     }
+//   } catch (err) {
+//     console.error('Admin UID decision error:', err);
+//     return res.status(500).json({ message: 'Server error', error: err.message });
+//   }
+// });
 
 router.get('/all-submitted-documents', async (req, res) => {
   try {
@@ -263,15 +406,19 @@ router.get('/all-submitted-documents', async (req, res) => {
 
 // console.log('Fetched Documents:', docs);
 
-// ✅ Accept Document Submission
-// ✅ Accept Document Submission and Send Email with PID
+
+// const Notification = require('../models/Notification');
+
 router.put('/document-submission/:id/accept', async (req, res) => {
   const { id } = req.params;
+
   try {
+    // 1️⃣ Generate PID
     const prefix = 'PID' + new Date().toISOString().slice(0, 10).replace(/-/g, '');
     const count = await Document.countDocuments({ pid: { $regex: `^${prefix}` } });
     const pid = `${prefix}_${(count + 1).toString().padStart(4, '0')}`;
 
+    // 2️⃣ Update document
     const updated = await Document.findByIdAndUpdate(
       id,
       { pid, accepted: true, adminAccept: true },
@@ -280,45 +427,81 @@ router.put('/document-submission/:id/accept', async (req, res) => {
 
     if (!updated) return res.status(404).json({ message: 'Document not found' });
 
-    // ✅ Fetch faculty email from Faculty collection
-    const faculty = await Faculty.findOne({ facultyId: updated.facultyId });
-    // if (!faculty || !faculty.email) {
-      // console.error("Faculty email not found for:", updated.facultyId);
-      // return res.status(400).json({ message: 'Faculty email not found' });
-    // }
-
-    // ✅ Send PID email
-    const mailOptions = {
-      from: 'tanusreekollipara@gmail.com',
-      to:emailToSend,
-      subject: 'PID Generated Successfully',
-      text: `Dear Faculty,
-
-Your document has been accepted by Admin. Your generated PID is: ${pid}
-
-Thank you,
-SVECW Admin Team`
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error('Error sending PID email:', error);
-      } else {
-        console.log('PID Email sent: ' + info.response);
-      }
+    // 3️⃣ Send notification to faculty
+    await Notification.create({
+      receiverId: updated.facultyId,       // Faculty ID who gets the notification
+      receiverRole: "faculty",             // Role of receiver
+      message: `Your paper "${updated.paperTitle}" has been approved. PID generated: ${pid}`,
+      relatedUserId: "admin",              // Optional: who triggered it
+      isRead: false,
+      createdAt: new Date()
     });
 
-    res.json({ message: 'Submission accepted and PID generated.', pid });
+    // 4️⃣ Respond with PID
+    res.status(200).json({ message: 'Submission accepted and PID generated.', pid });
 
   } catch (err) {
-    console.error(err);
+    console.error('Error generating PID:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
+// ✅ Accept Document Submission
+// ✅ Accept Document Submission and Send Email with PID
+// router.put('/document-submission/:id/accept', async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     const prefix = 'PID' + new Date().toISOString().slice(0, 10).replace(/-/g, '');
+//     const count = await Document.countDocuments({ pid: { $regex: `^${prefix}` } });
+//     const pid = `${prefix}_${(count + 1).toString().padStart(4, '0')}`;
 
-// ✅ Reject Document Submission
-// ✅ Reject Document Submission and Notify Faculty
+//     const updated = await Document.findByIdAndUpdate(
+//       id,
+//       { pid, accepted: true, adminAccept: true },
+//       { new: true }
+//     );
+
+//     if (!updated) return res.status(404).json({ message: 'Document not found' });
+
+//     // ✅ Fetch faculty email from Faculty collection
+//     const faculty = await Faculty.findOne({ facultyId: updated.facultyId });
+//     // if (!faculty || !faculty.email) {
+//       // console.error("Faculty email not found for:", updated.facultyId);
+//       // return res.status(400).json({ message: 'Faculty email not found' });
+//     // }
+
+//     // ✅ Send PID email
+//     const mailOptions = {
+//       from: 'tanusreekollipara@gmail.com',
+//       to:emailToSend,
+//       subject: 'PID Generated Successfully',
+//       text: `Dear Faculty,
+
+// Your document has been accepted by Admin. Your generated PID is: ${pid}
+
+// Thank you,
+// SVECW Admin Team`
+//     };
+
+//     transporter.sendMail(mailOptions, (error, info) => {
+//       if (error) {
+//         console.error('Error sending PID email:', error);
+//       } else {
+//         console.log('PID Email sent: ' + info.response);
+//       }
+//     });
+
+//     res.json({ message: 'Submission accepted and PID generated.', pid });
+
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+
+
+// ✅ Reject Document Submission and Notify Faculty (No Email)
 router.put('/document-submission/:id/reject', async (req, res) => {
   const { reason } = req.body;
 
@@ -328,45 +511,78 @@ router.put('/document-submission/:id/reject', async (req, res) => {
       return res.status(404).json({ error: 'Document not found' });
     }
 
+    // Mark as rejected
     submission.rejectionReason = reason;
     submission.isRejected = true;
     await submission.save();
 
-    // ✅ Fetch faculty email
-    const faculty = await Faculty.findOne({ facultyId: submission.facultyId });
-    // if (faculty && faculty.email) {
-    if (emailToSend){
-      const mailOptions = {
-        from: 'tanusreekollipara@gmail.com',
-        to: emailToSend,
-        subject: 'Document Submission Rejected',
-        text: `Dear Faculty,
+    // ✅ Create notification for faculty
+    await Notification.create({
+      userId: submission.facultyId,  // Faculty login ID
+      message: `Your document "${submission.paperTitle}" was rejected by Admin. Reason: "${reason}"`,
+      type: "document_rejected",
+      isRead: false,
+      createdAt: new Date()
+    });
 
-Your document submission was rejected by Admin for the following reason:
-"${reason}"
-
-Please review and resubmit if needed.
-
-Regards,
-SVECW Admin`
-      };
-
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Rejection Email Error:', error);
-        } else {
-          console.log('Rejection email sent: ' + info.response);
-        }
-      });
-    }
-
-    res.status(200).json({ message: 'Document rejected and email sent (if applicable).' });
+    res.status(200).json({ message: 'Document rejected and notification created.' });
 
   } catch (error) {
     console.error('Error rejecting document:', error);
     res.status(500).json({ error: 'Failed to reject the document' });
   }
 });
+
+// ✅ Reject Document Submission
+// ✅ Reject Document Submission and Notify Faculty
+// router.put('/document-submission/:id/reject', async (req, res) => {
+//   const { reason } = req.body;
+
+//   try {
+//     const submission = await DocumentUpload.findById(req.params.id);
+//     if (!submission) {
+//       return res.status(404).json({ error: 'Document not found' });
+//     }
+
+//     submission.rejectionReason = reason;
+//     submission.isRejected = true;
+//     await submission.save();
+
+//     // ✅ Fetch faculty email
+//     const faculty = await Faculty.findOne({ facultyId: submission.facultyId });
+//     // if (faculty && faculty.email) {
+//     if (emailToSend){
+//       const mailOptions = {
+//         from: 'tanusreekollipara@gmail.com',
+//         to: emailToSend,
+//         subject: 'Document Submission Rejected',
+//         text: `Dear Faculty,
+
+// Your document submission was rejected by Admin for the following reason:
+// "${reason}"
+
+// Please review and resubmit if needed.
+
+// Regards,
+// SVECW Admin`
+//       };
+
+//       transporter.sendMail(mailOptions, (error, info) => {
+//         if (error) {
+//           console.error('Rejection Email Error:', error);
+//         } else {
+//           console.log('Rejection email sent: ' + info.response);
+//         }
+//       });
+//     }
+
+//     res.status(200).json({ message: 'Document rejected and email sent (if applicable).' });
+
+//   } catch (error) {
+//     console.error('Error rejecting document:', error);
+//     res.status(500).json({ error: 'Failed to reject the document' });
+//   }
+// });
 
 
 router.get('/approved-pids', async (req, res) => {

@@ -42,7 +42,8 @@ exports.login = async (req, res) => {
 
     res.status(200).json({
       message: 'Login successful',
-      user
+      user,
+      isProfileCompleted: user.isProfileCompleted
     });
     // res.status(200).json({
     //   message: 'Login successful',

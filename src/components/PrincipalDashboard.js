@@ -4,6 +4,9 @@ import './RDDeanDashboard.css';
 import logo from './logo2.jpeg';
 import CustomNavbar from './CustomNavbar';
 import Swal from 'sweetalert2';
+import PrincipalFacultyHodSection from './PrincipalFacultyHodSection';
+import PrincipalPublishedPapers from './PrincipalPublishedPapers';
+import NotificationsSection from './NotificationsSection';
 
 export default function PrincipalDashboard() {
   const [requests, setRequests] = useState([]);
@@ -12,6 +15,20 @@ export default function PrincipalDashboard() {
   const [rejectReason, setRejectReason] = useState('');
   const [customReason, setCustomReason] = useState('');
   const navigate = useNavigate();
+const [papers, setPapers] = useState([]);
+const [selectedPaper, setSelectedPaper] = useState(null);
+// const [searchTerm, setSearchTerm] = useState("");
+
+const filteredPapers = papers.filter(paper => {
+  if (!searchTerm.trim()) return true;
+  const term = searchTerm.toLowerCase();
+  return paper.paperTitle.toLowerCase().includes(term) ||
+         paper.facultyId?.fullName?.toLowerCase().includes(term) ||
+         paper.facultyId?.userId?.toLowerCase().includes(term);
+});
+
+const openPaperDetails = (paper) => setSelectedPaper(paper);
+const closePaperDetails = () => setSelectedPaper(null);
 
   const [approvedPids, setApprovedPids] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -38,7 +55,7 @@ const filteredPids = approvedPids.filter(doc => {
 });
 
 useEffect(() => {
-  fetch('http://localhost:5000/api/admin/approved-pids')
+  fetch('http://localhost:5000/api/principal/approved-papers')
     .then(res => res.json())
     .then(data => setApprovedPids(data))
     .catch(err => {
@@ -51,7 +68,7 @@ useEffect(() => {
 
   useEffect(() => {
     if (activeSection === 'uid-approval') {
-      fetch('http://localhost:5000/api/hod/uid-requests')
+      fetch('http://localhost:5000/api/principal/uid-requests')
         .then(res => res.json())
         .then(data => {
           const filtered = data.filter(r => r.hodAccept && !r.principalAccept);
@@ -172,12 +189,46 @@ useEffect(() => {
 
         <ul className="menu">
           <li
+  className={activeSection === 'notifications' ? 'active' : ''}
+  onClick={() => setActiveSection('notifications')}
+  style={{ cursor: 'pointer' }}
+>
+  🔔 Notifications
+</li>
+          <li
             className={activeSection === 'uid-approval' ? 'active' : ''}
             onClick={() => setActiveSection('uid-approval')}
             style={{ cursor: 'pointer' }}
           >
-            📄 Final UID Approval
+            📄 UID Approval
           </li>
+         <li
+  onClick={() => setActiveSection('published-papers')}
+  className={activeSection === 'published-papers' ? 'active' : ''}
+>
+  📚 Published Papers
+</li>
+           <li
+    className={activeSection === 'faculty-details' ? 'active' : ''}
+    onClick={() => setActiveSection('faculty-details')}
+    style={{ cursor: 'pointer' }}
+  >
+    🧑‍🏫 Faculty Details
+  </li>
+  <li
+    className={activeSection === 'hod-details' ? 'active' : ''}
+    onClick={() => setActiveSection('hod-details')}
+    style={{ cursor: 'pointer' }}
+  >
+    👨‍💼 HOD Details
+  </li>
+    <li
+  className={activeSection === 'approved-pids' ? 'active' : ''}
+  onClick={() => setActiveSection('approved-pids')}
+  style={{ cursor: 'pointer' }}
+>
+  ✅ Approved PIDs
+</li>
           <li
             className={activeSection === 'profile' ? 'active' : ''}
             onClick={() => setActiveSection('profile')}
@@ -185,13 +236,7 @@ useEffect(() => {
           >
             👤 Profile
           </li>
-          <li
-  className={activeSection === 'approved-pids' ? 'active' : ''}
-  onClick={() => setActiveSection('approved-pids')}
-  style={{ cursor: 'pointer' }}
->
-  ✅ Approved PIDs
-</li>
+        
           <li
             onClick={handleLogout}
             style={{ cursor: 'pointer', color: 'white' }}
@@ -203,6 +248,9 @@ useEffect(() => {
 
       {/* Main Content */}
       <div className="main-content">
+        {activeSection === 'notifications' && (
+  <NotificationsSection userId={localStorage.getItem("userId")} />
+)}
         {activeSection === 'uid-approval' && (
           <>
             <h2>Pending UID Requests</h2>
@@ -335,6 +383,16 @@ useEffect(() => {
       ))
     )}
   </div>
+)}
+{activeSection === 'faculty-details' && (
+  <PrincipalFacultyHodSection type="faculty" />
+)}
+{activeSection === 'hod-details' && (
+  <PrincipalFacultyHodSection type="hod" />
+)}
+
+{activeSection === 'published-papers' && (
+  <PrincipalPublishedPapers approvedPids={approvedPids} />
 )}
 
         {activeSection === 'profile' && (

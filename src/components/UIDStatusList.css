@@ -1,40 +1,136 @@
-/* UIDStatusList.css */
+/* ===== FILTER BUTTONS ===== */
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
 
-.uid-requests-container {
+.filter-buttons button {
+  padding: 8px 16px;
+  border: none;
+  background: #e5e7eb;
+  color: #333;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.filter-buttons button:hover {
+  background: #d1d5db;
+}
+
+.filter-buttons button.active {
+  background: #4f46e5;
+  color: white;
+}
+
+/* ===== LIST CONTAINER ===== */
+.uid-status-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 20px;
+  gap: 18px;
 }
 
-.uid-request-card {
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+/* ===== CARD ===== */
+.uid-status-card {
+  background: white;
+  border-radius: 14px;
+  padding: 18px 22px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.uid-request-card h4 {
-  margin-top: 0;
-  color: #2c3e50;
+.uid-status-list {
+  overflow: visible;
 }
 
-.uid-request-card p {
-  margin: 4px 0;
-  font-size: 14px;
-  color: #444;
+.uid-status-card {
+  overflow: visible;
 }
 
-.uid-request-card hr {
-  margin: 12px 0;
+.uid-status-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 22px rgba(0,0,0,0.18);
+}
+
+.uid-status-card p {
+  margin: 6px 0;
+  line-height: 1.4;
+}
+
+/* ===== EDIT BUTTON ===== */
+.edit-btn1 {
+  background: #3b82f6;
+  
   border: none;
-  border-top: 1px solid #eee;
+  padding: 8px 14px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
 }
 
-.uid-request-card strong {
-  color: #333;
+.edit-btn1:hover {
+  background: #2563eb;
 }
+
+/* ===== PAGINATION ===== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 25px;
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: 1px solid #4f46e5;
+  background: white;
+  color: #4f46e5;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #4f46e5;
+  color: white;
+}
+
+.pagination .active-page {
+  background: #4f46e5;
+  color: white;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== LOADING TEXT ===== */
+.loading-text {
+  text-align: center;
+  font-size: 18px;
+  color: #555;
+}
+
+/* Animated dots */
+.dots::after {
+  content: "";
+  animation: dots 1.2s infinite;
+}
+
+@keyframes dots {
+  0% { content: ""; }
+  33% { content: "."; }
+  66% { content: ".."; }
+  100% { content: "..."; }
+}
+
 /* ===== MODAL OVERLAY ===== */
 .modal-overlay {
   position: fixed;
@@ -42,51 +138,68 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0,0,0,0.55);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 999;
 }
 
 /* ===== MODAL CARD ===== */
 .edit-modal-card {
-  background: #ffffff;
+  background: white;
   padding: 25px;
-  border-radius: 14px;
-  width: 420px;
-  max-width: 90%;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
-  animation: popupFade 0.25s ease;
+  border-radius: 16px;
+  width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35);
 }
 
-/* ===== LABELS ===== */
-.edit-modal-card label {
-  display: block;
-  font-weight: 600;
-  margin-top: 12px;
+.edit-modal-card h3 {
+  text-align: center;
+  margin-bottom: 18px;
 }
 
 /* ===== INPUTS ===== */
 .edit-modal-card input,
-.edit-modal-card textarea {
+.edit-modal-card textarea,
+.edit-modal-card select {
   width: 100%;
   padding: 8px;
-  margin-top: 4px;
+  margin: 6px 0 12px 0;
   border-radius: 6px;
   border: 1px solid #ccc;
+  font-size: 14px;
 }
 
-/* ===== BUTTON AREA ===== */
+.edit-modal-card textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* ===== CO AUTHOR ROW ===== */
+.edit-modal-card > div > input {
+  margin-right: 6px;
+}
+
+/* ===== REMOVE AUTHOR BUTTON ===== */
+.edit-modal-card button {
+  margin-top: 6px;
+}
+
+/* ===== MODAL ACTION BUTTONS ===== */
 .modal-actions {
-  margin-top: 18px;
   display: flex;
   justify-content: space-between;
+  margin-top: 18px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-/* ===== BUTTONS ===== */
-.update-btn {
-  background: #22c55e;
+/* Add Co Author */
+.modal-actions button:first-child {
+  background: #10b981;
   color: white;
   border: none;
   padding: 8px 14px;
@@ -94,6 +207,17 @@
   cursor: pointer;
 }
 
+/* Update */
+.update-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Cancel */
 .cancel-btn {
   background: #ef4444;
   color: white;
@@ -103,23 +227,52 @@
   cursor: pointer;
 }
 
-.edit-btn {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
+/* Hover effects */
+.modal-actions button:hover,
+.update-btn:hover,
+.cancel-btn:hover {
+  opacity: 0.9;
 }
 
-/* ===== ANIMATION ===== */
-@keyframes popupFade {
-  from {
-    transform: scale(0.9);
-    opacity: 0;
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .edit-modal-card {
+    width: 95%;
+    padding: 15px;
   }
-  to {
-    transform: scale(1);
-    opacity: 1;
+
+  .uid-status-card {
+    padding: 14px;
   }
+}
+
+
+.uid-card .edit-btn1 {
+  position: absolute;
+  top: 80px;
+  right: 18px;
+  background: #d02daf;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.uid-card > button:last-child:not(.edit-btn1) {
+  margin-top: 16px;
+  background: linear-gradient(145deg, #6366f1, #4f46e5);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  top: 80px;
+  right: 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px;
+  transition: 0.2s;
 }

@@ -1,27 +1,3 @@
-// import logo from './logo.svg';
-// import './App.css';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-// src/App.js
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './components/LandingPage.js';
 import FacultyLogin from './components/FacultyLogin';
@@ -42,6 +18,8 @@ import AdminDashboard from './components/AdminDashboard.js';
 import Instructions from './components/Instructions.js';
 import ResetPassword from './components/ResetPassword.js';
 import DashboardCounts from './components/faculty/DashboardCounts.jsx';
+import CompleteProfile from './components/CompleteProfile.js';
+import RDCoordinatorDashboard from './components/RDCoordinatorDashboard.js';
 
 function App() {
   return (
@@ -65,6 +43,8 @@ function App() {
         <Route path="/instructions" element={<Instructions/>} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/dashboard" element={<DashboardCounts />} />
+        <Route path="/complete-profile" element={<CompleteProfile />} />
+        <Route path="/rd-dashboard" element={<RDCoordinatorDashboard />} />
       </Routes>
     </Router>
   );

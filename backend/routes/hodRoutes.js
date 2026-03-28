@@ -5,19 +5,101 @@ const RejectedUid = require('../models/RejectedUid');
 const HodUidRequest = require('../models/UidRequests'); // assuming UID requests are separate
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
+const Notification = require("../models/Notification");
+const user = require('../models/User');
 
+
+// const router = express.Router();
+const { isHOD } = require('../middleware/auth'); 
 // Email transporter
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'tanusreekollipara@gmail.com',
-    pass: 'wtes romt gffu boib' 
+    user: 'rpmssvecw@gmail.com',
+    pass: 'opdh fgkm seaa qsvy'
   }
 });
 
+router.get("/uid/approved/:department", async (req, res) => {
+  try {
+    const count = await HodUidRequest.countDocuments({
+      department: req.params.department,
+      hodAccept: "true"
+    });
 
+    res.json({ count });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error getting approved UID count" });
+  }
+});
 
+router.get("/uid/pending/:department", async (req, res) => {
+  try {
+    const count = await HodUidRequest.countDocuments({
+      department: req.params.department,
+      hodAccept: "false"
+    });
 
+    res.json({ count });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error getting pending UID count" });
+  }
+});
+
+// Get logged-in HOD info
+router.get("/me", async (req, res) => {
+  try {
+    const hodId = req.query.id; // send HOD id from frontend login session
+    if (!hodId) return res.status(400).json({ message: "HOD ID required" });
+
+    const hod = await User.findById(hodId).select("name dept email");
+    if (!hod) return res.status(404).json({ message: "HOD not found" });
+
+    res.json(hod);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Get faculty by department
+// hodRoutes.js or hodController.js
+// Get faculty list by HOD department
+router.get("/faculty", async (req, res) => {
+  try {
+    const deptQuery = req.query.dept;
+    if (!deptQuery) return res.status(400).json({ message: "Department required" });
+
+    const faculty = await User.find({
+      department: { $regex: `^${deptQuery}$`, $options: "i" },
+      role: "faculty",
+    });
+
+    res.json(faculty);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Get single faculty by userId
+router.get("/faculty-details/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    if (!userId) return res.status(400).json({ message: "Faculty userId required" });
+
+    const faculty = await User.findOne({ userId, role: "faculty" });
+
+    if (!faculty) return res.status(404).json({ message: "Faculty not found" });
+
+    res.json(faculty);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 router.get('/uid-requests/:userId', async (req, res) => {
   try {
@@ -131,6 +213,91 @@ router.get('/:id', async (req, res) => {
 
 
 
+
+router.put('/uid-request/:id/reject/:userId', async (req, res) => {
+  try {
+
+    const { reason } = req.body;
+    const { id, userId } = req.params;
+
+    // find HOD
+    const hod = await User.findOne({ role: "hod", userId });
+
+    if (!hod) {
+      return res.status(404).json({ message: "HoD not found" });
+    }
+
+    // find UID request
+    const request = await HodUidRequest.findById(id);
+
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    // department security check
+    if (hod.department !== request.department) {
+      return res.status(403).json({
+        message: "You can reject only your department papers"
+      });
+    }
+
+    // find faculty who submitted UID
+    const faculty = await User.findOne({
+      userId: request.facultyId,
+      role: "faculty"
+    });
+
+    if (!faculty) {
+      return res.status(404).json({ message: "Faculty not found" });
+    }
+
+    const facultyEmail = faculty.email;
+
+    // move to rejected collection
+    const data = request.toObject();
+    delete data._id;
+
+    const rejectedEntry = new RejectedUid({
+      ...data,
+      rejectedAt: new Date(),
+      rejectedBy: "hod",
+      reason
+    });
+
+    await rejectedEntry.save();
+
+    // send email
+    await transporter.sendMail({
+      from: "rpmssvecw@gmail.com",
+      to: facultyEmail,
+      subject: "UID Rejected - RPMS SVECW",
+      text: `UID Request Rejected by the ${request.department} HOD
+
+Paper Title: ${request.paperTitle}
+Faculty: ${request.facultyName}
+Department: ${request.department}
+
+Reason: ${reason}
+
+Regards
+RPMS SVECW`
+    });
+
+    await request.deleteOne();
+
+    res.status(200).json({
+      message: "UID request rejected and mail sent to faculty"
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Server error",
+      error: err.message
+    });
+  }
+});
+
 router.put('/uid-request/:id/reject/:userId', async (req, res) => {
   try {
     const { reason } = req.body;
@@ -144,6 +311,16 @@ router.put('/uid-request/:id/reject/:userId', async (req, res) => {
 
     // 🔍 find request
     const request = await HodUidRequest.findById(id);
+    const faculty = await User.findOne({
+  userId: request.facultyId,
+  role: "faculty"
+});
+    
+      if (!faculty) {
+        return res.status(404).json({ message: "Faculty not found" });
+      }
+    
+      const facultyEmail = faculty.email;
     if (!request) {
       return res.status(404).json({ message: 'Request not found' });
     }
@@ -164,22 +341,48 @@ router.put('/uid-request/:id/reject/:userId', async (req, res) => {
     });
 
     await rejectedEntry.save();
+
+
+    const mailOptions = {
+    from: "rpmssvecw@gmail.com",
+    to: facultyEmail,
+    subject: "UID Rejected  RPMS SVECW",
+    text: `UID Request Rejected
+
+Paper Title: ${request.paperTitle}
+Faculty: ${request.facultyName}
+Department: ${request.department}
+Your UID request has been rejected by the  ${request.department} HOD for the following reason:${reason}
+
+Regards,
+RPMS SVECW
+`
+  };
+
+  await transporter.sendMail(mailOptions);
+    
     await request.deleteOne();
 
-    // 📧 Send rejection email
-    const faculty = await User.findOne({
-      role: 'faculty',
-      userId: request.facultyId
-    });
+    // // 📧 Send rejection email
+    // const faculty = await User.findOne({
+    //   role: 'faculty',
+    //   userId: request.facultyId
+    // });
 
-    if (faculty?.email) {
-      await transporter.sendMail({
-        from: 'tanusreekollipara@gmail.com',
-        to: faculty.email,
-        subject: 'UID Request Rejected by HoD',
-        text: `Dear ${request.facultyName},\n\nYour UID request for "${request.paperTitle}" has been rejected.\nReason: ${reason}`
-      });
-    }
+    // if (faculty?.email) {
+    //   await transporter.sendMail({
+    //     from: 'tanusreekollipara@gmail.com',
+    //     to: faculty.email,
+    //     subject: 'UID Request Rejected by HoD',
+    //     text: `Dear ${request.facultyName},\n\nYour UID request for "${request.paperTitle}" has been rejected.\nReason: ${reason}`
+    //   });
+    // }
+    await Notification.create({
+  receiverId: request.facultyId,
+  receiverRole: "faculty",
+  message: `Your UID request "${request.paperTitle}" was rejected by HOD. Reason: ${reason}`,
+  relatedUserId: request.facultyId
+});
 
     res.status(200).json({
       message: 'UID request rejected, logged, and email sent'
@@ -248,6 +451,20 @@ router.put('/uid-request/:id/accept/:userId', async (req, res) => {
 
     request.hodAccept = true;
     await request.save();
+
+    // 🔔 FIND PRINCIPAL
+    const principal = await User.findOne({ role: "principal" });
+
+    if (principal) {
+      await Notification.create({
+        receiverId: principal.userId,
+        receiverRole: "principal",
+        message: `HOD approved UID request for "${request.paperTitle}"`,
+        relatedUserId: request.facultyId
+      });
+    }
+
+    res.json({ message: 'UID request accepted' });
 
     res.json({ message: 'UID request accepted' });
   } catch (err) {

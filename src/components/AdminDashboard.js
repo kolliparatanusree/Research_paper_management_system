@@ -7,6 +7,7 @@ import './AdminDashboard.css';
 import CustomNavbar from './CustomNavbar';
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import RemoveRdCoordinator from './RemoveRDCoordinator';
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState('addUser');
@@ -67,6 +68,14 @@ const AdminDashboard = () => {
             <span className="sidebar-label">See and remove HODs</span>
           </button>
 
+           <button
+            className={`sidebar-btn ${activeSection === 'viewRdCoordinators' ? 'active' : ''}`}
+            onClick={() => setActiveSection('viewRdCoordinators')}
+          >
+            🧑‍💼 View R&d Coordinators
+            <span className="sidebar-label">See and remove R&d Coordinators</span>
+          </button>
+
           <button
             className="sidebar-btn logout-btn"
             onClick={handleLogout}
@@ -80,6 +89,7 @@ const AdminDashboard = () => {
           {activeSection === 'addUser' && <AddUserForm />}
           {activeSection === 'viewFaculty' && <RemoveFaculty />}
           {activeSection === 'viewHod' && <RemoveHod />}
+          {activeSection === 'viewRdCoordinators' && <RemoveRdCoordinator />}
         </main>
       </div>
     </>

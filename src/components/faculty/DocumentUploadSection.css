@@ -1,0 +1,185 @@
+/* ===== MAIN SECTION ===== */
+.approved-uid-section {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* ===== SEARCH BAR ===== */
+.approved-uid-section input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* ===== UID CARD ===== */
+.uid-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 22px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  position: relative; /* IMPORTANT for edit button positioning */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.uid-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.uid-card h4 {
+  margin-bottom: 12px;
+  color: #4f46e5;
+}
+
+/* ===== EDIT BUTTON (TOP RIGHT) ===== */
+.edit-btn {
+  position: absolute;
+  top: 80px;
+  right: 18px;
+  background: #2d36d0;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.edit-btn:hover {
+  background: #2563eb;
+}
+
+/* ===== LABEL TEXT ===== */
+.uid-card strong {
+  color: #111827;
+}
+
+/* ===== FORM INPUTS ===== */
+.uid-card input,
+.uid-card textarea,
+.uid-card select {
+  width: 100%;
+  padding: 8px 10px;
+  margin: 6px 0 14px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.uid-card textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* ===== CO AUTHOR ROW ===== */
+.uid-card input[type="text"] + input[type="text"] {
+  margin-left: 6px;
+}
+
+/* Remove co-author button */
+.uid-card button {
+  margin-top: 6px;
+}
+
+/* ===== ADD CO AUTHOR BUTTON ===== */
+.add-coauthor-btn {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.add-coauthor-btn:hover {
+  background: #059669;
+}
+
+/* ===== SAVE / CANCEL BUTTONS ===== */
+.cancel-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background: #dc2626;
+}
+
+/* Save button already inline green — keeping consistent */
+.uid-card button[style*="green"] {
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* ===== FILE INPUT GROUP ===== */
+.form-group {
+  margin-top: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* ===== SUBMIT DOCUMENT BUTTON ===== */
+.uid-card > button:last-child {
+  margin-top: 16px;
+  background: linear-gradient(145deg, #6366f1, #4f46e5);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px;
+  transition: 0.2s;
+}
+
+.uid-card > button:last-child:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.4);
+}
+
+.uid-card > button:last-child:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* ===== LIST OF CO AUTHORS ===== */
+.uid-card ul {
+  padding-left: 20px;
+  margin: 6px 0 12px 0;
+}
+
+.uid-card li {
+  margin-bottom: 4px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .uid-card {
+    padding: 16px;
+  }
+
+  .edit-btn {
+    top: 12px;
+    right: 12px;
+    padding: 5px 10px;
+    font-size: 13px;
+  }
+}
+

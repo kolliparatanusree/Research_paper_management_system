@@ -1,0 +1,198 @@
+/* ---------- Page Container ---------- */
+.faculty-hod-page {
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ---------- Filter Section ---------- */
+.filter-container {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  transition: 0.2s;
+  
+}
+
+.search-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 4px rgba(37, 99, 235, 0.3);
+}
+
+.department-dropdown {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+  cursor: pointer;
+  color: rgb(31, 33, 33);
+  background: linear-gradient(135deg, #667eea, #96b6e9);
+  /* background: white; */
+  min-width: 180px;
+}
+
+/* ---------- Card Container ---------- */
+.card-container {
+  display: flex;
+  grid-template-columns: repeat(auto-fit, 300px);
+  justify-content: center;
+  gap: 25px;
+  margin-top: 20px;
+}
+/* ---------- Profile Cards ---------- */
+.profile-card {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: rgb(21, 7, 7);
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  width: 250px;
+  min-height: 220px;
+  transition: 0.3s;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+}
+
+.profile-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+}
+
+/* ---------- Profile Image ---------- */
+.profile-img {
+  display: block;
+  margin: auto;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid rgb(137, 23, 23);
+  object-fit: cover;
+}
+
+/* ---------- Card Text ---------- */
+.profile-card h4 {
+  margin: 6px 0;
+  font-size: 16px;
+}
+
+.profile-card h5 {
+  font-size: 13px;
+  font-weight: normal;
+  opacity: 0.9;
+}
+
+/* ---------- View Button ---------- */
+.view-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: black;
+  /* background: white; */
+  color: #fcfcfe;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.view-btn:hover {
+  /* background: #e5e7eb; */
+  background: linear-gradient(135deg, #667eea, #aceed4);
+}
+
+/* ---------- Modal Background ---------- */
+.details-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* .view-btn {
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background: white;
+  color: #4f46e5;
+  font-weight: 600;
+  cursor: pointer;
+} */
+
+.profile-card h4 {
+  margin: 8px 0;
+}
+
+.profile-card h5 {
+  font-weight: normal;
+  opacity: 0.9;
+}
+
+.profile-img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid rgb(150, 175, 244);
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+/* ---------- Modal Content ---------- */
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* ---------- Modal Profile Image ---------- */
+.modal-content img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #6366f1;
+  object-fit: cover;
+}
+
+/* ---------- Close Button ---------- */
+.close-btn {
+  position: absolute;
+  right: 15px;
+  top: 12px;
+  font-size: 20px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+/* ---------- Modal Text ---------- */
+.modal-content h3 {
+  margin-top: 10px;
+  margin-bottom: 15px;
+  
+}
+
+.modal-content p {
+  margin: 6px 0;
+  font-size: 14px;
+  
+}

@@ -10,6 +10,27 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'faculty', 'hod', 'rdCoordinator', 'rdDean', 'principal'],
     required: true
   },
+
+   isProfileCompleted: {
+    type: Boolean,
+    default: false
+  },
+  profilePic: {
+  type: String, // stores file path or URL
+  default: ''
+},
+
+  // ✅ Profile details
+  educationDetails: String,
+  experienceDetails: String,
+  publications: [
+    {
+      title: String,
+      journal: String,
+      year: String
+    }
+  ],
+
   phoneNumber: String,
   gender: String,
   department: String

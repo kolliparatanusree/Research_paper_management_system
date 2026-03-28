@@ -4,7 +4,8 @@ const { login } = require('../controllers/authController');
 const User = require('../models/User');
 // const crypto = require('crypto'); // ✅ REQUIRED
 const bcrypt = require('bcryptjs');
-
+const upload = require('../middleware/upload');
+const Notification = require("../models/Notification");
 const otpStore = {};
 
 
@@ -12,6 +13,181 @@ router.post('/login', login);
 
 
 const sendMail = require('../utils/sendMail');
+
+
+// GET unread notification count for a user
+router.get("/notifications/unread-count/:userId", async (req, res) => {
+  try {
+    const count = await Notification.countDocuments({
+      receiverId: req.params.userId,
+      isRead: false
+    });
+
+    res.json({ count });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.put('/notifications/mark-read/:receiverId', async (req, res) => {
+  try {
+
+    await Notification.updateMany(
+      { receiverId: req.params.receiverId },
+      { $set: { isRead: true } }
+    );
+
+    res.json({ message: "Notifications marked as read" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating notifications" });
+  }
+});
+
+router.put(
+  '/update-profile/:userId',
+  upload.single('profilePic'),
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+
+      const updateData = {};
+
+      if (req.body.phoneNumber)
+        updateData.phoneNumber = req.body.phoneNumber;
+
+      if (req.body.educationDetails)
+        updateData.educationDetails = req.body.educationDetails;
+
+      if (req.body.experienceDetails)
+        updateData.experienceDetails = req.body.experienceDetails;
+
+      if (req.file)
+        updateData.profilePic = req.file.path;
+
+      await User.findOneAndUpdate({ userId }, updateData);
+
+      res.json({ message: 'Profile updated successfully' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+);
+
+
+router.put(
+  '/complete-profile/:userId',
+  upload.single('profilePic'),
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+
+      const updateData = {
+        educationDetails: req.body.educationDetails,
+        experienceDetails: req.body.experienceDetails,
+        isProfileCompleted: true
+      };
+
+      // publications optional for now
+      if (req.body.publications) {
+        updateData.publications = JSON.parse(req.body.publications);
+      }
+
+      if (req.file) {
+        updateData.profilePic = req.file.path;
+      }
+
+      const user = await User.findOneAndUpdate(
+        { userId },
+        updateData,
+        { new: true }
+      );
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json({ message: 'Profile completed successfully', user });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+);
+
+// router.put(
+//   '/update-profile/:userId',
+//   upload.single('profilePic'),
+//   async (req, res) => {
+//     try {
+//       const { userId } = req.params;
+
+//       const updateData = {
+//         phoneNumber: req.body.phoneNumber,
+//         educationDetails: req.body.educationDetails,
+//         experienceDetails: req.body.experienceDetails,
+//       };
+
+//       if (req.file) {
+//         updateData.profilePic = req.file.path;
+//       }
+
+//       await User.findOneAndUpdate({ userId }, updateData);
+
+//       res.json({ message: 'Profile updated successfully' });
+//     } catch (err) {
+//       res.status(500).json({ message: 'Server error' });
+//     }
+//   }
+// );
+// router.put(
+//   '/complete-profile/:userId',
+//   upload.single('profilePic'), // ⭐ IMPORTANT
+//   async (req, res) => {
+//     try {
+//       const { userId } = req.params;
+
+//       const updateData = {
+//         educationDetails: req.body.educationDetails,
+//         experienceDetails: req.body.experienceDetails,
+//         publications: JSON.parse(req.body.publications || '[]'),
+//         isProfileCompleted: true
+//       };
+
+//       if (req.file) {
+//         updateData.profilePic = req.file.path;
+//       }
+
+//       await User.findOneAndUpdate({ userId }, updateData);
+
+//       res.json({ message: 'Profile updated successfully' });
+//     } catch (err) {
+//       res.status(500).json({ message: 'Server error' });
+//     }
+//   }
+// );
+// PUT /api/users/complete-profile/:userId
+// router.put('/complete-profile/:userId', async (req, res) => {
+//   try {
+//     const { userId } = req.params;
+//     const { educationDetails, experienceDetails, publications, isProfileCompleted } = req.body;
+
+//     const user = await User.findOneAndUpdate(
+//       { userId },
+//       { educationDetails, experienceDetails, publications, isProfileCompleted },
+//       { new: true }
+//     );
+
+//     if (!user) return res.status(404).json({ message: 'User not found' });
+
+//     res.status(200).json({ message: 'Profile updated successfully', user });
+//   } catch (err) {
+//     console.error(err); // ✅ This will show the exact Mongo error
+//     res.status(500).json({ message: 'Server error', error: err.message });
+//   }
+// });
 
 // Change Password
 router.post('/change-password', async (req, res) => {

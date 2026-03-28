@@ -4,6 +4,9 @@ import logo from './logo2.jpeg';  // Adjust path as needed
 import { useNavigate } from 'react-router-dom';
 import CustomNavbar from './CustomNavbar'; // Import the custom navbar
 import Swal from 'sweetalert2';
+import NotificationsSection from './NotificationsSection';
+import PrincipalFacultyHodSection from './PrincipalFacultyHodSection';
+
 export default function RDDeanDashboard() {
   const [activeSection, setActiveSection] = useState('faculty-uid');
   const [approvedRequests, setApprovedRequests] = useState([]);
@@ -108,13 +111,62 @@ useEffect(() => {
     //   const reason = prompt('Enter reason for rejection:');
     //   if (!reason?.trim()) return alert('Rejection reason is required.');
     if (status === 'reject') {
+  // const { value: reason } = await Swal.fire({
+  //   title: 'Reject Document',
+  //   input: 'text',
+  //   inputLabel: 'Enter reason for rejection',
+  //   inputPlaceholder: 'Type reason here...',
+  //   showCancelButton: true,
+  // });
   const { value: reason } = await Swal.fire({
-    title: 'Reject Document',
-    input: 'text',
-    inputLabel: 'Enter reason for rejection',
-    inputPlaceholder: 'Type reason here...',
-    showCancelButton: true,
-  });
+  title: "Reject Document",
+  html: `
+    <select id="reasonSelect" class="swal2-select">
+      <option value="">Select reason</option>
+      <option value="Incomplete document">Incomplete document</option>
+      <option value="Invalid journal">Invalid journal</option>
+      <option value="Duplicate submission">Duplicate submission</option>
+      <option value="Incorrect paper details">Incorrect paper details</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <input id="otherReason"
+      class="swal2-input"
+      placeholder="Enter custom reason"
+      style="display:none">
+  `,
+  showCancelButton: true,
+
+  didOpen: () => {
+    const select = document.getElementById("reasonSelect");
+    const otherInput = document.getElementById("otherReason");
+
+    select.addEventListener("change", () => {
+      if (select.value === "Other") {
+        otherInput.style.display = "block";
+      } else {
+        otherInput.style.display = "none";
+      }
+    });
+  },
+
+  preConfirm: () => {
+    const select = document.getElementById("reasonSelect").value;
+    const other = document.getElementById("otherReason").value;
+
+    if (!select) {
+      Swal.showValidationMessage("Please select a reason");
+      return false;
+    }
+
+    if (select === "Other" && !other) {
+      Swal.showValidationMessage("Please enter the reason");
+      return false;
+    }
+
+    return select === "Other" ? other : select;
+  }
+});
 
   if (!reason) {
     return Swal.fire('Error', 'Rejection reason is required.', 'error');
@@ -151,7 +203,8 @@ useEffect(() => {
 Swal.fire({
   icon: 'success',
   title: 'Submission Accepted!',
-  html: `<p>${data.message}</p><p><strong>PID:</strong> ${data.pid}</p>`,
+  // html: `<p>${data.message}</p><p><strong>PID</strong> ${data.pid}</p>`,
+  html: `<p><strong>PID</strong> </p>`,
   showConfirmButton: true,
   confirmButtonText: 'OK'
 });
@@ -175,16 +228,58 @@ setSubmissions(prev => prev.filter(doc => doc._id !== id));
       // let body = null;
 if (status === 'reject') {
   const { value: reason } = await Swal.fire({
-    title: 'Reject UID Request',
-    input: 'text',
-    inputLabel: 'Enter reason for rejection',
-    inputPlaceholder: 'Type reason here...',
+    title: "Reject UID Request",
+    html: `
+      <select id="reasonSelect" class="swal2-select">
+        <option value="">Select reason</option>
+        <option value="Incomplete document">Incomplete document</option>
+        <option value="Invalid journal">Invalid journal</option>
+        <option value="Duplicate submission">Duplicate submission</option>
+        <option value="Incorrect paper details">Incorrect paper details</option>
+        <option value="Journal not indexed">Journal not indexed</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <input id="otherReason"
+        class="swal2-input"
+        placeholder="Enter custom reason"
+        style="display:none">
+    `,
     showCancelButton: true,
+
+    didOpen: () => {
+      const select = document.getElementById("reasonSelect");
+      const otherInput = document.getElementById("otherReason");
+
+      select.addEventListener("change", () => {
+        if (select.value === "Other") {
+          otherInput.style.display = "block";
+        } else {
+          otherInput.style.display = "none";
+        }
+      });
+    },
+
+    preConfirm: () => {
+      const select = document.getElementById("reasonSelect").value;
+      const other = document.getElementById("otherReason").value;
+
+      if (!select) {
+        Swal.showValidationMessage("Please select a reason");
+        return false;
+      }
+
+      if (select === "Other" && !other) {
+        Swal.showValidationMessage("Please enter the reason");
+        return false;
+      }
+
+      return select === "Other" ? other : select;
+    }
   });
 
-  if (!reason) {
-    return Swal.fire('Error', 'Rejection reason is required.', 'error');
-  }
+  if (!reason) return;
+
   body = JSON.stringify({ reason });
 }
 
@@ -278,6 +373,13 @@ Swal.fire('Success', data.message, 'success');
           <li className={activeSection === 'dashboard' ? 'active' : ''} onClick={() => setActiveSection('dashboard')}>
             🧾 Dashboard
           </li>
+          <li
+  className={activeSection === 'notifications' ? 'active' : ''}
+  onClick={() => setActiveSection('notifications')}
+  style={{ cursor: 'pointer' }}
+>
+  🔔 Notifications
+</li>
           <li className={activeSection === 'faculty-uid' ? 'active' : ''} onClick={() => setActiveSection('faculty-uid')}>
             🧾 Faculty UID Requests
           </li>
@@ -287,6 +389,19 @@ Swal.fire('Success', data.message, 'success');
           <li className={activeSection === 'approved-pids' ? 'active' : ''} onClick={() => setActiveSection('approved-pids')}>
             ✅ Approved PIDs
           </li>
+          <li
+  className={activeSection === 'faculty-details' ? 'active' : ''}
+  onClick={() => setActiveSection('faculty-details')}
+>
+  🧑‍🏫 Faculty Details
+</li>
+
+<li
+  className={activeSection === 'hod-details' ? 'active' : ''}
+  onClick={() => setActiveSection('hod-details')}
+>
+  👨‍💼 HOD Details
+</li>
           <li className={activeSection === 'profile' ? 'active' : ''} onClick={() => setActiveSection('profile')}>
             👤 Profile
           </li>
@@ -297,6 +412,9 @@ Swal.fire('Success', data.message, 'success');
       </div>
 
       <div className="main-content">
+        {activeSection === 'notifications' && (
+  <NotificationsSection userId={localStorage.getItem("userId")} />
+)}
          {activeSection === 'dashboard' && (
   <div className="dashboard-counts">
     {[
@@ -389,7 +507,7 @@ Swal.fire('Success', data.message, 'success');
 
 
 
-        <p><strong>ISSN:</strong> {doc.issn || 'N/A'}</p>
+        {/* <p><strong>ISSN:</strong> {doc.issn || 'N/A'}</p>
 
         <p>
           <strong>Scopus Link:</strong>{' '}
@@ -400,7 +518,7 @@ Swal.fire('Success', data.message, 'success');
           ) : (
             'N/A'
           )}
-        </p>
+        </p> */}
 
 
 
@@ -520,6 +638,13 @@ Swal.fire('Success', data.message, 'success');
   </div>
 )}
         
+        {activeSection === 'faculty-details' && (
+  <PrincipalFacultyHodSection type="faculty" />
+)}
+
+{activeSection === 'hod-details' && (
+  <PrincipalFacultyHodSection type="hod" />
+)}
 
         {/* {activeSection === 'approved-pids' && (
           <div className="uid-requests-container">

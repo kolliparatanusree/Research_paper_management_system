@@ -17,7 +17,19 @@ const [newPassword, setNewPassword] = useState('');
 const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
   const navigate = useNavigate();
+  // const { role, userId: id } = res.data.user;
 
+  const getDashboardRoute = (role) => {
+  switch (role) {
+    case 'faculty': return '/faculty-dashboard';
+    case 'hod': return '/hod-dashboard';
+    case 'principal': return '/principal-dashboard';
+    case 'rdCoordinator': return '/rd-dashboard';
+    case 'rdDean': return '/rd-dean-dashboard';
+    case 'admin': return '/mainAdmin-dashboard';
+    default: return '/';
+  }
+};
 
   const handleChangePassword = async (e) => {
   e.preventDefault();
@@ -80,97 +92,140 @@ Swal.fire('Success', 'OTP sent to email', 'success')
 };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    if (userId === 'admin' && password === 'admin123') {
-    localStorage.setItem('userId', 'admin');
-    localStorage.setItem('role', 'admin');
-    // alert('Login successful');
+  e.preventDefault();
+
+  try {
+    const res = await axios.post(
+      'http://localhost:5000/api/auth/login',
+      { userId, password }
+    );
+
+    const { user, isProfileCompleted } = res.data;
+    const { role, userId: id } = user;
+
+    // ✅ store session
+    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('userId', id);
+    localStorage.setItem('role', role);
+
     Swal.fire({
-        title: 'Login Successful',
-        text: 'Welcome, Admin!',
-        icon: 'success',
-        confirmButtonText: 'Continue'
-      }).then(() => {
-        navigate('/mainAdmin-dashboard');
-      });
-    // navigate('/mainAdmin-dashboard');
+      title: 'Login Successful',
+      text: `Welcome, ${role}!`,
+      icon: 'success',
+      confirmButtonText: 'Continue'
+    }).then(() => {
+
+      // 🚨 FIRST LOGIN CHECK (FOR EVERYONE)
+      if (role !== 'admin' && !isProfileCompleted) {
+    navigate('/complete-profile');
     return;
   }
 
-  if (userId === 'principal' && password === 'principal123') {
-    localStorage.setItem('userId', 'principal');
-    localStorage.setItem('role', 'principal');
-    // alert('Login successful');
+      // ✅ role-based dashboard routing
+      navigate(getDashboardRoute(role));
+    });
+
+  } catch (err) {
     Swal.fire({
-        title: 'Login Successful',
-        text: 'Welcome, Principal!',
-        icon: 'success',
-        confirmButtonText: 'Continue'
-      }).then(() => {
-        navigate('/principal-dashboard');
-      });
-    // navigate('/principal-dashboard');
-    return;
+      title: 'Login Failed',
+      text: err.response?.data?.message || 'Invalid credentials',
+      icon: 'error'
+    });
   }
+};
 
-  if (userId === 'rddean' && password === 'rddean123') {
-    localStorage.setItem('userId', 'rddean');
-    localStorage.setItem('role', 'rddean');
-    // alert('Login successful');
-    // navigate('/rd-dean-dashboard');
-    Swal.fire({
-        title: 'Login Successful',
-        text: 'Welcome, RD Dean!',
-        icon: 'success',
-        confirmButtonText: 'Continue'
-      }).then(() => {
-        navigate('/rd-dean-dashboard');
-      });
-    return;
-  }
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   if (userId === 'admin' && password === 'admin123') {
+  //   localStorage.setItem('userId', 'admin');
+  //   localStorage.setItem('role', 'admin');
+  //   // alert('Login successful');
+  //   Swal.fire({
+  //       title: 'Login Successful',
+  //       text: 'Welcome, Admin!',
+  //       icon: 'success',
+  //       confirmButtonText: 'Continue'
+  //     }).then(() => {
+  //       navigate('/mainAdmin-dashboard');
+  //     });
+  //   // navigate('/mainAdmin-dashboard');
+  //   return;
+  // }
 
-    try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
-        userId,
-        password
-      });
+  // if (userId === 'principal' && password === 'principal123') {
+  //   localStorage.setItem('userId', 'principal');
+  //   localStorage.setItem('role', 'principal');
+  //   // alert('Login successful');
+  //   Swal.fire({
+  //       title: 'Login Successful',
+  //       text: 'Welcome, Principal!',
+  //       icon: 'success',
+  //       confirmButtonText: 'Continue'
+  //     }).then(() => {
+  //       navigate('/principal-dashboard');
+  //     });
+  //   // navigate('/principal-dashboard');
+  //   return;
+  // }
 
-      const { role, userId: id } = res.data.user;
+  // if (userId === 'rddean' && password === 'rddean123') {
+  //   localStorage.setItem('userId', 'rddean');
+  //   localStorage.setItem('role', 'rddean');
+  //   // alert('Login successful');
+  //   // navigate('/rd-dean-dashboard');
+  //   Swal.fire({
+  //       title: 'Login Successful',
+  //       text: 'Welcome, RD Dean!',
+  //       icon: 'success',
+  //       confirmButtonText: 'Continue'
+  //     }).then(() => {
+  //       navigate('/rd-dean-dashboard');
+  //     });
+  //   return;
+  // }
 
-      localStorage.setItem('user', JSON.stringify(res.data.user));
-      localStorage.setItem('userId', id);
-      localStorage.setItem('role', role);
+  //   try {
+  //     const res = await axios.post('http://localhost:5000/api/auth/login', {
+  //       userId,
+  //       password
+  //     });
 
-      Swal.fire({
-        title: 'Login Successful',
-        text: `Welcome, ${role}!`,
-        icon: 'success'
-      }).then(() => {
-        switch (role) {
-          case 'faculty':
-            navigate('/faculty-dashboard');
-            break;
-          case 'hod':
-            navigate('/hod-dashboard');
-            break;
-          case 'principal':
-            navigate('/principal-dashboard');
-            break;
-          case 'rdDean':
-            navigate('/rd-dean-dashboard');
-            break;
-          default:
-            navigate('/');
-        }
-      });
-    } catch (err) {
-      Swal.fire({
-        title: 'Login Failed',
-        text: err.response?.data?.message || 'Invalid credentials',
-        icon: 'error'
-      });
-    }
-  };
+  //     const { role, userId: id } = res.data.user;
+
+  //     localStorage.setItem('user', JSON.stringify(res.data.user));
+  //     localStorage.setItem('userId', id);
+  //     localStorage.setItem('role', role);
+
+  //     Swal.fire({
+  //       title: 'Login Successful',
+  //       text: `Welcome, ${role}!`,
+  //       icon: 'success'
+  //     }).then(() => {
+  //       switch (role) {
+  //         case 'faculty':
+  //           navigate('/faculty-dashboard');
+  //           break;
+  //         case 'hod':
+  //           navigate('/hod-dashboard');
+  //           break;
+  //         case 'principal':
+  //           navigate('/principal-dashboard');
+  //           break;
+  //         case 'rdDean':
+  //           navigate('/rd-dean-dashboard');
+  //           break;
+  //         default:
+  //           navigate('/');
+  //       }
+  //     });
+  //   } catch (err) {
+  //     Swal.fire({
+  //       title: 'Login Failed',
+  //       text: err.response?.data?.message || 'Invalid credentials',
+  //       icon: 'error'
+  //     });
+  //   }
+  // };
 
   return (
     <div className="login-page-wrapper">

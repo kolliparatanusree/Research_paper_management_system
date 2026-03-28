@@ -2,8 +2,54 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
+const HodUidRequest = require('../models/UidRequests'); // your schema
 
+router.get('/rdcoordinators', async (req, res) => {
+  try {
+    const rdCoordinators = await User.find({ role: "rdCoordinator" }).select(
+      "userId fullName email phoneNumber gender department"
+    );
 
+    res.status(200).json(rdCoordinators);
+  } catch (err) {
+    console.error('Error fetching RD Coordinators:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// 🔹 Remove RD Coordinator by userId
+router.delete('/remove-rdcoordinator/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const rd = await User.findOne({ userId, role: "rdCoordinator" });
+
+    if (!rd) {
+      return res.status(404).json({ message: "RD Coordinator not found" });
+    }
+
+    // Optional: Check if RD Coordinator has pending UID requests
+    const pendingRequests = await HodUidRequest.find({
+      rdCoordinatorId: userId,
+      rdCoordinatorAccept: true, // or pending if you want
+      principalAccept: false
+    });
+
+    if (pendingRequests.length > 0) {
+      return res.status(403).json({
+        message: "Cannot remove RD Coordinator with pending UID requests"
+      });
+    }
+
+    // Delete RD Coordinator
+    await rd.deleteOne();
+
+    res.status(200).json({ message: "RD Coordinator removed successfully" });
+  } catch (err) {
+    console.error('Error removing RD Coordinator:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 // Assuming you have Faculty model
 // backend/routes/main-admin.js

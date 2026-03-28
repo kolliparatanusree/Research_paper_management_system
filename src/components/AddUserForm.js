@@ -64,7 +64,7 @@ const AddUserForm = () => {
             <option value="">Select Role</option>
             <option value="faculty">Faculty</option>
             <option value="hod">HOD</option>
-            {/* <option value="rdCoordinator">R&D Coordinator</option> */}
+            <option value="rdCoordinator">R&D Coordinator</option>
             <option value="rdDean">R&D Dean</option>
           </select>
         </div>

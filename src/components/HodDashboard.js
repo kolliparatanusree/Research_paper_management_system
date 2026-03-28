@@ -8,16 +8,49 @@ import logo from './logo2.jpeg';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import ProfileSection from './faculty/ProfileSection';
-
-
+import DepartmentPublicationsSection from './DepartmentPublicationsSection';
+import HodFacultySection from './HodFacultySection';
 export default function HodDashboard() {
-  const [activeSection, setActiveSection] = useState('requests');
+  const [activeSection, setActiveSection] = useState('dashboard');
   const [hodProfile, setHodProfile] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [error, setError] = useState(null);
-
+const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId'); // read HOD ID
+const [facultyCount, setFacultyCount] = useState(0);
+const [pendingUidCount, setPendingUidCount] = useState(0);
+const [approvedUidCount, setApprovedUidCount] = useState(0);
+const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+
+     const userId = localStorage.getItem("userId");
+  if (!userId) return;
+
+  fetch(`http://localhost:5000/api/notifications/${userId}`)
+    .then(res => res.json())
+    .then(data => setNotifications(data))
+    .catch(err => console.error(err));
+
+}, []);
+
+useEffect(() => {
+
+  if (!hodProfile?.department) return;
+
+  const department = hodProfile.department;
+
+  axios.get(`http://localhost:5000/api/faculty/count/${department}`)
+       .then(res => setFacultyCount(res.data.count));
+
+  axios.get(`http://localhost:5000/api/hod/uid/pending/${department}`)
+       .then(res => setPendingUidCount(res.data.count));
+
+  axios.get(`http://localhost:5000/api/hod/uid/approved/${department}`)
+       .then(res => setApprovedUidCount(res.data.count));
+
+}, [hodProfile]);
 
   useEffect(() => {
     if (!userId) {
@@ -122,6 +155,16 @@ const handleNavigation = (section) => {
   setActiveSection(section);
 };
 
+const handleNotificationClick = async () => {
+
+  const userId = localStorage.getItem("userId");
+
+  setShowNotifications(!showNotifications);
+
+  if (!showNotifications) {
+    await axios.put(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`);
+  }
+};
 
   // const handleNavigation = (section) => {
   //   if (section === 'logout') {
@@ -136,19 +179,36 @@ const handleNavigation = (section) => {
     <>
       <CustomNavbar />
       <div className="hod-dashboard">
+        
         {/* Sidebar */}
         <div className="sidebar">
           <div className="logo-container">
             {/* <img src={logo} alt="Logo" className="logo" /> */}
           </div>
           <h2>HOD Dashboard</h2>
+         
           <ul>
+            <li onClick={() => setActiveSection('dashboard')}>
+  📊 Dashboard
+</li>
             <li
               className={activeSection === 'requests' ? 'active' : ''}
               onClick={() => handleNavigation('requests')}
             >
               📨 Requesting UIDs
             </li>
+            <li
+  className={activeSection === 'publications' ? 'active' : ''}
+  onClick={() => handleNavigation('publications')}
+>
+  📚 Department Publications
+</li>
+<li
+  className={activeSection === 'faculty' ? 'active' : ''}
+  onClick={() => handleNavigation('faculty')}
+>
+  👥 View Faculty Details
+</li>
             <li
               className={activeSection === 'profile' ? 'active' : ''}
               onClick={() => handleNavigation('profile')}
@@ -164,8 +224,89 @@ const handleNavigation = (section) => {
           </ul>
         </div>
 
+        <div className="dashboard-cards">
+
+
+
+</div>
+
         {/* Main Content */}
         <div className="main-content">
+          
+         {activeSection === 'dashboard' && (
+
+<div className="dashboard-cards"> 
+        <div className="dashboard-card">
+<h3>👨‍🏫 Faculty</h3>
+<p>{facultyCount}</p>
+</div>
+
+<div className="dashboard-card">
+<h3>📨 Pending UID</h3>
+<p>{pendingUidCount}</p>
+</div>
+
+<div className="dashboard-card">
+<h3>✅ Approved UID</h3>
+<p>{approvedUidCount}</p>
+</div>
+
+<div className="top-bar">
+
+<button
+className="notification-btn"
+onClick={handleNotificationClick}
+>
+🔔 Notifications ({notifications.filter(n => !n.isRead).length})
+</button>
+
+{showNotifications && (
+
+<div className="notification-popup">
+
+<div className="notification-header">
+<h4>Notifications</h4>
+
+<button
+className="close-btn"
+onClick={() => setShowNotifications(false)}
+>
+❌
+</button>
+
+</div>
+
+{notifications.filter(note => !note.isRead).length === 0 ? (
+  <p>No notifications</p>
+) : (
+  notifications
+    .filter(note => !note.isRead)
+    .map((note) => (
+      <div key={note._id} className="notification-item">
+        <p>{note.message}</p>
+        <small>{new Date(note.createdAt).toLocaleString()}</small>
+      </div>
+    ))
+)}
+
+</div>
+
+)}
+
+</div>
+
+</div>
+
+)}
+
+     
+          {activeSection === 'publications' && hodProfile && (
+  <DepartmentPublicationsSection department={hodProfile.department} />
+)}
+{/* // In HodDashboard.js */}
+{activeSection === "faculty" && hodProfile && (
+  <HodFacultySection hodProfile={hodProfile} />
+)}
           {activeSection === 'requests' && <HodUidApproval />}
           {activeSection === 'profile' && hodProfile && (
   <ProfileSection facultyDetails={hodProfile} />
