@@ -7,6 +7,10 @@ const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const Notification = require("../models/Notification");
 const user = require('../models/User');
+// const nodemailer = require("nodemailer");
+const { sendReportEmail } = require("../controllers/hodController");
+const { jsPDF } = require("jspdf");
+router.post("/send-report", sendReportEmail);
 
 
 // const router = express.Router();
@@ -19,6 +23,7 @@ const transporter = nodemailer.createTransport({
     pass: 'opdh fgkm seaa qsvy'
   }
 });
+
 
 router.get("/uid/approved/:department", async (req, res) => {
   try {
@@ -186,31 +191,6 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
-
-// ====== Get HOD profile ======
-// Get HoD profile by userId
-router.get('/:id', async (req, res) => {
-  try {
-    const hodId = req.params.id;
-    console.log("Received HOD ID:", hodId);
-
-    // Use User collection instead of Hod
-    const hod = await User.findOne({ role: 'hod', userId: hodId });
-
-    if (!hod) {
-      return res.status(404).json({ message: 'HoD not found' });
-    }
-
-    // Optional: remove password before sending
-    const { password, ...hodWithoutPassword } = hod._doc;
-
-    res.json(hodWithoutPassword);
-  } catch (error) {
-    console.error("Error fetching HOD:", error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
 
 
 
@@ -475,6 +455,31 @@ router.put('/uid-request/:id/accept/:userId', async (req, res) => {
   }
 });
 
+
+
+// ====== Get HOD profile ======
+// Get HoD profile by userId
+router.get('/profile/:id', async (req, res) => {
+  try {
+    const hodId = req.params.id;
+    console.log("Received HOD ID:", hodId);
+
+    // Use User collection instead of Hod
+    const hod = await User.findOne({ role: 'hod', userId: hodId });
+
+    if (!hod) {
+      return res.status(404).json({ message: 'HoD not found' });
+    }
+
+    // Optional: remove password before sending
+    const { password, ...hodWithoutPassword } = hod._doc;
+
+    res.json(hodWithoutPassword);
+  } catch (error) {
+    console.error("Error fetching HOD:", error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 // router.put('/uid-request/:id/accept', async (req, res) => {
 //   try {
 //     const updated = await HodUidRequest.findByIdAndUpdate(

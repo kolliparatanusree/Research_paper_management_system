@@ -63,18 +63,55 @@ router.put(
       if (req.body.experienceDetails)
         updateData.experienceDetails = req.body.experienceDetails;
 
-      if (req.file)
-        updateData.profilePic = req.file.path;
+      if (req.file) {
+        updateData.profilePic = req.file.path.replace(/\\/g, "/");
+      }
 
-      await User.findOneAndUpdate({ userId }, updateData);
+      const updatedUser = await User.findOneAndUpdate(
+        { userId },
+        updateData,
+        { new: true }
+      );
 
-      res.json({ message: 'Profile updated successfully' });
+      res.json(updatedUser);
+
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: 'Server error' });
     }
   }
 );
+
+// router.put(
+//   '/update-profile/:userId',
+//   upload.single('profilePic'),
+//   async (req, res) => {
+//     try {
+//       const { userId } = req.params;
+
+//       const updateData = {};
+
+//       if (req.body.phoneNumber)
+//         updateData.phoneNumber = req.body.phoneNumber;
+
+//       if (req.body.educationDetails)
+//         updateData.educationDetails = req.body.educationDetails;
+
+//       if (req.body.experienceDetails)
+//         updateData.experienceDetails = req.body.experienceDetails;
+
+//       if (req.file)
+//         updateData.profilePic = req.file.path;
+
+//       await User.findOneAndUpdate({ userId }, updateData);
+
+//       res.json({ message: 'Profile updated successfully' });
+//     } catch (err) {
+//       console.error(err);
+//       res.status(500).json({ message: 'Server error' });
+//     }
+//   }
+// );
 
 
 router.put(

@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import ProfileSection from './faculty/ProfileSection';
 import DepartmentPublicationsSection from './DepartmentPublicationsSection';
 import HodFacultySection from './HodFacultySection';
+import NotificationsSection from './NotificationsSection';
 export default function HodDashboard() {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [hodProfile, setHodProfile] = useState(null);
@@ -21,8 +22,7 @@ const [notifications, setNotifications] = useState([]);
 const [facultyCount, setFacultyCount] = useState(0);
 const [pendingUidCount, setPendingUidCount] = useState(0);
 const [approvedUidCount, setApprovedUidCount] = useState(0);
-const [showNotifications, setShowNotifications] = useState(false);
-
+const [notifCount, setNotifCount] = useState(0);
   useEffect(() => {
 
      const userId = localStorage.getItem("userId");
@@ -33,6 +33,15 @@ const [showNotifications, setShowNotifications] = useState(false);
     .then(data => setNotifications(data))
     .catch(err => console.error(err));
 
+}, []);
+
+useEffect(() => {
+  const userId = localStorage.getItem("userId");
+
+  fetch(`http://localhost:5000/api/auth/notifications/unread-count/${userId}`)
+    .then(res => res.json())
+    .then(data => setNotifCount(data.count))
+    .catch(err => console.error(err));
 }, []);
 
 useEffect(() => {
@@ -155,16 +164,16 @@ const handleNavigation = (section) => {
   setActiveSection(section);
 };
 
-const handleNotificationClick = async () => {
+// const handleNotificationClick = async () => {
 
-  const userId = localStorage.getItem("userId");
+//   const userId = localStorage.getItem("userId");
 
-  setShowNotifications(!showNotifications);
+//   setShowNotifications(!showNotifications);
 
-  if (!showNotifications) {
-    await axios.put(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`);
-  }
-};
+//   if (!showNotifications) {
+//     await axios.put(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`);
+//   }
+// };
 
   // const handleNavigation = (section) => {
   //   if (section === 'logout') {
@@ -177,7 +186,7 @@ const handleNotificationClick = async () => {
 
   return (
     <>
-      <CustomNavbar />
+      {/* <CustomNavbar /> */}
       <div className="hod-dashboard">
         
         {/* Sidebar */}
@@ -232,7 +241,48 @@ const handleNotificationClick = async () => {
 
         {/* Main Content */}
         <div className="main-content">
-          
+          <div className="top-header">
+  <p className="welcome-text">
+    Welcome, {hodProfile?.fullName || "HOD"}
+  </p>
+
+  <div className="right-section">
+    {/* Notification Button */}
+    <button
+  className="notification-btn"
+  onClick={async () => {
+    setActiveSection("notifications");
+
+    const userId = localStorage.getItem("userId");
+    await axios.put(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`);
+
+    setNotifCount(0); // reset badge
+  }}
+>
+  🔔
+  {notifCount > 0 && (
+    <span className="notif-badge">{notifCount}</span>
+  )}
+</button>
+    {/* Profile Image */}
+    <img
+      src={
+        hodProfile?.profilePic
+          ? `http://localhost:5000/${hodProfile.profilePic}`
+          : "/default-profile.png"
+      }
+      alt="Profile"
+      className="profile-small"
+      onClick={() => setActiveSection("profile")}
+      onError={(e) => {
+        e.target.src = "/default-profile.png";
+      }}
+    />
+  </div>
+</div>
+          {activeSection === 'notifications' && (
+  <NotificationsSection userId={userId} />
+)}
          {activeSection === 'dashboard' && (
 
 <div className="dashboard-cards"> 
@@ -253,14 +303,14 @@ const handleNotificationClick = async () => {
 
 <div className="top-bar">
 
-<button
+{/* <button
 className="notification-btn"
 onClick={handleNotificationClick}
 >
 🔔 Notifications ({notifications.filter(n => !n.isRead).length})
-</button>
+</button> */}
 
-{showNotifications && (
+{/* {showNotifications && (
 
 <div className="notification-popup">
 
@@ -291,13 +341,15 @@ onClick={() => setShowNotifications(false)}
 
 </div>
 
-)}
+)} */}
 
 </div>
 
 </div>
 
 )}
+
+
 
      
           {activeSection === 'publications' && hodProfile && (

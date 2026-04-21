@@ -18,7 +18,7 @@ export default function PrincipalDashboard() {
 const [papers, setPapers] = useState([]);
 const [selectedPaper, setSelectedPaper] = useState(null);
 // const [searchTerm, setSearchTerm] = useState("");
-
+const [notifCount, setNotifCount] = useState(0);
 const filteredPapers = papers.filter(paper => {
   if (!searchTerm.trim()) return true;
   const term = searchTerm.toLowerCase();
@@ -34,6 +34,15 @@ const closePaperDetails = () => setSelectedPaper(null);
   const [searchTerm, setSearchTerm] = useState('');
 const [startDate, setStartDate] = useState('');
 const [endDate, setEndDate] = useState('');
+
+useEffect(() => {
+  const userId = localStorage.getItem("userId");
+
+  fetch(`http://localhost:5000/api/auth/notifications/unread-count/${userId}`)
+    .then(res => res.json())
+    .then(data => setNotifCount(data.count))
+    .catch(err => console.error(err));
+}, []);
 
 const filteredPids = approvedPids.filter(doc => {
   // Filter by date range
@@ -178,7 +187,7 @@ useEffect(() => {
 
   return (
     <>
-    <CustomNavbar />
+    {/* <CustomNavbar /> */}
     <div className="dashboard-container">
       {/* Sidebar */}
       <div className="sidebar">
@@ -188,13 +197,13 @@ useEffect(() => {
         </h3>
 
         <ul className="menu">
-          <li
+          {/* <li
   className={activeSection === 'notifications' ? 'active' : ''}
   onClick={() => setActiveSection('notifications')}
   style={{ cursor: 'pointer' }}
 >
   🔔 Notifications
-</li>
+</li> */}
           <li
             className={activeSection === 'uid-approval' ? 'active' : ''}
             onClick={() => setActiveSection('uid-approval')}
@@ -248,6 +257,44 @@ useEffect(() => {
 
       {/* Main Content */}
       <div className="main-content">
+            <div className="top-header">
+  <p className="welcome-text">
+    Welcome, Principal
+  </p>
+
+  <div className="right-section">
+
+    {/* 🔔 Notification */}
+    <button
+      className="notification-btn"
+      onClick={async () => {
+        setActiveSection("notifications");
+
+        const userId = localStorage.getItem("userId");
+
+        await fetch(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`, {
+          method: "PUT"
+        });
+
+        setNotifCount(0);
+      }}
+    >
+      🔔
+      {notifCount > 0 && (
+        <span className="notif-badge">{notifCount}</span>
+      )}
+    </button>
+
+    {/* 👤 Profile Image */}
+    <img
+      src="/default-profile.png"
+      alt="Profile"
+      className="profile-small"
+      onClick={() => setActiveSection("profile")}
+    />
+  </div>
+</div>
+
         {activeSection === 'notifications' && (
   <NotificationsSection userId={localStorage.getItem("userId")} />
 )}
@@ -396,13 +443,12 @@ useEffect(() => {
 )}
 
         {activeSection === 'profile' && (
-          <div className="profile-view">
-            <h2>Profile Details</h2>
-            <p><strong>Name:</strong> {defaultProfile.name}</p>
-            <p><strong>Email:</strong> {defaultProfile.email}</p>
-            <p><strong>Phone:</strong> {defaultProfile.phone}</p>
-            
-          </div>
+          <div className="profile-card">
+  <h2>Profile Details</h2>
+  <p><strong>Name:</strong> {defaultProfile.name}</p>
+  <p><strong>Email:</strong> {defaultProfile.email}</p>
+  <p><strong>Phone:</strong> {defaultProfile.phone}</p>
+</div>
         )}
       </div>
     </div>

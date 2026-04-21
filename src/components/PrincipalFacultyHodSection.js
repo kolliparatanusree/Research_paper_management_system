@@ -71,16 +71,16 @@ useEffect(() => {
 
 }, [search, department, list]);
 
-  useEffect(() => {
-    setFilteredList(
-      list.filter(
-        p =>
-          p.fullName.toLowerCase().includes(search.toLowerCase()) ||
-          p.userId.toLowerCase().includes(search.toLowerCase()) ||
-          p.email.toLowerCase().includes(search.toLowerCase())
-      )
-    );
-  }, [search, list]);
+  // useEffect(() => {
+  //   setFilteredList(
+  //     list.filter(
+  //       p =>
+  //         p.fullName.toLowerCase().includes(search.toLowerCase()) ||
+  //         p.userId.toLowerCase().includes(search.toLowerCase()) ||
+  //         p.email.toLowerCase().includes(search.toLowerCase())
+  //     )
+  //   );
+  // }, [search, list]);
 
   const viewDetails = async (userId) => {
     try {
@@ -127,7 +127,13 @@ useEffect(() => {
 </div>
 
       <div className="card-container">
-        {filteredList.length === 0 && <p>No {type} found.</p>}
+        {/* {filteredList.length === 0 && <p>No {type} found.</p>} */}
+        {filteredList.length === 0 && (
+  <div style={{ textAlign: "center", width: "100%", marginTop: "50px" }}>
+    <h3>No {type} found 😕</h3>
+    <p>Try adjusting search or filters</p>
+  </div>
+)}
         {filteredList.map(p => (
           <div key={p.userId} className="profile-card">
             <img
@@ -135,7 +141,12 @@ useEffect(() => {
   alt="profile"
   className="profile-img"
 />
-            <h4>{p.fullName}</h4>
+{/* <div
+  key={p.userId}
+  className="profile-card"
+  onClick={() => viewDetails(p.userId)}
+>      */}
+<h4>{p.fullName}</h4>
             <h5>ID: {p.userId}</h5>
             <button className="view-btn" onClick={() => viewDetails(p.userId)}>
   View Details
@@ -151,25 +162,30 @@ useEffect(() => {
               ✖
             </button>
             <div style={{ textAlign: "center", marginBottom: 20 }}>
-              <img
+              {/* <img
   src={`http://localhost:5000/${selectedPerson.profilePic}`}
   alt="profile"
   className="modal-profile-img"
+/> */}<img
+  src={`http://localhost:5000/${selectedPerson.profilePic}`}
+  alt="profile"
+  className="modal-profile-img"
+  onError={(e) => (e.target.src = "/default-avatar.png")}
 />
               <h3>{selectedPerson.fullName}</h3>
             </div>
             <p><strong>ID:</strong> {selectedPerson.userId}</p>
             <p><strong>Email:</strong> {selectedPerson.email}</p>
             <p><strong>Phone:</strong> {selectedPerson.phoneNumber}</p>
-            <p><strong>Gender:</strong> {selectedPerson.gender}</p>
+            {/* <p><strong>Gender:</strong> {selectedPerson.gender}</p> */}
             <p><strong>Department:</strong> {selectedPerson.department}</p>
             {selectedPerson.educationDetails && (
               <p><strong>Education:</strong> {selectedPerson.educationDetails}</p>
             )}
-            {selectedPerson.experienceDetails && (
+            {/* {selectedPerson.experienceDetails && (
               <p><strong>Experience:</strong> {selectedPerson.experienceDetails}</p>
-            )}
-            {type === "faculty" && selectedPerson.publications?.length > 0 && (
+            )} */}
+            {/* {type === "faculty" && selectedPerson.publications?.length > 0 && (
               <>
                 <h4>Publications:</h4>
                 <ul>
@@ -178,7 +194,7 @@ useEffect(() => {
                   ))}
                 </ul>
               </>
-            )}
+            )} */}
           </div>
         </div>
       )}

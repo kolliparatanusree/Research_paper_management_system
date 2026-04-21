@@ -49,6 +49,335 @@ const facultyController = require('../controllers/facultyController');
 //   }
 // });
 
+router.get("/publications/:userId", async (req, res) => {
+  try {
+    const data = await DocumentUpload.find({
+      userId: req.params.userId
+    });
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/coauthors/:userId", async (req, res) => {
+  try {
+    const data = await HodUidRequest.find({
+      userId: req.params.userId
+    });
+
+    // extract co-authors only
+    const coAuthors = data.flatMap(d => d.coAuthors || []);
+
+    res.json(coAuthors);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+router.get("/department-comparison", async (req, res) => {
+  try {
+    const data = await DocumentUpload.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "userId",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" },
+
+      {
+        $group: {
+          _id: "$user.department",
+          count: { $sum: 1 }
+        }
+      },
+
+      {
+        $project: {
+          department: "$_id",
+          count: 1,
+          _id: 0
+        }
+      },
+
+      { $sort: { count: -1 } }
+    ]);
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/department-trends", async (req, res) => {
+  try {
+    const data = await DocumentUpload.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "userId",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" },
+
+      {
+        $addFields: {
+          month: {
+            $dateToString: {
+              format: "%b",
+              date: "$uploadedAt"
+            }
+          }
+        }
+      },
+
+      {
+        $group: {
+          _id: {
+            month: "$month",
+            dept: "$user.department"
+          },
+          count: { $sum: 1 }
+        }
+      },
+
+      {
+        $group: {
+          _id: "$_id.month",
+          depts: {
+            $push: {
+              dept: "$_id.dept",
+              count: "$count"
+            }
+          }
+        }
+      },
+
+      {
+        $project: {
+          month: "$_id",
+          depts: 1,
+          _id: 0
+        }
+      },
+
+      { $sort: { month: 1 } }
+    ]);
+
+    // 🔥 Convert to frontend format
+    const formatted = data.map((item) => {
+      const obj = { month: item.month };
+
+      item.depts.forEach((d) => {
+        obj[d.dept] = d.count;
+      });
+
+      return obj;
+    });
+
+    res.json(formatted);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/college-leaderboard", async (req, res) => {
+  try {
+    const data = await DocumentUpload.aggregate([
+      {
+        $lookup: {
+          from: "users",              // 👈 your users collection
+          localField: "userId",       // from DocumentUpload
+          foreignField: "userId",     // in users collection
+          as: "userInfo"
+        }
+      },
+      {
+        $unwind: "$userInfo"
+      },
+      {
+        $group: {
+          _id: "$userInfo.department",   // 👈 now department comes from users
+          publications: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          department: "$_id",
+          publications: 1,
+          _id: 0
+        }
+      },
+      {
+        $sort: { publications: -1 }
+      }
+    ]);
+
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+router.get("/insight/:department", async (req, res) => {
+  try {
+    const dept = req.params.department;
+
+    const data = await DocumentUpload.find({ department: dept });
+
+    const yearly = {};
+
+    data.forEach((p) => {
+      const y = p.year;
+      yearly[y] = (yearly[y] || 0) + 1;
+    });
+
+    const years = Object.keys(yearly).sort();
+    const last = yearly[years[years.length - 1]] || 0;
+    const prev = yearly[years[years.length - 2]] || 0;
+
+    let status = "Stable";
+    let message = "Consistent research output";
+
+    if (last > prev + 2) {
+      status = "Improving 🚀";
+      message = "Strong upward research trend";
+    } else if (last < prev - 2) {
+      status = "Declining ⚠️";
+      message = "Research output dropping";
+    }
+
+    res.json({ status, message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/risk/:department", async (req, res) => {
+  try {
+    const dept = req.params.department;
+
+    const data = await DocumentUpload.find({ department: dept });
+
+    const facultyMap = {};
+
+    data.forEach((p) => {
+      facultyMap[p.userId] = (facultyMap[p.userId] || 0) + 1;
+    });
+
+    const values = Object.values(facultyMap);
+
+    const avg = values.reduce((a, b) => a + b, 0) / values.length || 0;
+
+    const low = values.filter((v) => v < avg * 0.5).length;
+
+    let level = "low";
+    let message = "Healthy research output";
+
+    if (low > values.length / 2) {
+      level = "high";
+      message = "Critical: majority faculty underperforming";
+    } else if (low > 0) {
+      level = "medium";
+      message = "Some faculty need improvement";
+    }
+
+    res.json({ level, message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+router.get('/all-publications/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // 1️⃣ Get approved documents
+    const approvedDocs = await DocumentUpload.find({
+      userId,
+      adminAccept: true
+    });
+
+    // 2️⃣ Extract UID list
+    const uidList = approvedDocs.map(doc => doc.uid);
+
+    // 3️⃣ Get matching HOD requests
+    const hodRequests = await HodUidRequest.find({
+      uid: { $in: uidList }
+    });
+
+    // 4️⃣ Map publications
+    const publications = approvedDocs.map(doc => {
+  const hod = hodRequests.find(h => String(h.uid) === String(doc.uid));
+
+  return {
+    title: doc.paperTitle || hod?.title || "Untitled",
+    journal: hod?.target || "N/A",
+    type: hod?.type || "N/A",
+    year: doc.uploadedAt
+      ? new Date(doc.uploadedAt).getFullYear()
+      : "Unknown"
+  };
+});
+  //   const publications = hodRequests.map(p => ({
+  //     title: p.title || "Untitled",
+  //     journal: p.target || "N/A",   // ✅ using target instead of journal
+  //     type: p.type || "N/A",
+  //     year: p.uploadedAt
+  // ? new Date(p.uploadedAt).getFullYear()
+  // : "Unknown"
+  //   }));
+
+    res.json(publications);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+});
+// router.get('/all-publications/:userId', async (req, res) => {
+//   try {
+//     const { userId } = req.params;
+
+//     const user = await User.findOne({ userId });
+
+//     const oldPublications = (user?.publications || []).map(p => ({
+//       title: p.title,
+//       journal: p.journal,
+//       year: p.year
+//     }));
+
+//     const newPublications = await DocumentUpload.find({
+//       userId,
+//       adminAccept: true
+//     });
+
+//     const formattedNew = newPublications.map(p => ({
+//       title: p.title,
+//       journal: p.journalName,
+//       year: p.publicationYear
+//     }));
+
+//     const allPublications = [...oldPublications, ...formattedNew];
+
+//     res.json(allPublications);
+
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
 // File: routes/facultyRoutes.js
 router.put("/update-uid/:uid", async (req, res) => {
   try {

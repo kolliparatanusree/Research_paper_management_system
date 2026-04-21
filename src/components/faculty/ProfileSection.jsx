@@ -1,89 +1,180 @@
-/* File: src/components/faculty/ProfileSection.jsx */
-import React, { useState } from 'react';
-import Swal from 'sweetalert2';
-import './ProfileSection.css';
+// src/components/faculty/ProfileSection.jsx
+// import React, { useState, useMemo, useEffect } from "react";
+
+import React, { useState, useMemo, useEffect } from "react";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Avatar,
+  Button,
+  Grid,
+  TextField,
+  CircularProgress,
+  Chip,
+  Stack,
+  Divider
+} from "@mui/material";
+import { LinearProgress } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import DownloadIcon from "@mui/icons-material/Download";
+
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  ResponsiveContainer
+} from "recharts";
+
+import jsPDF from "jspdf";
+import Swal from "sweetalert2";
 
 export default function ProfileSection({ facultyDetails, refreshProfile }) {
-  const [editSection, setEditSection] = useState(null); // 'experience', 'publications', 'awards'
-  const [tempData, setTempData] = useState([]);
-  const [isEditingProfile, setIsEditingProfile] = useState(false);
-const [phoneNumber, setPhoneNumber] = useState(facultyDetails.phoneNumber || '');
-const [newProfilePic, setNewProfilePic] = useState(null);
- const parseEducationString = (eduStr) => {
-  if (!eduStr) return [{ degree: '', institution: '', year: '' }];
+  const [isEditing, setIsEditing] = useState(false);
+  const [phone, setPhone] = useState(facultyDetails?.phoneNumber || "");
+const [publications, setPublications] = useState([]);
+  const safeProfile = facultyDetails || {};
+  const [profileImage, setProfileImage] = useState(null);
+const [previewImage, setPreviewImage] = useState("");
+//   useEffect(() => {
+//   if (!facultyDetails?.userId) return;
 
-  return eduStr.split(';').map(item => {
-    const match = item.match(/(.*?) - (.*?) \((.*?)\)/);
-    return match
-      ? {
-          degree: match[1]?.trim() || '',
-          institution: match[2]?.trim() || '',
-          year: match[3]?.trim() || ''
-        }
-      : { degree: '', institution: '', year: '' };
+//   fetch(`http://localhost:5000/api/faculty/all-publications/${facultyDetails.userId}`)
+//     .then(res => res.json())
+//     .then(data => setPublications(data))
+//     .catch(err => console.error(err));
+// }, [facultyDetails]);
+
+useEffect(() => {
+  if (!facultyDetails?.userId) return;
+
+  fetch(`http://localhost:5000/api/faculty/all-publications/${facultyDetails.userId}`)
+    .then(res => res.json())
+    .then(data => {
+      console.log("🔥 PUBLICATIONS API RESPONSE:", data);
+      setPublications(Array.isArray(data) ? data : []);
+    })
+    .catch(err => console.error(err));
+}, [facultyDetails?.userId]);
+  // ================= PROFILE COMPLETION =================
+  const profileCompletion = useMemo(() => {
+    let total = 6;
+    let filled = 0;
+
+    if (safeProfile.fullName) filled++;
+    if (safeProfile.email) filled++;
+    if (safeProfile.phoneNumber) filled++;
+    if (safeProfile.department) filled++;
+    if (safeProfile.educationDetails) filled++;
+    if (safeProfile.experienceDetails) filled++;
+
+    return Math.round((filled / total) * 100);
+  }, [safeProfile]);
+
+  // ================= BADGES =================
+  const badges = useMemo(() => {
+    const list = [];
+
+    if (publications.length >= 5) list.push("Researcher");
+if (publications.length >= 10) list.push("Top Author");
+    if (safeProfile?.experienceDetails) list.push("Experienced");
+    if (profileCompletion === 100) list.push("Profile Complete");
+
+    return list;
+  }, [profileCompletion, publications.length]);
+
+
+  const publicationData = useMemo(() => {
+  if (!publications || publications.length === 0) return [];
+
+  const countByYear = {};
+
+  publications.forEach((pub) => {
+    let year = pub.year;
+
+    // If year is string like "2026"
+    if (typeof year === "string") {
+      year = parseInt(year);
+    }
+
+    // If year is from uploadedAt fallback
+    if (!year && pub.uploadedAt) {
+      const d = new Date(pub.uploadedAt);
+      if (!isNaN(d.getTime())) {
+        year = d.getFullYear();
+      }
+    }
+
+    // Final validation
+    if (!year || isNaN(year)) return;
+
+    countByYear[year] = (countByYear[year] || 0) + 1;
   });
-};
 
-const [publicationsList, setPublicationsList] = useState(
-  facultyDetails?.publications || []
-);
-const [educationList, setEducationList] = useState(
-  parseEducationString(facultyDetails.educationDetails)
-);
+  return Object.keys(countByYear)
+    .sort((a, b) => Number(a) - Number(b))
+    .map((year) => ({
+      year: Number(year),
+      count: countByYear[year]
+    }));
+}, [publications]);
+  // ================= GRAPH =================
+//   const publicationData = useMemo(() => {
+//     if (!publications.length) return [];
 
-const [experienceDetails, setExperienceDetails] = useState(
-  facultyDetails.experienceDetails || ''
-);
-  const profilePicUrl = facultyDetails?.profilePic
-  ? `http://localhost:5000/${facultyDetails.profilePic}`
-  : null;
-  if (!facultyDetails) {
-    return (
-      <div className="profile-section">
-        <h3>My Profile</h3>
-        <p>Loading profile...</p>
-      </div>
-    );
-  }
+//     const countByYear = {};
 
-  const handleEducationChange = (index, field, value) => {
-  const list = [...educationList];
-  list[index][field] = value;
-  setEducationList(list);
-};
+//    publications.forEach((pub) => {
+//   const year = pub.year || pub.publicationYear || "Unknown";
+//   countByYear[year] = (countByYear[year] || 0) + 1;
+// });
 
-const handleAddEducation = () => {
-  setEducationList([...educationList, { degree: '', institution: '', year: '' }]);
-};
+//     return Object.keys(countByYear)
+//       .sort()
+//       .map((year) => ({
+//         year,
+//         count: countByYear[year]
+//       }));
+// }, [publications]);
 
-const handleRemoveEducation = (idx) => {
-  setEducationList(educationList.filter((_, i) => i !== idx));
-};
+  // ================= SUGGESTIONS =================
+  // ================= SUGGESTIONS =================
+const suggestions = useMemo(() => {
+  const list = [];
 
- 
+  if (!safeProfile.educationDetails)
+    list.push("Add your education details");
 
-const formatEducationString = (list) => {
-  return list
-    .map(e => `${e.degree} - ${e.institution} (${e.year})`)
-    .join('; ');
-};
+  if (!safeProfile.experienceDetails)
+    list.push("Add your experience");
 
-  const handleProfileSave = async () => {
+  // 🔥 Only show this for faculty
+  if (safeProfile?.role === "faculty" && !publications.length)
+    list.push("Add your publications");
+
+  return list;
+}, [safeProfile, publications]);
+
+  // ================= SAVE =================
+  const handleSave = async () => {
   try {
     const formData = new FormData();
-    formData.append('phoneNumber', phoneNumber);
-    const eduString = formatEducationString(educationList);
-formData.append('educationDetails', eduString);
-    formData.append('experienceDetails', experienceDetails);
-formData.append('publications', JSON.stringify(publicationsList));
-    if (newProfilePic) {
-      formData.append('profilePic', newProfilePic);
+    formData.append("phoneNumber", phone);
+
+    if (profileImage) {
+      formData.append("profilePic", profileImage);
     }
 
     const res = await fetch(
-      `http://localhost:5000/api/auth/update-profile/${facultyDetails.userId}`,
+      `http://localhost:5000/api/auth/update-profile/${safeProfile.userId}`,
       {
-        method: 'PUT',
+        method: "PUT",
         body: formData
       }
     );
@@ -91,746 +182,397 @@ formData.append('publications', JSON.stringify(publicationsList));
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
 
-    Swal.fire('Success', 'Profile updated successfully', 'success');
+    // 🔥 CRITICAL FIX
+    if (data.profilePic) {
+      setPreviewImage(`http://localhost:5000/${data.profilePic}`);
+    }
 
-    setIsEditingProfile(false);
+    Swal.fire("Success", "Profile updated successfully", "success");
+    setIsEditing(false);
+
     refreshProfile?.();
 
   } catch (err) {
-    Swal.fire('Error', err.message, 'error');
+    Swal.fire("Error", err.message, "error");
+  }
+};
+//   const handleSave = async () => {
+//   try {
+//     const formData = new FormData();
+//     formData.append("phoneNumber", phone);
+
+//     if (profileImage) {
+//       formData.append("profilePic", profileImage);
+//     }
+
+//     const res = await fetch(
+//       `http://localhost:5000/api/auth/update-profile/${safeProfile.userId}`,
+//       {
+//         method: "PUT",
+//         body: formData
+//       }
+//     );
+
+//     const data = await res.json();
+//     if (!res.ok) throw new Error(data.message);
+
+//     Swal.fire("Success", "Profile updated successfully", "success");
+//     setIsEditing(false);
+//     setPreviewImage("");
+//     refreshProfile?.();
+//   } catch (err) {
+//     Swal.fire("Error", err.message, "error");
+//   }
+// };
+
+  const handleImageChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setProfileImage(file);
+    setPreviewImage(URL.createObjectURL(file)); // preview
   }
 };
 
-  const handleChangePassword = () => {
-    Swal.fire({
-      title: 'Change Password',
-      html:
-        `<input type="password" id="oldPwd" class="swal2-input" placeholder="Old Password">` +
-        `<input type="password" id="newPwd" class="swal2-input" placeholder="New Password">` +
-        `<input type="password" id="confirmPwd" class="swal2-input" placeholder="Confirm Password">`,
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: 'Change Password',
-      preConfirm: async () => {
-        const oldPwd = document.getElementById('oldPwd').value;
-        const newPwd = document.getElementById('newPwd').value;
-        const confirmPwd = document.getElementById('confirmPwd').value;
+  // ================= PDF =================
+  const downloadCV = () => {
+    const doc = new jsPDF();
 
-        if (!oldPwd || !newPwd || !confirmPwd) {
-          Swal.showValidationMessage('All fields are required');
-          return false;
-        }
+    doc.setFontSize(18);
+    doc.text("Faculty Profile", 20, 20);
 
-        if (newPwd !== confirmPwd) {
-          Swal.showValidationMessage('New password and Confirm password do not match');
-          return false;
-        }
+    doc.setFontSize(12);
+    doc.text(`Name: ${safeProfile.fullName}`, 20, 40);
+    doc.text(`Email: ${safeProfile.email}`, 20, 50);
+    doc.text(`Department: ${safeProfile.department}`, 20, 60);
+    doc.text(`Phone: ${safeProfile.phoneNumber}`, 20, 70);
 
-        try {
-          const res = await fetch('http://localhost:5000/api/auth/change-password', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: facultyDetails.userId,
-              currentPassword: oldPwd,
-              newPassword: newPwd
-            }),
-          });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.message || 'Password change failed');
-          return data;
-        } catch (err) {
-          Swal.showValidationMessage(`Request failed: ${err.message}`);
-        }
-      }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire('Success', 'Password changed successfully!', 'success');
-      }
-    });
+    doc.text("Education:", 20, 90);
+    doc.text(safeProfile.educationDetails || "N/A", 20, 100);
+
+    doc.text("Experience:", 20, 120);
+    doc.text(safeProfile.experienceDetails || "N/A", 20, 130);
+
+    doc.save("Profile.pdf");
   };
 
-  const handlePublicationChange = (index, field, value) => {
-  const list = [...publicationsList];
-  list[index][field] = value;
-  setPublicationsList(list);
-};
-
-const handleAddPublication = () => {
-  setPublicationsList([
-    ...publicationsList,
-    { title: '', journal: '', year: '' }
-  ]);
-};
-
-const handleRemovePublication = (idx) => {
-  setPublicationsList(publicationsList.filter((_, i) => i !== idx));
-};
-
-  const handleEditClick = (section, currentArray) => {
-    setEditSection(section);
-    setTempData(currentArray || []);
-  };
-
-  const handleSave = async (section) => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/faculty/update-${section}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: facultyDetails.userId,
-          data: tempData
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Update failed');
-
-      Swal.fire('Success', `${section} updated successfully!`, 'success');
-      setEditSection(null);
-
-      // Refresh parent profile if passed
-      if (refreshProfile) refreshProfile();
-    } catch (err) {
-      Swal.fire('Error', err.message, 'error');
-    }
-  };
-  
-
-  const renderArraySection = (label, sectionKey, arrayData) => {
-    if (!Array.isArray(arrayData) || arrayData.length === 0) return null;
-
-    return (
-      <div>
-        <strong>{label}:</strong>
-        {editSection === sectionKey ? (
-          <div>
-            {tempData.map((item, idx) => (
-              <div key={idx} style={{ marginBottom: '10px' }}>
-                {Object.keys(item).map((k) => (
-                  <input
-                    key={k}
-                    type="text"
-                    value={item[k] || ''}
-                    placeholder={k}
-                    onChange={(e) => {
-                      const newData = [...tempData];
-                      newData[idx][k] = e.target.value;
-                      setTempData(newData);
-                    }}
-                    style={{ marginRight: '5px', marginBottom: '5px' }}
-                  />
-                ))}
-              </div>
-            ))}
-            <button onClick={() => setTempData([...tempData, {}])}>+ Add</button>
-            <button onClick={() => handleSave(sectionKey)} style={{ marginLeft: '10px' }}>Save</button>
-            <button onClick={() => setEditSection(null)} style={{ marginLeft: '10px', backgroundColor: '#6c757d' }}>Cancel</button>
-          </div>
-        ) : (
-          <ul>
-            {arrayData.map((item) => (
-              <li key={item._id || item.title || Math.random()}>
-                {sectionKey === 'experience' ? `${item.role} at ${item.organization} (${item.years})` :
-                 sectionKey === 'publications' ? `${item.title} — ${item.journal} (${item.year})` :
-                 sectionKey === 'awards' ? `${item.name} (${item.year})` : JSON.stringify(item)}
-              </li>
-            ))}
-            <button onClick={() => handleEditClick(sectionKey, arrayData)} style={{ marginTop: '5px' }}>Edit</button>
-          </ul>
-        )}
-      </div>
-    );
-  };
+  if (!facultyDetails) {
+    return <Typography>Loading profile...</Typography>;
+  }
+ 
 
   return (
-  <div className="profile-page">
-    <div className="profile-card">
+    <Box p={3} 
+  sx={{
+    minHeight: "100vh",
+    background: "linear-gradient(135deg, #eef2ff, #f0f9ff, #ecfeff)"
+  }}
+>
 
-    <h3>My Profile</h3>
-        <button
-      onClick={() => setIsEditingProfile(!isEditingProfile)}
-      style={{
-        marginBottom: '15px',
-        padding: '6px 14px',
-        background: '#3b82f6',
-        color: 'white',
-        border: 'none',
-        borderRadius: '6px',
-        cursor: 'pointer'
-      }}
-    >
-      {isEditingProfile ? 'Cancel Edit' : '✏️ Edit Profile'}
-    </button>
+  {/* 🔥 CENTERED PROFILE CARD */}
+  <Box display="flex" justifyContent="center" mb={3}>
+    <Box width={{ xs: "100%", sm: "70%", md: "35%" }}>
 
-    {/* 🟢 CARD 1 — BASIC INFO */}
-    <div className="profile-card">
-      <h4>Basic Information</h4>
+        {/* LEFT PANEL */}
+        <Grid
+  item
+  xs={12}
+  md={4}
+  sx={{ display: "flex", justifyContent: "center" }}
+>
+          <Card
+           sx={{
+  width: "100%",
+  maxWidth: 350,
+  borderRadius: 5,
+  background: "rgba(255,255,255,0.75)",
+  backdropFilter: "blur(14px)",
+  border: "1px solid rgba(255,255,255,0.4)",
+  boxShadow: "0 15px 40px rgba(0,0,0,0.08)",
+  transition: "all 0.3s ease",
+  "&:hover": {
+    transform: "translateY(-6px) scale(1.02)",
+    boxShadow: "0 25px 60px rgba(59,130,246,0.25)"
+  }
+}}
+          >
+            <CardContent sx={{ textAlign: "center" }}>
 
-      {profilePicUrl && (
-        <div className="profile-pic-wrapper">
-          <img
-            src={profilePicUrl}
-            alt="Profile"
-            className="profile-pic"
-          />
-          {isEditingProfile && (
+              <Avatar
+               src={
+  previewImage
+    ? previewImage
+    : safeProfile?.profilePic
+    ? `http://localhost:5000/${safeProfile.profilePic}`
+    : "/default-profile.png"
+}
+                // src={
+                //   previewImage
+                //     ? previewImage
+                //     : safeProfile?.profilePic
+                //     ? `http://localhost:5000/${safeProfile.profilePic}`
+                //     : "/default-profile.png"
+                // }
+                sx={{
+                  width: 110,
+                  height: 110,
+                  margin: "auto",
+                  border: "4px solid rgba(193, 208, 233, 0.5)",
+  boxShadow: "0 0 25px rgba(59,130,246,0.5)"
+                }}
+              />{isEditing && (
+  <Button
+    variant="outlined"
+    component="label"
+    size="small"
+    sx={{ mt: 1 }}
+  >
+    Change Photo
     <input
       type="file"
+      hidden
       accept="image/*"
-      onChange={(e) => setNewProfilePic(e.target.files[0])}
-      style={{ marginTop: '10px' }}
+      onChange={handleImageChange}
     />
-  )}
-          
-        </div>
-      )}
-
-      <p><strong>Name:</strong> {facultyDetails.fullName || 'N/A'}</p>
-      <p><strong>Faculty ID:</strong> {facultyDetails.userId || 'N/A'}</p>
-      <p><strong>Department:</strong> {facultyDetails.department || 'N/A'}</p>
-      <p><strong>Email:</strong> {facultyDetails.email || 'N/A'}</p>
-      <p><strong>Phone Number:</strong></p>
-
-{isEditingProfile ? (
-  <input
-    type="text"
-    value={phoneNumber}
-    onChange={(e) => setPhoneNumber(e.target.value)}
-    style={{ marginBottom: '10px', padding: '6px', width: '250px' }}
-  />
-) : (
-  <p>{facultyDetails.phoneNumber || 'N/A'}</p>
+  </Button>
 )}
-      {/* <p><strong>Phone Number:</strong> {facultyDetails.phoneNumber || 'N/A'}</p> */}
-    </div>
-  {/* 🟣 CARD — EDUCATION */}
-<div className="profile-card">
-  <h4>Education</h4>
-{isEditingProfile ? (
-  <>
-    {educationList.map((edu, idx) => (
-      <div key={idx} className="entry-block">
 
-        <label>Education Level *</label>
-        <select
-          value={edu.degree}
-          onChange={(e) =>
-            handleEducationChange(idx, 'degree', e.target.value)
-          }
-        >
-          <option value="">-- Select Education Level --</option>
-          <option value="Ph.D">Ph.D</option>
-          <option value="Post Doctorate">Post Doctorate</option>
-          <option value="M.Tech">M.Tech</option>
-          <option value="M.E">M.E</option>
-          <option value="M.Sc">M.Sc</option>
-          <option value="MBA">MBA</option>
-          <option value="B.Tech">B.Tech</option>
-          <option value="B.E">B.E</option>
-          <option value="B.Sc">B.Sc</option>
-          <option value="Intermediate">Intermediate (12th)</option>
-          <option value="SSC">SSC (10th)</option>
-        </select>
+              <Typography variant="h6" mt={2} fontWeight="bold">
+                {safeProfile.fullName}
+              </Typography>
 
-        <label>Institution *</label>
-        <input
-          type="text"
-          value={edu.institution}
-          onChange={(e) =>
-            handleEducationChange(idx, 'institution', e.target.value)
-          }
-        />
+              <Typography color="text.secondary">
+                {safeProfile.department}
+              </Typography>
 
-        <label>Year *</label>
-        <input
-          type="text"
-          value={edu.year}
-          onChange={(e) =>
-            handleEducationChange(idx, 'year', e.target.value)
-          }
-        />
+              {/* PROGRESS */}
+              {/* ================= ADVANCED PROFILE PROGRESS ================= */}
 
-        {educationList.length > 1 && (
-          <button
-            type="button"
-            className="remove-btn"
-            onClick={() => handleRemoveEducation(idx)}
-          >
-            🗑️ Remove
-          </button>
-        )}
-      </div>
-    ))}
+{/* ================= SIMPLE PROFILE PROGRESS ================= */}
+<Box mt={3}>
 
-    <button type="button" onClick={handleAddEducation}>
-      + Add Education
-    </button>
-  </>
-) : (
-  <p>{facultyDetails.educationDetails || 'N/A'}</p>
-)}
-  {/* {isEditingProfile ? (
-    <textarea
-      value={educationDetails}
-      onChange={(e) => setEducationDetails(e.target.value)}
-      rows={3}
-      style={{ width: '100%', marginTop: '6px' }}
-      placeholder="Enter education details"
-    />
-  ) : (
-    <p>{facultyDetails.educationDetails || 'N/A'}</p>
-  )} */}
-</div>
-    {/* 🟣 CARD 2 — EDUCATION */}
-    {/* {facultyDetails.educationDetails && (
-      <div className="profile-card">
-        <h4>Education</h4>
-        <p>{facultyDetails.educationDetails}</p>
-      </div>
-    )} */}
+  <Box display="flex" justifyContent="space-between" mb={0.5}>
+    <Typography fontWeight="bold">
+      Profile Completion
+    </Typography>
+    <Typography fontWeight="bold">
+      {profileCompletion}%
+    </Typography>
+  </Box>
 
-    {/* 🔵 CARD 3 — EXPERIENCE */}
-    {/* {Array.isArray(facultyDetails.experienceDetails) &&
-      facultyDetails.experienceDetails.length > 0 && (
-        <div className="profile-card">
-          <h4>Experience</h4>
-          {renderArraySection(
-            '',
-            'experience',
-            facultyDetails.experienceDetails
-          )}
-        </div>
-      )} */}
-{/* 🔵 CARD — EXPERIENCE */}
-<div className="profile-card">
-  <h4>Experience</h4>
-
-  {isEditingProfile ? (
-    <textarea
-      value={experienceDetails}
-      onChange={(e) => setExperienceDetails(e.target.value)}
-      rows={3}
-      style={{ width: '100%', marginTop: '6px' }}
-      placeholder="Enter experience details"
-    />
-  ) : (
-    <p>{facultyDetails.experienceDetails || 'N/A'}</p>
-  )}
-</div>
-    {/* 🟡 CARD 4 — PUBLICATIONS */}
-    {/* 🟡 CARD — PUBLICATIONS */}
-<div className="profile-card">
-  <h4>Publications</h4>
-  <p style={{ fontSize: '16px', fontWeight: '600' }}>
-    Total Publications:{' '}
-    {Array.isArray(facultyDetails?.publications)
-      ? facultyDetails.publications.length
-      : 0}
-  </p>
-
-  
-</div> {isEditingProfile && (
-  <button
-    onClick={handleProfileSave}
-    style={{
-      marginTop: '15px',
-      padding: '10px 20px',
-      backgroundColor: '#10b981',
-      color: 'white',
-      border: 'none',
-      borderRadius: '6px',
-      cursor: 'pointer'
+  <LinearProgress
+    variant="determinate"
+    value={profileCompletion}
+    sx={{
+      height: 10,
+      borderRadius: 5,
+      backgroundColor: "#e5e7eb",
+      overflow: "hidden",
+      "& .MuiLinearProgress-bar": {
+        borderRadius: 5,
+        background: "linear-gradient(90deg, #3b82f6, #06b6d4)",
+        transition: "transform 1s ease"
+      }
     }}
-  >
-    💾 Save Profile
-  </button>
-)}<br />
+  />
 
-    {/* 🔐 PASSWORD BUTTON */}
-    <button
-      style={{
-        marginTop: '20px',
-        padding: '10px 20px',
-        backgroundColor: '#10b981',
-        color: 'white',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-      }}
-      onClick={handleChangePassword}
-    >
-      Change Password
-    </button>
-   
-      </div>
-  </div>
-);
+</Box>
+<br></br>
+    
+              {/* BADGES */}
+              <Stack mt={2} direction="row" spacing={1} flexWrap="wrap" justifyContent="center">
+                {badges.map((b, i) => (
+                  <Chip
+                    key={i}
+                    label={b}
+                    icon={<EmojiEventsIcon />}
+                    sx={{
+  background: "linear-gradient(135deg, #dbeafe, #ecfeff)",
+  color: "#1e3a8a",
+  fontWeight: "bold",
+  border: "1px solid #bfdbfe"
+}}
+                  />
+                ))}
+              </Stack>
+
+              <Divider sx={{ my: 2 }} />
+
+              <Button
+                startIcon={<EditIcon />}
+                variant="contained"
+                fullWidth
+                onClick={() => setIsEditing(!isEditing)}
+
+                sx={{
+  background: "linear-gradient(135deg, #3b82f6, #06b6d4)",
+  fontWeight: "bold",
+  "&:hover": {
+    background: "linear-gradient(135deg, #2563eb, #0891b2)"
+  }
+}}
+              >
+                {isEditing ? "Cancel" : "Edit Profile"}
+              </Button>
+              <br/><br/>
+              <Button
+                startIcon={<DownloadIcon />}
+                variant="outlined"
+                fullWidth
+                sx={{ mt: 1 }}
+                sx={{
+  borderColor: "#3b82f6",
+  color: "#3b82f6",
+  "&:hover": {
+    background: "#eff6ff"
+  }
+}}
+                onClick={downloadCV}
+              >
+                Download CV
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
+            </Box>
+  </Box>
+  <br/>
+        {/* RIGHT PANEL */}
+        <Grid container spacing={3}>
+  <Grid item xs={12}>
+          <Card sx={{
+  borderRadius: 5,
+  background: "rgba(255,255,255,0.85)",
+  backdropFilter: "blur(10px)",
+  boxShadow: "0 10px 30px rgba(0,0,0,0.06)"
+}}>
+            <CardContent>
+
+              <Typography variant="h6" fontWeight="bold" sx={{ color: "#1e293b" }}>
+                Profile Details
+              </Typography>
+
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <TextField label="Name" value={safeProfile.fullName} fullWidth disabled />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <TextField label="Email" value={safeProfile.email} fullWidth disabled />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <TextField
+                    label="Phone"
+                    value={phone}
+                    fullWidth
+                    disabled={!isEditing}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <TextField label="Department" value={safeProfile.department} fullWidth disabled />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <TextField label="Education" value={safeProfile.educationDetails || ""} fullWidth multiline disabled />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <TextField label="Experience" value={safeProfile.experienceDetails || ""} fullWidth multiline disabled />
+                </Grid>
+              </Grid>
+
+              {isEditing && (
+                <Button
+                  startIcon={<SaveIcon />}
+                  variant="contained"
+                  color="success"
+                  sx={{ mt: 2 }}
+                  onClick={handleSave}
+                >
+                  Save Changes
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* GRAPH */}
+          {/* GRAPH - Only for Faculty */}
+{safeProfile?.role === "faculty" && (
+  <Card sx={{ mt: 3, borderRadius: 4 }}>
+    <CardContent>
+      <Typography variant="h6" fontWeight="bold">
+        Publications Trend ({publications.length})
+      </Typography>
+
+      <ResponsiveContainer width="100%" height={250}>
+        <LineChart data={publicationData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="year" />
+          <YAxis />
+          <Tooltip />
+          <Line
+            type="monotone"
+            dataKey="count"
+            stroke="#3b82f6"
+            strokeWidth={3}
+            dot={{ r: 4 }}
+            activeDot={{ r: 6 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </CardContent>
+  </Card>
+)}
+          {/* <Card sx={{ mt: 3, borderRadius: 4 }}>
+            <CardContent>
+              <Typography variant="h6" fontWeight="bold">
+                Publications Trend ({publications.length})
+              </Typography>
+
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={publicationData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="year" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#3b82f6"
+                    strokeWidth={3}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card> */}
+
+          {/* SUGGESTIONS */}
+          <Card sx={{ mt: 3, borderRadius: 4 }}>
+            <CardContent>
+              <Typography variant="h6" fontWeight="bold">
+                Smart Suggestions
+              </Typography>
+
+              {suggestions.length === 0 ? (
+                <Typography color="green">Profile looks perfect 👌</Typography>
+              ) : (
+                suggestions.map((s, i) => (
+                  <Chip
+                    key={i}
+                    label={s}
+                    sx={{ m: 0.5 }}
+                  />
+                ))
+              )}
+            </CardContent>
+          </Card>
+
+        </Grid>
+      </Grid>
+    </Box>
+  );
 }
-
-// /* File: src/components/faculty/ProfileSection.jsx */
-// import React from 'react';
-// import Swal from 'sweetalert2';
-
-// export default function ProfileSection({ facultyDetails }) {
-//   if (!facultyDetails) {
-//     return (
-//       <div className="profile-section">
-//         <h3>My Profile</h3>
-//         <p>Loading profile...</p>
-//       </div>
-//     );
-//   }
-
-//   const showChangePasswordPopup = () => {
-//     Swal.fire({
-//       title: 'Change Password',
-//       html:
-//         `<input type="password" id="oldPwd" class="swal2-input" placeholder="Old Password">` +
-//         `<input type="password" id="newPwd" class="swal2-input" placeholder="New Password">` +
-//         `<input type="password" id="confirmPwd" class="swal2-input" placeholder="Confirm Password">`,
-//       focusConfirm: false,
-//       showCancelButton: true,
-//       confirmButtonText: 'Change Password',
-//       preConfirm: async () => {
-//         const oldPwd = document.getElementById('oldPwd').value;
-//         const newPwd = document.getElementById('newPwd').value;
-//         const confirmPwd = document.getElementById('confirmPwd').value;
-
-//         if (!oldPwd || !newPwd || !confirmPwd) {
-//           Swal.showValidationMessage('All fields are required');
-//           return false;
-//         }
-
-//         if (newPwd !== confirmPwd) {
-//           Swal.showValidationMessage('New password and Confirm password do not match');
-//           return false;
-//         }
-
-//         // ✅ Send request with correct field names
-//         try {
-//           const res = await fetch('http://localhost:5000/api/auth/change-password', {
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json' },
-//             body: JSON.stringify({
-//               userId: facultyDetails.userId,       // matches backend
-//               currentPassword: oldPwd,             // matches backend
-//               newPassword: newPwd
-//             }),
-//           });
-
-//           const data = await res.json();
-
-//           if (!res.ok) throw new Error(data.message || 'Password change failed');
-//           return data;
-//         } catch (err) {
-//           Swal.showValidationMessage(`Request failed: ${err.message}`);
-//         }
-//       }
-//     }).then((result) => {
-//       if (result.isConfirmed) {
-//         Swal.fire('Success', 'Password changed successfully!', 'success');
-//       }
-//     });
-//   };
-
-//   return (
-//     <div className="profile-section">
-//       <h3>My Profile</h3>
-
-//       <div className="profile-details">
-//         <p><strong>Name:</strong> {facultyDetails.fullName}</p>
-//         <p><strong>Faculty ID:</strong> {facultyDetails.userId}</p>
-//         <p><strong>Department:</strong> {facultyDetails.department}</p>
-//         <p><strong>Email:</strong> {facultyDetails.email}</p>
-//         <p><strong>Phone Number:</strong> {facultyDetails.phoneNumber}</p>
-//       </div>
-
-//       <button
-//         style={{
-//           marginTop: '20px',
-//           padding: '10px 20px',
-//           backgroundColor: '#10b981',
-//           color: 'white',
-//           border: 'none',
-//           borderRadius: '5px',
-//           cursor: 'pointer',
-//         }}
-//         onClick={showChangePasswordPopup}
-//       >
-//         Change Password
-//       </button>
-//     </div>
-//   );
-// }
-
-// // /* File: src/components/faculty/ProfileSection.jsx */
-// // import React, { useState } from 'react';
-// // import Swal from 'sweetalert2';
-
-// // export default function ProfileSection({ facultyDetails }) {
-// //   const [oldPassword, setOldPassword] = useState('');
-// //   const [newPassword, setNewPassword] = useState('');
-// //   const [confirmPassword, setConfirmPassword] = useState('');
-
-// //   if (!facultyDetails) {
-// //     return (
-// //       <div className="profile-section">
-// //         <h3>My Profile</h3>
-// //         <p>Loading profile...</p>
-// //       </div>
-// //     );
-// //   }
-
-// //   const showChangePasswordPopup = () => {
-// //   Swal.fire({
-// //     title: 'Change Password',
-// //     html:
-// //       `<input type="password" id="oldPwd" class="swal2-input" placeholder="Old Password">` +
-// //       `<input type="password" id="newPwd" class="swal2-input" placeholder="New Password">` +
-// //       `<input type="password" id="confirmPwd" class="swal2-input" placeholder="Confirm Password">`,
-// //     focusConfirm: false,
-// //     showCancelButton: true,
-// //     confirmButtonText: 'Change Password',
-// //     preConfirm: () => {
-// //       const oldPwd = document.getElementById('oldPwd').value;
-// //       const newPwd = document.getElementById('newPwd').value;
-// //       const confirmPwd = document.getElementById('confirmPwd').value;
-
-// //       if (!oldPwd || !newPwd || !confirmPwd) {
-// //         Swal.showValidationMessage('All fields are required');
-// //         return false;
-// //       }
-
-// //       if (newPwd !== confirmPwd) {
-// //         Swal.showValidationMessage('New password and Confirm password do not match');
-// //         return false;
-// //       }
-
-// //       // send request directly here
-// //       return fetch('http://localhost:5000/api/auth/change-password', {
-// //         method: 'POST',
-// //         headers: { 'Content-Type': 'application/json' },
-// //         body: JSON.stringify({
-// //           facultyId: facultyDetails.userId,
-// //           oldPassword: oldPwd,
-// //           newPassword: newPwd
-// //         }),
-// //       })
-// //         .then(async (res) => {
-// //           const data = await res.json();
-// //           if (!res.ok) throw new Error(data.message || 'Password change failed');
-// //           return data;
-// //         })
-// //         .catch((err) => {
-// //           Swal.showValidationMessage(`Request failed: ${err.message}`);
-// //         });
-// //     }
-// //   }).then((result) => {
-// //     if (result.isConfirmed) {
-// //       Swal.fire('Success', 'Password changed successfully!', 'success');
-// //     }
-// //   });
-// // };
-
-// //   return (
-// //     <div className="profile-section">
-// //       <h3>My Profile</h3>
-
-// //       <div className="profile-details">
-// //         <p><strong>Name:</strong> {facultyDetails.fullName}</p>
-// //         <p><strong>Faculty ID:</strong> {facultyDetails.userId}</p>
-// //         <p><strong>Department:</strong> {facultyDetails.department}</p>
-// //         <p><strong>Email:</strong> {facultyDetails.email}</p>
-// //         <p><strong>Phone Number:</strong> {facultyDetails.phoneNumber}</p>
-// //       </div>
-
-// //       <button
-// //         style={{
-// //           marginTop: '20px',
-// //           padding: '10px 20px',
-// //           backgroundColor: '#10b981',
-// //           color: 'white',
-// //           border: 'none',
-// //           borderRadius: '5px',
-// //           cursor: 'pointer',
-// //         }}
-// //         onClick={showChangePasswordPopup}
-// //       >
-// //         Change Password
-// //       </button>
-// //     </div>
-// //   );
-// // }
-
-// // /* File: src/components/faculty/ProfileSection.jsx */
-// // import React from 'react';
-// // import { useState } from 'react';
-// // import { useNavigate } from 'react-router-dom';
-// // import Swal from 'sweetalert2';
-
-// // export default function ProfileSection({ facultyDetails }) {
-// //   const [currentPassword, setCurrentPassword] = useState('');
-// //   const [newPassword, setNewPassword] = useState('');
-// //   const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  
-  
-// //   if (!facultyDetails) {
-// //     return (
-// //       <div className="profile-section">
-// //         <h3>My Profile</h3>
-// //         <p>Loading profile...</p>
-// //       </div>
-// //     );
-// //   }
-
-// //   // Function to handle change password popup
-// // const handleChangePassword = async () => {
-// //   if (!oldPassword || !newPassword || !confirmPassword) {
-// //     Swal.fire('Error', 'Please fill all fields', 'error');
-// //     return;
-// //   }
-
-// //   if (newPassword !== confirmPassword) {
-// //     Swal.fire('Error', 'New password and confirm password do not match', 'error');
-// //     return;
-// //   }
-
-// //   try {
-// //     const facultyId = localStorage.getItem('userId'); // make sure this exists
-
-// //     const res = await fetch('http://localhost:5000/api/faculty/change-password', {
-// //       method: 'POST',
-// //       headers: { 'Content-Type': 'application/json' },
-// //       body: JSON.stringify({
-// //         facultyId,      // must include this
-// //         oldPassword,    // must match backend field name
-// //         newPassword     // must match backend field name
-// //       }),
-// //     });
-
-// //     const data = await res.json();
-// //     if (!res.ok) throw new Error(data.message || 'Something went wrong');
-
-// //     Swal.fire('Success', data.message, 'success');
-// //     setOldPassword('');
-// //     setNewPassword('');
-// //     setConfirmPassword('');
-// //   } catch (err) {
-// //     Swal.fire('Error', err.message, 'error');
-// //   }
-// // };
-
-// //   return (
-// //     <div className="profile-section">
-// //       <h3>My Profile</h3>
-
-// //       <div className="profile-details">
-// //         <p><strong>Name:</strong> {facultyDetails.fullName}</p>
-// //         <p><strong>Faculty ID:</strong> {facultyDetails.userId}</p>
-// //         <p><strong>Department:</strong> {facultyDetails.department}</p>
-// //         <p><strong>Email:</strong> {facultyDetails.email}</p>
-// //         <p><strong>Phone Number:</strong> {facultyDetails.phoneNumber}</p>
-// //       </div>
-
-// //       <button
-// //         onClick={handleChangePassword}
-// //         style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-// //       >
-// //         Change Password
-// //       </button>
-// //     </div>
-// //   );
-// // }
-
-
-// // // /* File: src/components/faculty/ProfileSection.jsx */
-// // // import React from 'react';
-// // // import ChangePasswordForm from '../ChangePasswordForm'; // import it
-
-// // // export default function ProfileSection({ facultyDetails }) {
-// // //   if (!facultyDetails) {
-// // //     return (
-// // //       <div className="profile-section">
-// // //         <h3>My Profile</h3>
-// // //         <p>Loading profile...</p>
-// // //       </div>
-// // //     );
-// // //   }
-
-// // //   return (
-// // //     <div className="profile-section">
-// // //       <h3>My Profile</h3>
-
-// // //       <div className="profile-details">
-// // //         <p><strong>Name:</strong> {facultyDetails.fullName}</p>
-// // //         <p><strong>Faculty ID:</strong> {facultyDetails.userId}</p>
-// // //         <p><strong>Department:</strong> {facultyDetails.department}</p>
-// // //         <p><strong>Email:</strong> {facultyDetails.email}</p>
-// // //         <p><strong>Phone Number:</strong> {facultyDetails.phoneNumber}</p>
-// // //       </div>
-
-// // //       {/* ✅ Add Change Password Form below the profile info */}
-// // //       <div style={{ marginTop: '20px' }}>
-// // //         <ChangePasswordForm userId={facultyDetails.userId} />
-// // //       </div>
-// // //     </div>
-// // //   );
-// // // }
-
-
-// // // // import React, { useEffect, useState } from 'react';
-// // // // import ProfileSection from './ProfileSection';
-// // // // import axios from 'axios';
-
-// // // // export default function FacultyDashboard() {
-// // // //     const [facultyDetails, setFacultyDetails] = useState(null);
-
-// // // //     useEffect(() => {
-// // // //         const fetchProfile = async () => {
-// // // //             try {
-// // // //                 const res = await axios.get('http://localhost:5000/api/faculty/profile', {
-// // // //                     headers: {
-// // // //                         Authorization: `Bearer ${localStorage.getItem('token')}`
-// // // //                     }
-// // // //                 });
-// // // //                 setFacultyDetails(res.data);
-// // // //             } catch (err) {
-// // // //                 console.error(err);
-// // // //             }
-// // // //         };
-
-// // // //         fetchProfile();
-// // // //     }, []);
-
-// // // //     return (
-// // // //         <ProfileSection facultyDetails={facultyDetails} />
-// // // //     );
-// // // // }
-
-// // // /* File: src/components/faculty/ProfileSection.jsx */
-// // // import React from 'react';
-
-// // // export default function ProfileSection({ facultyDetails }) {
-// // //   if (!facultyDetails) {
-// // //     return (
-// // //       <div className="profile-section">
-// // //         <h3>My Profile</h3>
-// // //         <p>Loading profile...</p>
-// // //       </div>
-// // //     );
-// // //   }
-
-// // //   return (
-// // //     <div className="profile-section">
-// // //       <h3>My Profile</h3>
-
-// // //       <div className="profile-details">
-// // //         <p><strong>Name:</strong> {facultyDetails.fullName}</p>
-// // //         <p><strong>Faculty ID:</strong> {facultyDetails.userId}</p>
-// // //         <p><strong>Department:</strong> {facultyDetails.department}</p>
-// // //         <p><strong>Email:</strong> {facultyDetails.email}</p>
-// // //         <p><strong>Phone Number:</strong> {facultyDetails.phoneNumber}</p>
-// // //       </div>
-// // //     </div>
-// // //   );
-// // // }

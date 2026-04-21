@@ -8,6 +8,7 @@ import DepartmentPublicationsSection from './DepartmentPublicationsSection';
 import HodFacultySection from './HodFacultySection';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import NotificationsSection from './NotificationsSection';
 import RDcoordinatorUidApproval from './RDcoordinatorUidApproval'; // RD Coordinator version of UID approval
 
 export default function RDCoordinatorDashboard() {
@@ -18,19 +19,31 @@ export default function RDCoordinatorDashboard() {
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
+  const [notifCount, setNotifCount] = useState(0);
 
   const [facultyCount, setFacultyCount] = useState(0);
   const [pendingUidCount, setPendingUidCount] = useState(0);
   const [approvedUidCount, setApprovedUidCount] = useState(0);
-  const [showNotifications, setShowNotifications] = useState(false);
 
-  // Fetch notifications
-  useEffect(() => {
+ useEffect(() => {
+  const interval = setInterval(() => {
     if (!userId) return;
-    axios.get(`http://localhost:5000/api/notifications/${userId}`)
-      .then(res => setNotifications(res.data))
-      .catch(err => console.error(err));
-  }, []);
+
+    axios
+      .get(`http://localhost:5000/api/auth/notifications/unread-count/${userId}`)
+      .then((res) => setNotifCount(res.data.count))
+      .catch((err) => console.error(err));
+  }, 10000);
+
+  return () => clearInterval(interval);
+}, [userId]);
+  // Fetch notifications
+  // useEffect(() => {
+  //   if (!userId) return;
+  //   axios.get(`http://localhost:5000/api/notifications/${userId}`)
+  //     .then(res => setNotifications(res.data))
+  //     .catch(err => console.error(err));
+  // }, []);
 
   // Fetch department-wise counts
   useEffect(() => {
@@ -121,16 +134,9 @@ export default function RDCoordinatorDashboard() {
     setActiveSection(section);
   };
 
-  const handleNotificationClick = async () => {
-    setShowNotifications(!showNotifications);
-    if (!showNotifications) {
-      await axios.put(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`);
-    }
-  };
-
   return (
     <>
-      <CustomNavbar />
+      {/* <CustomNavbar /> */}
       <div className="hod-dashboard">
         {/* Sidebar */}
         <div className="sidebar">
@@ -147,6 +153,51 @@ export default function RDCoordinatorDashboard() {
 
         {/* Main Content */}
         <div className="main-content">
+          <div className="top-header">
+  <p className="welcome-text">
+    Welcome, {profile?.fullName || "RD Coordinator"}
+  </p>
+
+  <div className="right-section">
+    {/* Notification */}
+    <button
+      className="notification-btn"
+      onClick={async () => {
+  setActiveSection("notifications");
+  setNotifCount(0);
+
+  try {
+    await axios.put(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`);
+  } catch (err) {
+    console.error(err);
+  }
+}}
+    >
+      🔔
+      {notifCount > 0 && (
+        <span className="notif-badge">{notifCount}</span>
+      )}
+    </button>
+
+    {/* Profile Pic */}
+    <img
+      src={
+        profile?.profilePic
+          ? `http://localhost:5000/${profile.profilePic}`
+          : "/default-profile.png"
+      }
+      alt="Profile"
+      className="profile-small"
+      onClick={() => setActiveSection("profile")}
+      onError={(e) => {
+        e.target.src = "/default-profile.png";
+      }}
+    />
+  </div>
+</div>
+          {activeSection === 'notifications' && (
+  <NotificationsSection userId={userId} />
+)}
           {activeSection === 'dashboard' && (
             <div className="dashboard-cards">
               <div className="dashboard-card">
@@ -162,7 +213,7 @@ export default function RDCoordinatorDashboard() {
                 <p>{approvedUidCount}</p>
               </div>
 
-              <div className="top-bar">
+              {/* <div className="top-bar">
                 <button className="notification-btn" onClick={handleNotificationClick}>
                   🔔 Notifications ({notifications.filter(n => !n.isRead).length})
                 </button>
@@ -185,7 +236,7 @@ export default function RDCoordinatorDashboard() {
                     )}
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
           )}
 
