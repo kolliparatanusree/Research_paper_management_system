@@ -1,6 +1,4 @@
-/* =======================
-   MAIN CONTAINER
-======================= */
+
 .publications-container {
   padding: 20px;
   background: #f5f7fb;
@@ -15,9 +13,6 @@
   color: #1f2d3d;
 }
 
-/* =======================
-   FILTER BAR
-======================= */
 .filter-container {
   display: flex;
   gap: 10px;
@@ -35,9 +30,7 @@
   width: 120px;
 }
 
-/* =======================
-   BUTTONS (GLOBAL)
-======================= */
+
 button {
   padding: 10px 14px;
   border: none;
@@ -75,9 +68,7 @@ button {
   background: #e5673c;
 }
 
-/* =======================
-   PUBLICATION LIST
-======================= */
+
 .publication-item {
   background: white;
   padding: 12px 15px;
@@ -100,9 +91,7 @@ button {
   color: #333;
 }
 
-/* =======================
-   VIEW BUTTON (IMPORTANT FIX)
-======================= */
+
 .view-btn {
   background: #1f6feb;
   color: white;
@@ -115,9 +104,6 @@ button {
   background: #0d4ed8;
 }
 
-/* =======================
-   POPUP
-======================= */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -133,8 +119,6 @@ button {
 }
 
 .popup-card {
-  /* background: white; */
-  text: black;
   padding: 25px;
   overflow-y: auto;
   border-radius: 12px;
@@ -144,7 +128,6 @@ button {
   position: relative;
 }
 
-/* Close button */
 .close-btn {
   position: absolute;
   top: 10px;
@@ -157,9 +140,6 @@ button {
   font-weight: bold;
 }
 
-/* =======================
-   SUMMARY CARDS
-======================= */
 .summary-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -197,9 +177,6 @@ button {
   border-left: 5px solid green;
 }
 
-/* =======================
-   LEADERBOARD
-======================= */
 .leaderboard-box {
   background: white;
   padding: 15px;
@@ -214,9 +191,6 @@ button {
   border-bottom: 1px solid #eee;
 }
 
-/* =======================
-   TABLE (RANKING)
-======================= */
 .ranking-box {
   background: white;
   padding: 15px;
@@ -241,9 +215,7 @@ button {
   color: white;
 }
 
-/* =======================
-   CHART BOX
-======================= */
+
 .chart-box {
   background: white;
   padding: 15px;
@@ -294,11 +266,6 @@ button {
   padding: 6px 10px;
 }
 
-/* SCROLL AREA */
-/* .analytics-scroll {
-  max-height: 75vh;
-  overflow-y: auto;
-} */
 
 .leaderboard-box {
   background: #fff;

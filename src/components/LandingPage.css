@@ -251,6 +251,6 @@ footer a:hover {
 }
 
 .timeline-date {
-  color: #000 !important;  /* Black date text */
+  color: #000 !important; 
   font-weight: bold;
 }

@@ -12,7 +12,6 @@
   min-height: 100vh;
 }
 
-/* ===== TITLE ===== */
 .hod-faculty-section h2 {
   text-align: center;
   font-size: 28px;
@@ -21,7 +20,6 @@
   font-weight: 600;
 }
 
-/* ===== SEARCH ===== */
 .faculty-search {
   width: 100%;
   max-width: 500px;

@@ -79,15 +79,7 @@
   font-weight: bold;
 }
 
-/* Main Content Area */
-/* .main-content {
-  flex: 1; 
-  padding: 10px;
-  background: #fff;
-  overflow-y: auto;
-} */
 
-/* Dashboard Headings */
 .main-content h2 {
   color: #4b0082;
 }
@@ -366,7 +358,6 @@
   margin-bottom: 10px;
 }
 
-SweetAlert Loading Popup
 .swal-loading-popup {
   border-radius: 14px;
   padding: 30px;
@@ -465,15 +456,14 @@ SweetAlert Loading Popup
 
 .dashboard-counts {
   display: flex;
-  flex-wrap: wrap;           /* allow cards to go to next row */
-  gap: 2rem;                 /* space between cards */
-  justify-content: center;   /* center the cards horizontally */
+  flex-wrap: wrap;           
+  gap: 2rem;                
+  justify-content: center; 
 }
 
 .count-card {
-  flex: 1 1 45%;             /* 45% width → 2 cards per row */
-  min-width: 300px;          /* prevents them from getting too small */
-  padding: 2rem;             /* bigger card padding */
+  flex: 1 1 45%;             
+  min-width: 300px;         
   border-radius: 20px;
   color: white;
   text-align: center;

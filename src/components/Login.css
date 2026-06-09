@@ -1,11 +1,8 @@
-/* .login-page-wrapper {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-}
-/* Page background */
+
 .login-page-wrapper {
 height: 100vh;
   background: linear-gradient(135deg, #667eea, #764ba2);
-} */
+} 
 
 /* Card top accent */
 .login-page-wrapper .login-card {
