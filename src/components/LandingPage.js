@@ -62,7 +62,7 @@ export default function LandingPage() {
           <VerticalTimelineElement
             contentStyle={{ background: '#1f2937', color: '#e0e0e0' }}
             contentArrowStyle={{ borderRight: '7px solid #3b82f6' }}
-             date={<span style={{ color: '#000', fontWeight: 'bold' }}>Step 1</span>}
+             date={<span style={{ color: '#000', fontWeight: 'bold' }}>Step 2</span>}
             iconStyle={{ background: '#3b82f6', color: '#fff' }}
             icon={<FaUserCheck />}
           >
@@ -73,7 +73,7 @@ export default function LandingPage() {
           <VerticalTimelineElement
             contentStyle={{ background: '#1f2937', color: '#e0e0e0' }}
             contentArrowStyle={{ borderRight: '7px solid #3b82f6' }}
-             date={<span style={{ color: '#000', fontWeight: 'bold' }}>Step 1</span>}
+             date={<span style={{ color: '#000', fontWeight: 'bold' }}>Step 3</span>}
             iconStyle={{ background: '#3b82f6', color: '#fff' }}
             icon={<FaCheckCircle />}
           >
@@ -84,7 +84,7 @@ export default function LandingPage() {
           <VerticalTimelineElement
             contentStyle={{ background: '#1f2937', color: '#e0e0e0' }}
             contentArrowStyle={{ borderRight: '7px solid #3b82f6' }}
-             date={<span style={{ color: '#000', fontWeight: 'bold' }}>Step 1</span>}
+             date={<span style={{ color: '#000', fontWeight: 'bold' }}>Step 4</span>}
             iconStyle={{ background: '#3b82f6', color: '#fff' }}
             icon={<FaUpload />}
           >
@@ -95,7 +95,7 @@ export default function LandingPage() {
           <VerticalTimelineElement
             contentStyle={{ background: '#1f2937', color: '#e0e0e0' }}
             contentArrowStyle={{ borderRight: '7px solid #3b82f6' }}
-            date={<span style={{ color: '#000', fontWeight: 'bold' }}>Step 1</span>}
+            date={<span style={{ color: '#000', fontWeight: 'bold' }}>Step 5</span>}
             iconStyle={{ background: '#3b82f6', color: '#fff' }}
             icon={<FaCheckCircle />}
           >
@@ -106,7 +106,7 @@ export default function LandingPage() {
           <VerticalTimelineElement
             contentStyle={{ background: '#1f2937', color: '#e0e0e0' }}
             contentArrowStyle={{ borderRight: '7px solid #3b82f6' }}
-             date={<span style={{ color: '#000', fontWeight: 'bold' }}>Step 1</span>}
+             date={<span style={{ color: '#000', fontWeight: 'bold' }}>Step 6</span>}
             iconStyle={{ background: '#3b82f6', color: '#fff' }}
             icon={<FaDollarSign />}
           >

@@ -414,7 +414,7 @@ useEffect(() => {
               </ResponsiveContainer>
 
               {/* PIE */}
-              <ResponsiveContainer width="100%" height={250}>
+              {/* <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie data={typeData} dataKey="value" outerRadius={80}>
                     {typeData.map((_, i) => (
@@ -422,7 +422,7 @@ useEffect(() => {
                     ))}
                   </Pie>
                 </PieChart>
-              </ResponsiveContainer>
+              </ResponsiveContainer> */}
               <div className="chart-box">
   <h3>📈 Department Trends</h3>
 

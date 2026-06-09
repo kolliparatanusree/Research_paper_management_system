@@ -26,6 +26,7 @@ const filteredPapers = papers.filter(paper => {
          paper.facultyId?.fullName?.toLowerCase().includes(term) ||
          paper.facultyId?.userId?.toLowerCase().includes(term);
 });
+const [openRequestId, setOpenRequestId] = useState(null);
 
 const openPaperDetails = (paper) => setSelectedPaper(paper);
 const closePaperDetails = () => setSelectedPaper(null);
@@ -184,6 +185,9 @@ useEffect(() => {
       }
     });
   };
+  const toggleRequest = (id) => {
+  setOpenRequestId(openRequestId === id ? null : id);
+};
 
   return (
     <>
@@ -305,55 +309,134 @@ useEffect(() => {
               <p>No requests pending final approval.</p>
             ) : (
               requests.map(req => (
-                <div className="uid-request-card" key={req._id}>
-                  <h4>{req.paperTitle}</h4>
-                  <p><strong>Faculty Name:</strong> {req.facultyName}</p>
-                  <p><strong>Faculty ID:</strong> {req.facultyId}</p>
-                  <p><strong>Department:</strong> {req.department}</p>
-                  <p><strong>Type:</strong> {req.type}</p>
-                  <p><strong>Target:</strong> {req.target}</p>
-                  <p><strong>Abstract:</strong> {req.abstract}</p>
-                  <p><strong>Submitted On:</strong> {new Date(req.submittedAt).toLocaleDateString()}</p>
+  <div className="uid-request-card" key={req._id}>
 
-                  <div className="actions">
-                    <button className="accept" onClick={() => handleAction(req._id, 'accept')}>Accept</button>
+    {/* HEADER (Always visible) */}
+    <div className="uid-card-header">
+     <h4>{req.paperTitle}</h4>
 
-                    {rejectingId === req._id ? (
-                      <>
-                        <select
-                          className="reason-select"
-                          value={rejectReason}
-                          onChange={(e) => setRejectReason(e.target.value)}
-                        >
-                          <option value="">Select reason</option>
-                          {rejectionOptions.map((opt, i) => (
-                            <option key={i} value={opt}>{opt}</option>
-                          ))}
-                        </select>
+<p>
+  <strong>Faculty Name:</strong> {req.facultyName}
+</p>
 
-                        {rejectReason === 'Other' && (
-                          <input
-                            type="text"
-                            placeholder="Enter custom reason"
-                            className="custom-reason-input"
-                            value={customReason}
-                            onChange={(e) => setCustomReason(e.target.value)}
-                          />
-                        )}
+<p>
+  <strong>Faculty ID:</strong> {req.facultyId}
+</p>
+      <button
+        className="toggle-btn"
+        onClick={() => toggleRequest(req._id)}
+      >
+        {openRequestId === req._id ? "▲" : "▼"}
+      </button>
+    </div>
 
-                        <button className="confirm-reject" onClick={() => handleAction(req._id, 'reject')}>
-                          Confirm Reject
-                        </button>
-                        <button className="cancel-reject" onClick={handleCancelReject}>
-                          Cancel
-                        </button>
-                      </>
-                    ) : (
-                      <button className="reject" onClick={() => setRejectingId(req._id)}>Reject</button>
-                    )}
-                  </div>
-                </div>
-              ))
+    {/* COLLAPSIBLE CONTENT */}
+    {openRequestId === req._id && (
+      <div className="uid-card-body">
+        <p><strong>Faculty Name:</strong> {req.facultyName}</p>
+        <p><strong>Faculty ID:</strong> {req.facultyId}</p>
+        <p><strong>Department:</strong> {req.department}</p>
+        <p><strong>Type:</strong> {req.type}</p>
+        <p><strong>Target:</strong> {req.target}</p>
+        <p><strong>Abstract:</strong> {req.abstract}</p>
+        <p><strong>Submitted On:</strong> {new Date(req.submittedAt).toLocaleDateString()}</p>
+
+        <div className="actions">
+          <button className="accept" onClick={() => handleAction(req._id, 'accept')}>
+            Accept
+          </button>
+
+          {rejectingId === req._id ? (
+            <>
+              <select
+                className="reason-select"
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+              >
+                <option value="">Select reason</option>
+                {rejectionOptions.map((opt, i) => (
+                  <option key={i} value={opt}>{opt}</option>
+                ))}
+              </select>
+
+              {rejectReason === 'Other' && (
+                <input
+                  type="text"
+                  placeholder="Enter custom reason"
+                  className="custom-reason-input"
+                  value={customReason}
+                  onChange={(e) => setCustomReason(e.target.value)}
+                />
+              )}
+
+              <button className="confirm-reject" onClick={() => handleAction(req._id, 'reject')}>
+                Confirm Reject
+              </button>
+              <button className="cancel-reject" onClick={handleCancelReject}>
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button className="reject" onClick={() => setRejectingId(req._id)}>
+              Reject
+            </button>
+          )}
+        </div>
+      </div>
+    )}
+  </div>
+))
+              
+              // requests.map(req => (
+              //   <div className="uid-request-card" key={req._id}>
+              //     <h4>{req.paperTitle}</h4>
+              //     <p><strong>Faculty Name:</strong> {req.facultyName}</p>
+              //     <p><strong>Faculty ID:</strong> {req.facultyId}</p>
+              //     <p><strong>Department:</strong> {req.department}</p>
+              //     <p><strong>Type:</strong> {req.type}</p>
+              //     <p><strong>Target:</strong> {req.target}</p>
+              //     <p><strong>Abstract:</strong> {req.abstract}</p>
+              //     <p><strong>Submitted On:</strong> {new Date(req.submittedAt).toLocaleDateString()}</p>
+
+              //     <div className="actions">
+              //       <button className="accept" onClick={() => handleAction(req._id, 'accept')}>Accept</button>
+
+              //       {rejectingId === req._id ? (
+              //         <>
+              //           <select
+              //             className="reason-select"
+              //             value={rejectReason}
+              //             onChange={(e) => setRejectReason(e.target.value)}
+              //           >
+              //             <option value="">Select reason</option>
+              //             {rejectionOptions.map((opt, i) => (
+              //               <option key={i} value={opt}>{opt}</option>
+              //             ))}
+              //           </select>
+
+              //           {rejectReason === 'Other' && (
+              //             <input
+              //               type="text"
+              //               placeholder="Enter custom reason"
+              //               className="custom-reason-input"
+              //               value={customReason}
+              //               onChange={(e) => setCustomReason(e.target.value)}
+              //             />
+              //           )}
+
+              //           <button className="confirm-reject" onClick={() => handleAction(req._id, 'reject')}>
+              //             Confirm Reject
+              //           </button>
+              //           <button className="cancel-reject" onClick={handleCancelReject}>
+              //             Cancel
+              //           </button>
+              //         </>
+              //       ) : (
+              //         <button className="reject" onClick={() => setRejectingId(req._id)}>Reject</button>
+              //       )}
+              //     </div>
+              //   </div>
+              // ))
             )}
           </>
         )}

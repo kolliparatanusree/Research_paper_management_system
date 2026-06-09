@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import './FacultyDashboard.css';
+import './PIDStatusList.css';
 import Swal from 'sweetalert2';
 export default function PIDStatusList({ facultyId }) {
   const [submissions, setSubmissions] = useState([]);
   const [filter, setFilter] = useState('approved'); // 'approved' | 'pending' | 'rejected'
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState(null);
+
+const toggleExpand = (id) => {
+  setExpandedId(expandedId === id ? null : id);
+};
 
   useEffect(() => {
   const fetchSubmissions = async () => {
@@ -133,29 +138,72 @@ Swal.fire({
         ) : filtered.length === 0 ? (
           <p>No {filter} documents found.</p>
         ) : (
-          filtered.map((doc) => (
-            <div key={doc._id} className="uid-status-card">
-              <p style={{ color: 'blue', fontSize: '23px' }}>{doc.paperTitle}</p>
-              <p><strong>UID:</strong> {doc.uid}</p>
-              <p><strong>PID:</strong> {doc.pid}</p>
-              <p><strong>Type:</strong> {doc.type}</p>
-              <p><strong>Abstract:</strong> {doc.abstract}</p>
-              <p><strong>Target:</strong> {doc.target}</p>
-              <p><strong>Uploaded At:</strong> {new Date(doc.uploadedAt).toLocaleDateString()}</p>
+         filtered.map((doc) => (
+  <div key={doc._id} className={`uid-status-card ${doc.isRejected ? 'rejected' : doc.adminAccept ? 'approved' : 'pending'}`}>
 
-              {filter === 'rejected' && (
-                <p style={{ color: 'red' }}><strong>Reason:</strong> {doc.rejectionReason || 'Not provided'}</p>
-              )}
+    {/* Header row */}
+    <div className="card-header" onClick={() => toggleExpand(doc._id)}>
+      <p className="title">{doc.paperTitle}</p>
 
-              {filter === 'pending' && (
-                <p style={{ color: 'orange' }}><strong>Status:</strong> Waiting for R&D dean review</p>
-              )}
+      <span className="arrow">
+        {expandedId === doc._id ? '▲' : '▼'}
+      </span>
+    </div>
 
-              {filter === 'approved' && (
-                <p style={{ color: 'green' }}><strong>Status:</strong> ✅ Approved by Admin</p>
-              )}
-            </div>
-          ))
+    {/* Always visible */}
+    {/* <p><strong>PID:</strong> {doc.pid}</p> */}
+    {doc.adminAccept === true && doc.isRejected === false && (
+  <p><strong>PID:</strong> {doc.pid}</p>
+)}
+
+    {/* Expandable section */}
+    {expandedId === doc._id && (
+      <div className="card-body">
+        <p><strong>UID:</strong> {doc.uid}</p>
+        <p><strong>Type:</strong> {doc.type}</p>
+        <p><strong>Abstract:</strong> {doc.abstract}</p>
+        <p><strong>Target:</strong> {doc.target}</p>
+        <p><strong>Uploaded At:</strong> {new Date(doc.uploadedAt).toLocaleDateString()}</p>
+
+        {filter === 'rejected' && (
+          <p className="reason"><strong>Reason:</strong> {doc.rejectionReason || 'Not provided'}</p>
+        )}
+
+        {filter === 'pending' && (
+          <p className="pending">⌛ Waiting for R&D dean review</p>
+        )}
+
+        {filter === 'approved' && (
+          <p className="approved">✅ Approved by Admin</p>
+        )}
+      </div>
+    )}
+  </div>
+))
+         
+          // filtered.map((doc) => (
+          //   <div key={doc._id} className="uid-status-card">
+          //     <p style={{ color: 'blue', fontSize: '23px' }}>{doc.paperTitle}</p>
+          //     <p><strong>UID:</strong> {doc.uid}</p>
+          //     <p><strong>PID:</strong> {doc.pid}</p>
+          //     <p><strong>Type:</strong> {doc.type}</p>
+          //     <p><strong>Abstract:</strong> {doc.abstract}</p>
+          //     <p><strong>Target:</strong> {doc.target}</p>
+          //     <p><strong>Uploaded At:</strong> {new Date(doc.uploadedAt).toLocaleDateString()}</p>
+
+          //     {filter === 'rejected' && (
+          //       <p style={{ color: 'red' }}><strong>Reason:</strong> {doc.rejectionReason || 'Not provided'}</p>
+          //     )}
+
+          //     {filter === 'pending' && (
+          //       <p style={{ color: 'orange' }}><strong>Status:</strong> Waiting for R&D dean review</p>
+          //     )}
+
+          //     {filter === 'approved' && (
+          //       <p style={{ color: 'green' }}><strong>Status:</strong> ✅ Approved by Admin</p>
+          //     )}
+          //   </div>
+          // ))
         )}
       </div>
     </div>

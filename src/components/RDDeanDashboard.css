@@ -695,3 +695,28 @@ button.reject:hover {
   font-weight: 600;
   color: #9a3412;
 }
+.uid-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.uid-request-card {
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.uid-request-card p {
+  display: block;
+}

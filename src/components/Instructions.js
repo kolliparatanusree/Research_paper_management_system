@@ -9,7 +9,7 @@ export default function Instructions() {
     <div className="instructions-container">
       {/* <CustomNavbar /> */}
       <div className="instructions-content">
-        <h1 className="instructions-title">Instructions for Using the Research Publication Management System (RPMS)</h1>
+        <h1 className="instructions-title">Instructions</h1>
         
         <ol className="instructions-list">
           <li>

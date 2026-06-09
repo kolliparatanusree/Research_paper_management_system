@@ -108,15 +108,28 @@ Swal.fire('Success', 'OTP sent to email', 'success')
     localStorage.setItem('userId', id);
     localStorage.setItem('role', role);
 
-    Swal.fire({
-      title: 'Login Successful',
-      text: `Welcome, ${role}!`,
-      icon: 'success',
-      confirmButtonText: 'Continue'
-    }).then(() => {
+  //   Swal.fire({
+  //     title: 'Login Successful',
+  //     text: `Welcome, ${role}!`,
+  //     icon: 'success',
+  //     confirmButtonText: 'Continue'
+  //   }).then(() => {
 
-      // 🚨 FIRST LOGIN CHECK (FOR EVERYONE)
-      if (role !== 'admin' && !isProfileCompleted) {
+  //     // 🚨 FIRST LOGIN CHECK (FOR EVERYONE)
+  //     if (role !== 'admin' && !isProfileCompleted) {
+  //   navigate('/complete-profile');
+  //   return;
+  // }
+  Swal.fire({
+  title: 'Login Successful',
+  text: `Welcome, ${role}!`,
+  icon: 'success',
+  timer: 1500,              // ⏱ auto close after 1.5 sec
+  showConfirmButton: false, // ❌ removes button
+  allowOutsideClick: false
+}).then(() => {
+
+  if (role !== 'admin' && !isProfileCompleted) {
     navigate('/complete-profile');
     return;
   }
