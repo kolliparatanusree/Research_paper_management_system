@@ -1,0 +1,1 @@
+export const API_BASE_URL = "https://research-paper-management-system-oonk.onrender.com";

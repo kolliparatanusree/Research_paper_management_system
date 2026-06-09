@@ -16,6 +16,9 @@ const rdcoordinatorRoutes = require('./routes/rdcoordinatorRoutes');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.get("/", (req, res) => {
+  res.send("API Running");
+});
 const dashboardRoutes = require('./routes/dashboard');
 app.use('/api/dashboard', dashboardRoutes);
 app.use("/api/notifications", notificationRoutes);
