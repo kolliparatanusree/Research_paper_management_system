@@ -32,7 +32,7 @@ export default function FacultyRegister() {
 
     // Normally, send formData to backend here
     try {
-      const response = await axios.post('http://localhost:5000/api/faculty/register', {
+      const response = await axios.post('/api/faculty/register', {
         fullName: formData.fullName,
         email: formData.email,
         password: formData.password,

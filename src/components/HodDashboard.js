@@ -13,6 +13,7 @@ import HodFacultySection from './HodFacultySection';
 import NotificationsSection from './NotificationsSection';
 export default function HodDashboard() {
   const [activeSection, setActiveSection] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [hodProfile, setHodProfile] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [error, setError] = useState(null);
@@ -28,7 +29,7 @@ const [notifCount, setNotifCount] = useState(0);
      const userId = localStorage.getItem("userId");
   if (!userId) return;
 
-  fetch(`http://localhost:5000/api/notifications/${userId}`)
+  fetch(`/api/notifications/${userId}`)
     .then(res => res.json())
     .then(data => setNotifications(data))
     .catch(err => console.error(err));
@@ -38,7 +39,7 @@ const [notifCount, setNotifCount] = useState(0);
 useEffect(() => {
   const userId = localStorage.getItem("userId");
 
-  fetch(`http://localhost:5000/api/auth/notifications/unread-count/${userId}`)
+  fetch(`/api/auth/notifications/unread-count/${userId}`)
     .then(res => res.json())
     .then(data => setNotifCount(data.count))
     .catch(err => console.error(err));
@@ -50,13 +51,13 @@ useEffect(() => {
 
   const department = hodProfile.department;
 
-  axios.get(`http://localhost:5000/api/faculty/count/${department}`)
+  axios.get(`/api/faculty/count/${department}`)
        .then(res => setFacultyCount(res.data.count));
 
-  axios.get(`http://localhost:5000/api/hod/uid/pending/${department}`)
+  axios.get(`/api/hod/uid/pending/${department}`)
        .then(res => setPendingUidCount(res.data.count));
 
-  axios.get(`http://localhost:5000/api/hod/uid/approved/${department}`)
+  axios.get(`/api/hod/uid/approved/${department}`)
        .then(res => setApprovedUidCount(res.data.count));
 
 }, [hodProfile]);
@@ -83,7 +84,7 @@ useEffect(() => {
 
     setLoadingProfile(true);
 
-    const res = await axios.get(`http://localhost:5000/api/faculty/${userId}`);
+    const res = await axios.get(`/api/faculty/${userId}`);
     const data = res.data;
 
     setHodProfile({
@@ -117,7 +118,7 @@ useEffect(() => {
     // const fetchHodProfile = async () => {
     //   try {
     //     setLoadingProfile(true);
-    //     const res = await axios.get(`http://localhost:5000/api/hod/${hodId}`);
+    //     const res = await axios.get(`/api/hod/${hodId}`);
     //     setHodProfile(res.data);
     //   } catch (err) {
     //     console.error('Error fetching HOD profile:', err);
@@ -171,7 +172,7 @@ const handleNavigation = (section) => {
 //   setShowNotifications(!showNotifications);
 
 //   if (!showNotifications) {
-//     await axios.put(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`);
+//     await axios.put(`/api/auth/notifications/mark-read/${userId}`);
 //   }
 // };
 
@@ -190,42 +191,62 @@ const handleNavigation = (section) => {
       <div className="hod-dashboard">
         
         {/* Sidebar */}
-        <div className="sidebar">
+        <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
           <div className="logo-container">
             {/* <img src={logo} alt="Logo" className="logo" /> */}
           </div>
           <h2>HOD Dashboard</h2>
          
           <ul>
-            <li onClick={() => setActiveSection('dashboard')}>
+          <li
+  onClick={() => {
+    setActiveSection('dashboard');
+    setSidebarOpen(false);
+  }}
+>
   📊 Dashboard
 </li>
             <li
               className={activeSection === 'requests' ? 'active' : ''}
-              onClick={() => handleNavigation('requests')}
+              onClick={() => {
+                handleNavigation('requests');
+                setSidebarOpen(false);
+              }}
             >
               📨 Requesting UIDs
             </li>
             <li
   className={activeSection === 'publications' ? 'active' : ''}
-  onClick={() => handleNavigation('publications')}
+  onClick={() => {
+    handleNavigation('publications');
+    setSidebarOpen(false);
+  }}
 >
   📚 Department Publications
 </li>
 <li
   className={activeSection === 'faculty' ? 'active' : ''}
-  onClick={() => handleNavigation('faculty')}
+  onClick={() => {
+    handleNavigation('faculty');
+    setSidebarOpen(false);
+  }}
 >
   👥 View Faculty Details
 </li>
             <li
               className={activeSection === 'profile' ? 'active' : ''}
-              onClick={() => handleNavigation('profile')}
+              onClick={() => {
+                handleNavigation('profile');
+                setSidebarOpen(false);
+              }}
             >
               👤 Profile
             </li>
             <li
-              onClick={() => handleNavigation('logout')}
+              onClick={() => {
+                handleNavigation('logout');
+                setSidebarOpen(false);
+              }}
               style={{ cursor: 'pointer', color: 'white', marginTop: 'auto' }}
             >
               🔚 Logout
@@ -240,6 +261,13 @@ const handleNavigation = (section) => {
 </div>
 
         {/* Main Content */}
+        <button
+  className="mobile-menu-btn"
+  onClick={() => setSidebarOpen(!sidebarOpen)}
+  aria-label="Toggle menu"
+>
+  ☰
+</button>
         <div className="main-content">
           <div className="top-header">
   <p className="welcome-text">
@@ -254,7 +282,7 @@ const handleNavigation = (section) => {
     setActiveSection("notifications");
 
     const userId = localStorage.getItem("userId");
-    await axios.put(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`);
+    await axios.put(`/api/auth/notifications/mark-read/${userId}`);
 
     setNotifCount(0); // reset badge
   }}
@@ -268,7 +296,7 @@ const handleNavigation = (section) => {
     <img
       src={
         hodProfile?.profilePic
-          ? `http://localhost:5000/${hodProfile.profilePic}`
+          ? `/${hodProfile.profilePic}`
           : "/default-profile.png"
       }
       alt="Profile"
@@ -423,7 +451,7 @@ onClick={() => setShowNotifications(false)}
 //     }
 
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/hod/${hodId}`);
+//       const res = await fetch(`/api/hod/${hodId}`);
 //       if (!res.ok) {
 //         throw new Error(`HTTP error! Status: ${res.status}`);
 //       }
@@ -443,7 +471,7 @@ onClick={() => setShowNotifications(false)}
 //   // useEffect(() => {
 //   //   const fetchHodProfile = async () => {
 //   //     try {
-//   //       const res = await fetch(`http://localhost:5000/api/hod/${hodId}`);
+//   //       const res = await fetch(`/api/hod/${hodId}`);
 //   //       if (!res.ok) {
 //   //         throw new Error('Failed to fetch HOD profile');
 //   //       }

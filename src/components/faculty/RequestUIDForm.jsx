@@ -84,7 +84,7 @@ export default function RequestUIDForm() {
     };
 
     return (
-        <div className="centered-form-container">
+        <div className="request-uid-page">
             <div className="uid-form-card">
                 {/* <h3>Request UID</h3> */}
                 <form onSubmit={handleFormSubmit} className="uid-form">

@@ -15,6 +15,7 @@ import logo from "./logo2.jpeg";
 
 export default function FacultyDashboard() {
   const [activeSection, setActiveSection] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [facultyDetails, setFacultyDetails] = useState(null);
   const [notifCount, setNotifCount] = useState(0);
   const [counts, setCounts] = useState({
@@ -30,7 +31,7 @@ export default function FacultyDashboard() {
   // fetch counts
   const fetchCounts = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/dashboard/counts/${facultyId}`);
+      const res = await fetch(`/api/dashboard/counts/${facultyId}`);
       const data = await res.json();
       setCounts(data);
     } catch (err) {
@@ -39,7 +40,7 @@ export default function FacultyDashboard() {
   };
 
   useEffect(() => {
-  fetch(`http://localhost:5000/api/auth/notifications/unread-count/${facultyId}`)
+  fetch(`/api/auth/notifications/unread-count/${facultyId}`)
     .then(res => res.json())
     .then(data => setNotifCount(data.count))
     .catch(err => console.error(err));
@@ -48,7 +49,7 @@ export default function FacultyDashboard() {
   // fetch faculty details
   useEffect(() => {
     const fetchDetails = async () => {
-      const res = await fetch(`http://localhost:5000/api/faculty/${facultyId}`);
+      const res = await fetch(`/api/faculty/${facultyId}`);
       const data = await res.json();
       setFacultyDetails({ ...data, facultyId: data.userId });
     };
@@ -91,13 +92,14 @@ export default function FacultyDashboard() {
     <>
       {/* <CustomNavbar /> */}
       <div className="dashboard-container">
-        <div className="sidebar1">
+        <div className={`sidebar1 ${sidebarOpen ? 'open' : ''}`}>
           <nav className="menu">
             <ul>
               <img src={logo} alt="Logo" className="logo" />
               <li 
                 className={activeSection === 'dashboard' ? 'active' : ''} 
-                onClick={() => setActiveSection('dashboard')}
+                onClick={() => {setActiveSection('dashboard'); setSidebarOpen(false);
+  }}
               >
                 📊 Dashboard
               </li>
@@ -107,21 +109,34 @@ export default function FacultyDashboard() {
 >
   🔔 Notifications
 </li> */}
-              <li className={activeSection === 'request-uid' ? 'active' : ''} onClick={() => setActiveSection('request-uid')}>📄 Request UID</li>
-              <li className={activeSection === 'uid-status' ? 'active' : ''} onClick={() => setActiveSection('uid-status')}>🔄 UID Status</li>
-              <li className={activeSection === 'indexing' ? 'active' : ''} onClick={() => setActiveSection('indexing')}>📤 Submit Documents</li>
-              <li className={activeSection === 'my-submissions' ? 'active' : ''} onClick={() => setActiveSection('my-submissions')}>🔄 PID Status</li>
+              <li className={activeSection === 'request-uid' ? 'active' : ''} onClick={() => {setActiveSection('request-uid'); setSidebarOpen(false);
+  }}>📄 Request UID</li>
+              <li className={activeSection === 'uid-status' ? 'active' : ''} onClick={() => {setActiveSection('uid-status'); setSidebarOpen(false);
+  }}>🔄 UID Status</li>
+              <li className={activeSection === 'indexing' ? 'active' : ''} onClick={() => {setActiveSection('indexing'); setSidebarOpen(false);
+  }}>📤 Submit Documents</li>
+              <li className={activeSection === 'my-submissions' ? 'active' : ''} onClick={() => {setActiveSection('my-submissions'); setSidebarOpen(false);
+  }}>🔄 PID Status</li>
               <li
   className={activeSection === 'publications' ? 'active' : ''}
-  onClick={() => setActiveSection('publications')}
+  onClick={() => {setActiveSection('publications'); setSidebarOpen(false);
+  }}
 >
   📚 Publications
 </li>
               {/* <li className={activeSection === 'profile' ? 'active' : ''} onClick={() => setActiveSection('profile')}>👤 Profile</li> */}
-              <li className="btn" onClick={handleLogout} style={{ color: 'white', marginTop: '0px', cursor: 'pointer', fontSize: '20px' }}>🔚 Logout</li>
+              <li className="btn" onClick={() => {handleLogout(); setSidebarOpen(false);}} style={{ color: 'white', marginTop: '0px', cursor: 'pointer', fontSize: '20px' }}>🔚 Logout</li>
             </ul>
           </nav>
         </div>
+          
+              <button
+  className="mobile-menu-btn"
+  onClick={() => setSidebarOpen(!sidebarOpen)}
+  aria-label="Toggle menu"
+>
+  ☰
+</button>
 
         <div className="main-content">
           {/* <p style={{ color: 'purple', fontSize: '25px' }}>Welcome, {facultyDetails?.fullName || 'Faculty'}</p> */}
@@ -149,7 +164,7 @@ export default function FacultyDashboard() {
    <img
   src={
     facultyDetails?.profilePic
-      ? `http://localhost:5000/${facultyDetails.profilePic}`
+      ? `/${facultyDetails.profilePic}`
       : "/default-profile.png"
   }
   alt="Profile"

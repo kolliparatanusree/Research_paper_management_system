@@ -39,7 +39,7 @@ const [endDate, setEndDate] = useState('');
 useEffect(() => {
   const userId = localStorage.getItem("userId");
 
-  fetch(`http://localhost:5000/api/auth/notifications/unread-count/${userId}`)
+  fetch(`/api/auth/notifications/unread-count/${userId}`)
     .then(res => res.json())
     .then(data => setNotifCount(data.count))
     .catch(err => console.error(err));
@@ -65,7 +65,7 @@ const filteredPids = approvedPids.filter(doc => {
 });
 
 useEffect(() => {
-  fetch('http://localhost:5000/api/principal/approved-papers')
+  fetch('/api/principal/approved-papers')
     .then(res => res.json())
     .then(data => setApprovedPids(data))
     .catch(err => {
@@ -78,7 +78,7 @@ useEffect(() => {
 
   useEffect(() => {
     if (activeSection === 'uid-approval') {
-      fetch('http://localhost:5000/api/principal/uid-requests')
+      fetch('/api/principal/uid-requests')
         .then(res => res.json())
         .then(data => {
           const filtered = data.filter(r => r.hodAccept && !r.principalAccept);
@@ -102,7 +102,7 @@ useEffect(() => {
       }
 
       try {
-        const res = await fetch(`http://localhost:5000/api/principal/uid-request/${id}/reject`, {
+        const res = await fetch(`/api/principal/uid-request/${id}/reject`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ reason: finalReason }),
@@ -123,7 +123,7 @@ useEffect(() => {
       }
     } else {
       try {
-        const res = await fetch(`http://localhost:5000/api/principal/uid-request/${id}/accept`, {
+        const res = await fetch(`/api/principal/uid-request/${id}/accept`, {
           method: 'PUT',
         });
         const data = await res.json();
@@ -276,7 +276,7 @@ useEffect(() => {
 
         const userId = localStorage.getItem("userId");
 
-        await fetch(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`, {
+        await fetch(`/api/auth/notifications/mark-read/${userId}`, {
           method: "PUT"
         });
 

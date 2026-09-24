@@ -12,7 +12,7 @@ export default function HodLogin() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/hod/login', { hodId, password });
+      const res = await axios.post('/api/hod/login', { hodId, password });
       alert(res.data.message);
       localStorage.setItem('hodId', res.data.hod.hodId);
       navigate('/hod-dashboard');

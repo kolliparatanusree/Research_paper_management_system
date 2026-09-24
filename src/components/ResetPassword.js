@@ -20,7 +20,7 @@ export default function ResetPassword() {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/auth/reset-password', {
+      await axios.post('/api/auth/reset-password', {
         email,
         otp,
         newPassword
@@ -135,7 +135,7 @@ const styles = {
 //     }
 
 //     try {
-//       await axios.post('http://localhost:5000/api/auth/reset-password', {
+//       await axios.post('/api/auth/reset-password', {
 //         email,
 //         otp,
 //         newPassword
@@ -247,7 +247,7 @@ const styles = {
 // //     }
 
 // //     try {
-// //       await axios.post('http://localhost:5000/api/auth/reset-password', {
+// //       await axios.post('/api/auth/reset-password', {
 // //         userId,
 // //         token,
 // //         newPassword

@@ -12,6 +12,8 @@ export default function DocumentUploadSection({ userId }) {
   const [loadingUid, setLoadingUid] = useState(null);
   const [editingUid, setEditingUid] = useState(null);
   const [editData, setEditData] = useState({});
+
+  const [expandedUid, setExpandedUid] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 const itemsPerPage = 3; // change as needed
   useEffect(() => {
@@ -20,7 +22,7 @@ const itemsPerPage = 3; // change as needed
     const fetchApprovedUIDs = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/faculty/approved-uid-requests/${userId}`
+          `/api/faculty/approved-uid-requests/${userId}`
         );
         const data = await res.json();
         setApprovedUIDs(data);
@@ -32,7 +34,7 @@ const itemsPerPage = 3; // change as needed
     const fetchUploadedUIDs = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/faculty/uploaded-uids/${userId}`
+          `/api/faculty/uploaded-uids/${userId}`
         );
         const data = await res.json();
         setUploadedUIDs(data || []);
@@ -72,7 +74,7 @@ const itemsPerPage = 3; // change as needed
   const handleSave = async (uid) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/faculty/update-uid/${uid}`,
+        `/api/faculty/update-uid/${uid}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -114,7 +116,7 @@ const itemsPerPage = 3; // change as needed
     formData.append("patentOffice", docData?.patentOffice || "");
 
     try {
-      const res = await fetch("http://localhost:5000/api/faculty/upload-documents", {
+      const res = await fetch("/api/faculty/upload-documents", {
         method: "POST",
         body: formData,
       });
@@ -219,7 +221,22 @@ const paginatedUIDs = filteredApprovedUIDs.slice(
 
             {/* UID */}
             <p><strong>UID:</strong> {uid.uid}</p>
+          <button
+  type="button"
+  className="see-more-btn"
+  onClick={() =>
+    setExpandedUid(
+      expandedUid === uid.uid ? null : uid.uid
+    )
+  }
+>
+  {expandedUid === uid.uid
+    ? "🔼 Hide Details"
+    : "🔽 Show Details"}
+</button>
 
+{expandedUid === uid.uid && (
+  <div className="uid-expanded-info">
             {/* Type */}
             <p><strong>Type of Publication:</strong></p>
             {editingUid === uid.uid ? (
@@ -244,7 +261,7 @@ const paginatedUIDs = filteredApprovedUIDs.slice(
             {editingUid === uid.uid ? (
               <div>
                 {(editData[uid.uid]?.coAuthors || []).map((author, index) => (
-                  <div key={index} >
+                  <div key={index} className="coauthor-row">
                     <input
                       type="text"
                       placeholder="Author Name"
@@ -486,6 +503,8 @@ className="add-coauthor-btn"
             >
               {loadingUid === uid.uid ? "Uploading..." : "Submit Documents"}
             </button>
+              </div>
+)}
           </div>
         ))
       )}
@@ -519,6 +538,7 @@ className="add-coauthor-btn"
 
   </div>
 )}
+
     </div>
   );
 }
@@ -551,7 +571,7 @@ className="add-coauthor-btn"
 //     useEffect(() => {
 //         const fetchApprovedUIDs = async () => {
 //             try {
-//                 const res = await fetch(`http://localhost:5000/api/faculty/approved-uid-requests/${userId}`);
+//                 const res = await fetch(`/api/faculty/approved-uid-requests/${userId}`);
 //                 const data = await res.json();
 //                 setApprovedUIDs(data);
 //             } catch (err) {
@@ -562,7 +582,7 @@ className="add-coauthor-btn"
 //         const fetchUploadedUIDs = async () => {
 //   try {
 //     const response = await fetch(
-//       `http://localhost:5000/api/faculty/uploaded-uids/${userId}`
+//       `/api/faculty/uploaded-uids/${userId}`
 //     );
 //     const data = await response.json();
 
@@ -603,7 +623,7 @@ className="add-coauthor-btn"
 
 // const handleSave = async (uid) => {
 //     try {
-//         const res = await fetch(`http://localhost:5000/api/faculty/update-uid/${uid}`, {
+//         const res = await fetch(`/api/faculty/update-uid/${uid}`, {
 //             method: "PUT",
 //             headers: {
 //                 "Content-Type": "application/json"
@@ -657,7 +677,7 @@ className="add-coauthor-btn"
 
 
 //         try {
-//             const res = await fetch('http://localhost:5000/api/faculty/upload-documents', {
+//             const res = await fetch('/api/faculty/upload-documents', {
 //                 method: 'POST',
 //                 body: formData
 //             });
@@ -1161,7 +1181,7 @@ className="add-coauthor-btn"
 // //     useEffect(() => {
 // //         const fetchApprovedUIDs = async () => {
 // //             try {
-// //                 const res = await fetch(`http://localhost:5000/api/faculty/approved-uid-requests/${facultyId}`);
+// //                 const res = await fetch(`/api/faculty/approved-uid-requests/${facultyId}`);
 // //                 const data = await res.json();
 // //                 setApprovedUIDs(data);
 // //             } catch (err) {
@@ -1207,7 +1227,7 @@ className="add-coauthor-btn"
 // //         formData.append('issn', docData?.issn || '');
 
 // //         try {
-// //             const res = await fetch('http://localhost:5000/api/faculty/upload-documents', {
+// //             const res = await fetch('/api/faculty/upload-documents', {
 // //                 method: 'POST',
 // //                 body: formData
 // //             });

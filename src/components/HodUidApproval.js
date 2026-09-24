@@ -35,13 +35,13 @@ const [sortOrder, setSortOrder] = useState("latest");
       setLoading(true);
 
       // 🔹 Fetch HOD details
-      const hodRes = await fetch(`http://localhost:5000/api/hod/profile/${hodId}`);
+      const hodRes = await fetch(`/api/hod/profile/${hodId}`);
       const hodData = await hodRes.json();
       setDepartment(hodData.department);
 
       // 🔹 Fetch UID Requests
       const requestRes = await fetch(
-        `http://localhost:5000/api/hod/uid-requests/${hodId}`
+        `/api/hod/uid-requests/${hodId}`
       );
 
       if (!requestRes.ok) {
@@ -70,15 +70,15 @@ const [sortOrder, setSortOrder] = useState("latest");
 
   const handleAction = async (id, status) => {
   try {
-    let url = `http://localhost:5000/api/hod/uid-request/${id}/accept/${hodId}`;
-    // let url = `http://localhost:5000/api/hod/uid-request/${id}/${status}`;
+    let url = `/api/hod/uid-request/${id}/accept/${hodId}`;
+    // let url = `/api/hod/uid-request/${id}/${status}`;
     let body = null;
 
     if (status === 'reject') {
       const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
       if (!finalReason) return Swal.fire('Error', 'Please provide a reason', 'error');
-        url = `http://localhost:5000/api/hod/uid-request/${id}/reject/${hodId}`;
-      // url = `http://localhost:5000/api/hod/uid-request/${id}/reject`;
+        url = `/api/hod/uid-request/${id}/reject/${hodId}`;
+      // url = `/api/hod/uid-request/${id}/reject`;
       body = JSON.stringify({ reason: finalReason });
     }
 
@@ -201,7 +201,7 @@ const sendReportToHod = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const email = user?.email || "hod@gmail.com"; // fallback if needed
      const userId = user?.userId;
-    const res = await fetch("http://localhost:5000/api/hod/send-report", {
+    const res = await fetch("/api/hod/send-report", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -450,12 +450,12 @@ return (
 //     }
 
 //     try {
-//       const hodRes = await fetch(`http://localhost:5000/api/hod/${hodId}`);
+//       const hodRes = await fetch(`/api/hod/${hodId}`);
 //       const hodData = await hodRes.json();
 //       setDepartment(hodData.department);
 
 //       const requestRes = await fetch(
-//   `http://localhost:5000/api/hod/uid-requests/${hodId}`
+//   `/api/hod/uid-requests/${hodId}`
 // );
 
 // if (!requestRes.ok) throw new Error('Failed to fetch UID requests');
@@ -463,14 +463,14 @@ return (
 // const deptRequests = await requestRes.json();
 // setRequests(deptRequests);
 
-// // const requestRes = await fetch('http://localhost:5000/api/hod/uid-requests');
+// // const requestRes = await fetch('/api/hod/uid-requests');
 // // if (!requestRes.ok) throw new Error('Failed to fetch UID requests');
 
 // // const allRequests = await requestRes.json();
 // // if (!Array.isArray(allRequests)) throw new Error('UID requests should be an array');
 
 
-// //       // const requestRes = await fetch('http://localhost:5000/api/hod/uid-requests');
+// //       // const requestRes = await fetch('/api/hod/uid-requests');
 // //       // const allRequests = await requestRes.json();
 
 // //       const filtered = allRequests.filter(
@@ -493,15 +493,15 @@ return (
 
 //   const handleAction = async (id, status) => {
 //   try {
-//     let url = `http://localhost:5000/api/hod/uid-request/${id}/accept/${hodId}`;
-//     // let url = `http://localhost:5000/api/hod/uid-request/${id}/${status}`;
+//     let url = `/api/hod/uid-request/${id}/accept/${hodId}`;
+//     // let url = `/api/hod/uid-request/${id}/${status}`;
 //     let body = null;
 
 //     if (status === 'reject') {
 //       const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
 //       if (!finalReason) return Swal.fire('Error', 'Please provide a reason', 'error');
-//         url = `http://localhost:5000/api/hod/uid-request/${id}/reject/${hodId}`;
-//       // url = `http://localhost:5000/api/hod/uid-request/${id}/reject`;
+//         url = `/api/hod/uid-request/${id}/reject/${hodId}`;
+//       // url = `/api/hod/uid-request/${id}/reject`;
 //       body = JSON.stringify({ reason: finalReason });
 //     }
 
@@ -522,13 +522,13 @@ return (
 
 //   // const handleAction = async (id, status) => {
 //   //   try {
-//   //     let url = `http://localhost:5000/api/hod/uid-request/${id}/${status}`;
+//   //     let url = `/api/hod/uid-request/${id}/${status}`;
 //   //     let body = null;
 
 //   //     if (status === 'reject') {
 //   //       const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
 //   //       if (!finalReason) return alert('Please provide a reason for rejection.');
-//   //       url = `http://localhost:5000/api/hod/uid-request/${id}/reject`;
+//   //       url = `/api/hod/uid-request/${id}/reject`;
 //   //       body = JSON.stringify({ reason: finalReason });
 //   //     }
 

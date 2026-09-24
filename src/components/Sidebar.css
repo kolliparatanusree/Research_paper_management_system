@@ -1,6 +1,6 @@
 .main-content {
-  margin-left: 220px;
-  width: calc(100% - 220px);
+  margin-left: 260px;
+  width: calc(100% - 260px);
   padding: 30px;
   min-height: calc(100vh - 64px);
   background: linear-gradient(135deg, #f8fafc, #eef2ff);
@@ -12,11 +12,13 @@
   background-color: #111827;
   color: white;
   padding: 20px;
-  height: calc(100vh - 64px); /* Adjust if you have navbar */
+  height: calc(100vh - 64px);
   position: fixed;
-  top: 64px; /* Height of navbar */
+  top: 64px;
   left: 0;
   overflow-y: auto;
+  box-sizing: border-box;
+  z-index: 1000;
 }
 
 .sidebar-title {
@@ -35,6 +37,7 @@
   text-align: left;
   cursor: pointer;
   font-size: 16px;
+  box-sizing: border-box;
 }
 
 .sidebar button:hover,
@@ -43,3 +46,76 @@
   border-radius: 8px;
 }
 
+/* ---------- TABLETS ---------- */
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .main-content {
+    margin-left: 200px;
+    width: calc(100% - 200px);
+    padding: 20px;
+  }
+
+  .sidebar-title {
+    font-size: 20px;
+  }
+
+  .sidebar button {
+    padding: 11px 14px;
+    font-size: 15px;
+  }
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 600px) {
+  .sidebar {
+    width: 220px;
+    max-width: 75vw;
+    height: calc(100vh - 56px);
+    top: 56px;
+    padding: 16px;
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding: 16px;
+    min-height: calc(100vh - 56px);
+  }
+
+  .sidebar-title {
+    font-size: 19px;
+    margin-bottom: 20px;
+  }
+
+  .sidebar button {
+    padding: 11px 12px;
+    font-size: 14px;
+  }
+}
+
+/* ---------- VERY SMALL PHONES ---------- */
+
+@media (max-width: 380px) {
+  .sidebar {
+    width: 210px;
+    max-width: 78vw;
+  }
+
+  .main-content {
+    padding: 12px;
+  }
+
+  .sidebar-title {
+    font-size: 18px;
+  }
+
+  .sidebar button {
+    font-size: 13px;
+    padding: 10px;
+  }
+}

@@ -44,7 +44,7 @@ if (!userId) {
   return Swal.fire('Error', 'User not logged in', 'error');
 }
   console.log({ userId, currentPassword, newPassword });
-    await axios.post('http://localhost:5000/api/auth/change-password', {
+    await axios.post('/api/auth/change-password', {
       userId,
       currentPassword,
       newPassword
@@ -67,13 +67,13 @@ if (!userId) {
   e.preventDefault();
 
   try {
-    await axios.post('http://localhost:5000/api/auth/forgot-password', { email });
+    await axios.post('/api/auth/forgot-password', { email });
 
 Swal.fire('Success', 'OTP sent to email', 'success')
   .then(() => {
     navigate('/reset-password', { state: { email } });
   });
-    // await axios.post('http://localhost:5000/api/auth/forgot-password', {
+    // await axios.post('/api/auth/forgot-password', {
     //   email
     // });
 
@@ -96,7 +96,7 @@ Swal.fire('Success', 'OTP sent to email', 'success')
 
   try {
     const res = await axios.post(
-      'http://localhost:5000/api/auth/login',
+      '/api/auth/login',
       { userId, password }
     );
 
@@ -198,7 +198,7 @@ Swal.fire('Success', 'OTP sent to email', 'success')
   // }
 
   //   try {
-  //     const res = await axios.post('http://localhost:5000/api/auth/login', {
+  //     const res = await axios.post('/api/auth/login', {
   //       userId,
   //       password
   //     });

@@ -14,7 +14,7 @@ export default function DashboardCounts() {
 
   useEffect(() => {
   const facultyId = localStorage.getItem('userId');
-  fetch(`http://localhost:5000/api/dashboard/counts/${facultyId}`)
+  fetch(`/api/dashboard/counts/${facultyId}`)
     .then(res => res.json())
     .then(data => setCounts(data));
 }, []);

@@ -33,7 +33,7 @@ export default function DepartmentPublicationsSection({ department }) {
   useEffect(() => {
   const fetchComparison = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/faculty/department-comparison");
+      const res = await fetch("/api/faculty/department-comparison");
       const data = await res.json();
       setDeptComparison(data || []);
     } catch (err) {
@@ -49,7 +49,7 @@ useEffect(() => {
   const fetchTrend = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/faculty/department-trends"
+        "/api/faculty/department-trends"
       );
       const data = await res.json();
       setTrendData(Array.isArray(data) ? data : []);
@@ -65,7 +65,7 @@ useEffect(() => {
   // FETCH
   const fetchPublications = async () => {
     try {
-      let url = `http://localhost:5000/api/faculty/department-publications/${department}?`;
+      let url = `/api/faculty/department-publications/${department}?`;
 
       if (startDate) url += `startDate=${startDate}&`;
       if (endDate) url += `endDate=${endDate}&`;
@@ -94,7 +94,7 @@ useEffect(() => {
   const fetchLeaderboard = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/faculty/college-leaderboard"
+        "/api/faculty/college-leaderboard"
       );
       const data = await res.json();
       setLeaderboard(Array.isArray(data) ? data : []);

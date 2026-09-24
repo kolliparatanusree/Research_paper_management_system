@@ -60,7 +60,7 @@ export default function PublicationsSection({ userId }) {
     const fetchPublications = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/faculty/publication-history/${userId}`
+          `/api/faculty/publication-history/${userId}`
         );
         const data = await res.json();
         setPublications(data.publicationHistory || []);
@@ -202,7 +202,7 @@ export default function PublicationsSection({ userId }) {
 //     const fetchPublications = async () => {
 //       try {
 //         const res = await fetch(
-//           `http://localhost:5000/api/faculty/publication-history/${userId}`
+//           `/api/faculty/publication-history/${userId}`
 //         );
 //         const data = await res.json();
 //         setPublications(data.publicationHistory || []);
@@ -297,7 +297,7 @@ export default function PublicationsSection({ userId }) {
 // //     const fetchPublications = async () => {
 // //       try {
 // //         const res = await axios.get(
-// //           `http://localhost:5000/api/faculty/publication-history/${userId}`
+// //           `/api/faculty/publication-history/${userId}`
 // //         );
 
 // //         console.log("API RESPONSE:", res.data);

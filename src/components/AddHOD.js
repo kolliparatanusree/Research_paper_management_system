@@ -31,7 +31,7 @@ const AddHOD = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/main-admin/add-hod', {
+      const response = await fetch('/api/main-admin/add-hod', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({

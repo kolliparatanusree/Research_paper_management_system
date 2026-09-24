@@ -31,13 +31,13 @@ export default function RDcoordinatorUidApproval({ department: propDepartment })
         setLoading(true);
 
         if (!department) {
-          const profileRes = await fetch(`http://localhost:5000/api/faculty/${rdCoordinatorId}`);
+          const profileRes = await fetch(`/api/faculty/${rdCoordinatorId}`);
           const profileData = await profileRes.json();
           setDepartment(profileData.department);
         }
 
         const requestRes = await fetch(
-          `http://localhost:5000/api/rdcoordinator/uid-requests/${rdCoordinatorId}`
+          `/api/rdcoordinator/uid-requests/${rdCoordinatorId}`
         );
 
         if (!requestRes.ok) throw new Error('Failed to fetch UID requests');
@@ -78,14 +78,14 @@ export default function RDcoordinatorUidApproval({ department: propDepartment })
 
   const handleAction = async (id, status) => {
     try {
-      let url = `http://localhost:5000/api/rdcoordinator/uid-request/${id}/accept/${rdCoordinatorId}`;
+      let url = `/api/rdcoordinator/uid-request/${id}/accept/${rdCoordinatorId}`;
       let body = null;
 
       if (status === 'reject') {
         const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
         if (!finalReason) return Swal.fire('Error', 'Provide reason', 'error');
 
-        url = `http://localhost:5000/api/rdcoordinator/uid-request/${id}/reject/${rdCoordinatorId}`;
+        url = `/api/rdcoordinator/uid-request/${id}/reject/${rdCoordinatorId}`;
         body = JSON.stringify({ reason: finalReason });
       }
 
@@ -285,14 +285,14 @@ export default function RDcoordinatorUidApproval({ department: propDepartment })
 //       try {
 //         // If department not passed as prop, fetch from RD Coordinator profile
 //         if (!department) {
-//           const profileRes = await fetch(`http://localhost:5000/api/faculty/${rdCoordinatorId}`);
+//           const profileRes = await fetch(`/api/faculty/${rdCoordinatorId}`);
 //           const profileData = await profileRes.json();
 //           setDepartment(profileData.department);
 //         }
 
 //         // Fetch pending UID requests for this department
 //         const requestRes = await fetch(
-//           `http://localhost:5000/api/rdcoordinator/uid-requests/${rdCoordinatorId}`
+//           `/api/rdcoordinator/uid-requests/${rdCoordinatorId}`
 //         );
 
 //         if (!requestRes.ok) throw new Error('Failed to fetch UID requests');
@@ -312,14 +312,14 @@ export default function RDcoordinatorUidApproval({ department: propDepartment })
 
 //   const handleAction = async (id, status) => {
 //     try {
-//       let url = `http://localhost:5000/api/rdcoordinator/uid-request/${id}/accept/${rdCoordinatorId}`;
+//       let url = `/api/rdcoordinator/uid-request/${id}/accept/${rdCoordinatorId}`;
 //       let body = null;
 
 //       if (status === 'reject') {
 //         const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
 //         if (!finalReason) return Swal.fire('Error', 'Please provide a reason', 'error');
 
-//         url = `http://localhost:5000/api/rdcoordinator/uid-request/${id}/reject/${rdCoordinatorId}`;
+//         url = `/api/rdcoordinator/uid-request/${id}/reject/${rdCoordinatorId}`;
 //         body = JSON.stringify({ reason: finalReason });
 //       }
 

@@ -10,7 +10,7 @@ const RemoveFaculty = () => {
   useEffect(() => {
     const fetchFaculties = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/main-admin/faculties');
+        const response = await fetch('/api/main-admin/faculties');
         const data = await response.json();
         setFaculties(data);
         setFilteredFaculties(data);
@@ -54,7 +54,7 @@ const RemoveFaculty = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/main-admin/remove-faculty/${userId}`,
+        `/api/main-admin/remove-faculty/${userId}`,
         { method: 'DELETE' }
       );
       const data = await response.json();
@@ -135,7 +135,7 @@ export default RemoveFaculty;
 //   useEffect(() => {
 //     const fetchFaculties = async () => {
 //       try {
-//         const response = await fetch('http://localhost:5000/api/main-admin/faculties');
+//         const response = await fetch('/api/main-admin/faculties');
 //         const data = await response.json();
 //         setFaculties(data);
 //         setFilteredFaculties(data);
@@ -161,7 +161,7 @@ export default RemoveFaculty;
 //     if (!window.confirm('Are you sure you want to remove this faculty?')) return;
 
 //     try {
-//       const response = await fetch(`http://localhost:5000/api/main-admin/remove-faculty/${facultyId}`, {
+//       const response = await fetch(`/api/main-admin/remove-faculty/${facultyId}`, {
 //         method: 'DELETE',
 //       });
 //       const data = await response.json();

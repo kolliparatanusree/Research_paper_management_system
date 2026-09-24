@@ -30,7 +30,7 @@ export default function HodRegister() {
 
     try {
       const { confirmPassword, ...payload } = formData;
-      const res = await axios.post('http://localhost:5000/api/hod/register', payload);
+      const res = await axios.post('/api/hod/register', payload);
       alert(res.data.message);
       navigate('/hod-login');
     } catch (err) {

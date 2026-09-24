@@ -1,4 +1,5 @@
 /* ================= GLOBAL ================= */
+
 body {
   margin: 0;
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
@@ -7,12 +8,16 @@ body {
 }
 
 .uid-requests-container {
-  padding: 20px;
+  width: 100%;
   max-width: 1400px;
+  padding: 20px;
   margin: auto;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* ================= STATS BAR ================= */
+
 .stats-bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -27,6 +32,7 @@ body {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
   transition: 0.3s ease;
   border-left: 4px solid #1f6feb;
+  box-sizing: border-box;
 }
 
 .stat-card:hover {
@@ -46,6 +52,7 @@ body {
 }
 
 /* ================= TOOLBAR ================= */
+
 .toolbar {
   display: flex;
   gap: 10px;
@@ -56,15 +63,18 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   margin-bottom: 20px;
+  box-sizing: border-box;
 }
 
 .search-input {
   flex: 1;
+  min-width: 0;
   padding: 10px 14px;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   outline: none;
   transition: 0.2s;
+  box-sizing: border-box;
 }
 
 .search-input:focus {
@@ -77,6 +87,7 @@ body {
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   background: #fff;
+  box-sizing: border-box;
 }
 
 .export-btn,
@@ -111,15 +122,20 @@ body {
 }
 
 /* ================= ANALYTICS ================= */
+
 .analytics-section {
   background: #ffffff;
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 20px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* ================= REQUEST CARD ================= */
+
 .uid-request-card {
   background: #ffffff;
   border-radius: 14px;
@@ -128,6 +144,9 @@ body {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
   transition: 0.25s ease;
   border: 1px solid #eef2f7;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .uid-request-card:hover {
@@ -135,36 +154,44 @@ body {
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 }
 
-/* HEADER */
+/* ================= HEADER ================= */
+
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .title-section {
   cursor: pointer;
+  min-width: 0;
 }
 
 .title-row {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
 }
 
 .title-row h4 {
   margin: 0;
   font-size: 16px;
   color: #111827;
+  overflow-wrap: anywhere;
 }
 
 .faculty-name {
   margin: 4px 0 0;
   font-size: 13px;
   color: #6b7280;
+  overflow-wrap: anywhere;
 }
 
-/* NEW BADGE */
+/* ================= NEW BADGE ================= */
+
 .priority-badge {
   background: #ffedd5;
   color: #9a3412;
@@ -172,10 +199,13 @@ body {
   padding: 3px 8px;
   border-radius: 20px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
-/* EXPAND BUTTON */
+/* ================= EXPAND BUTTON ================= */
+
 .expand-btn {
+  flex-shrink: 0;
   background: transparent;
   border: none;
   font-size: 16px;
@@ -183,11 +213,14 @@ body {
   color: #6b7280;
 }
 
-/* BODY */
+/* ================= BODY ================= */
+
 .card-body {
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid #eef2f7;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .info-grid {
@@ -195,6 +228,7 @@ body {
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   font-size: 14px;
+  max-width: 100%;
 }
 
 .abstract-box {
@@ -203,14 +237,19 @@ body {
   padding: 10px;
   border-radius: 8px;
   font-size: 14px;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
 }
 
 /* ================= ACTION BUTTONS ================= */
+
 .actions {
   margin-top: 12px;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  max-width: 100%;
 }
 
 .actions button {
@@ -222,7 +261,8 @@ body {
   transition: 0.2s;
 }
 
-/* ACCEPT */
+/* ================= ACCEPT ================= */
+
 .accept {
   background: #10b981;
   color: white;
@@ -232,7 +272,8 @@ body {
   background: #059669;
 }
 
-/* REJECT */
+/* ================= REJECT ================= */
+
 .actions > button:nth-child(3),
 .reject {
   background: #ef4444;
@@ -243,20 +284,28 @@ body {
   background: #dc2626;
 }
 
-/* CONFIRM */
+/* ================= CONFIRM ================= */
+
 .actions select,
 .actions input {
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #e5e7eb;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* ================= PIE CHART ================= */
+
 .recharts-wrapper {
   margin: auto;
+  max-width: 100%;
 }
 
 /* ================= RESPONSIVE ================= */
+
+/* Tablets */
+
 @media (max-width: 1024px) {
   .stats-bar {
     grid-template-columns: repeat(2, 1fr);
@@ -265,15 +314,190 @@ body {
   .info-grid {
     grid-template-columns: 1fr;
   }
+
+  .uid-requests-container {
+    padding: 16px;
+  }
 }
 
+/* ================= MOBILE ================= */
+
 @media (max-width: 600px) {
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
+
+  .uid-requests-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    margin: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
+
+  /* Stats */
 
   .stats-bar {
     grid-template-columns: 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .stat-card {
+    width: 100%;
+    min-width: 0;
+    padding: 14px;
+  }
+
+  .stat-card h3 {
+    font-size: 20px;
+  }
+
+  /* Toolbar */
+
+  .toolbar {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .search-input {
+    width: 100%;
+    flex: none;
+  }
+
+  .toolbar select {
+    width: 100%;
+  }
+
+  .export-btn,
+  .pdf-btn,
+  .email-btn {
+    width: 100%;
+  }
+
+  /* Analytics */
+
+  .analytics-section {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+  }
+
+  /* Request cards */
+
+  .uid-request-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+
+  /* Card header */
+
+  .card-header {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .title-row {
+    gap: 7px;
+    flex-wrap: wrap;
+  }
+
+  .title-row h4 {
+    font-size: 15px;
+  }
+
+  .faculty-name {
+    font-size: 12px;
+  }
+
+  .priority-badge {
+    font-size: 10px;
+  }
+
+  /* Card body */
+
+  .card-body {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .abstract-box {
+    width: 100%;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* Actions */
+
+  .actions {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .actions button,
+  .actions select,
+  .actions input {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .actions button {
+    flex: 1 1 auto;
+  }
+
+  /* Chart */
+
+  .recharts-wrapper {
+    max-width: 100% !important;
+  }
+}
+
+/* ================= VERY SMALL PHONES ================= */
+
+@media (max-width: 380px) {
+
+  .uid-requests-container {
+    padding: 8px;
+  }
+
+  .stat-card {
+    padding: 12px;
+  }
+
+  .toolbar {
+    padding: 8px;
+  }
+
+  .uid-request-card {
+    padding: 10px;
+  }
+
+  .title-row h4 {
+    font-size: 14px;
+  }
+
+  .faculty-name {
+    font-size: 11px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actions button,
+  .actions select,
+  .actions input {
+    width: 100%;
   }
 }

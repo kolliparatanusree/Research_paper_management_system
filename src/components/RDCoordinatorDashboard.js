@@ -30,7 +30,7 @@ export default function RDCoordinatorDashboard() {
     if (!userId) return;
 
     axios
-      .get(`http://localhost:5000/api/auth/notifications/unread-count/${userId}`)
+      .get(`/api/auth/notifications/unread-count/${userId}`)
       .then((res) => setNotifCount(res.data.count))
       .catch((err) => console.error(err));
   }, 10000);
@@ -40,7 +40,7 @@ export default function RDCoordinatorDashboard() {
   // Fetch notifications
   // useEffect(() => {
   //   if (!userId) return;
-  //   axios.get(`http://localhost:5000/api/notifications/${userId}`)
+  //   axios.get(`/api/notifications/${userId}`)
   //     .then(res => setNotifications(res.data))
   //     .catch(err => console.error(err));
   // }, []);
@@ -50,14 +50,14 @@ export default function RDCoordinatorDashboard() {
     if (!profile?.department) return;
     const department = profile.department;
 
-    axios.get(`http://localhost:5000/api/faculty/count/${department}`)
+    axios.get(`/api/faculty/count/${department}`)
       .then(res => setFacultyCount(res.data.count));
 
     // Pending UID requests for RD Coordinator (after HOD approval)
-    axios.get(`http://localhost:5000/api/rdcoordinator/uid/pending/${department}`)
+    axios.get(`/api/rdcoordinator/uid/pending/${department}`)
       .then(res => setPendingUidCount(res.data.count));
 
-    axios.get(`http://localhost:5000/api/rdcoordinator/uid/approved/${department}`)
+    axios.get(`/api/rdcoordinator/uid/approved/${department}`)
       .then(res => setApprovedUidCount(res.data.count));
 
   }, [profile]);
@@ -80,7 +80,7 @@ export default function RDCoordinatorDashboard() {
         });
 
         setLoadingProfile(true);
-        const res = await axios.get(`http://localhost:5000/api/faculty/${userId}`);
+        const res = await axios.get(`/api/faculty/${userId}`);
         const data = res.data;
 
         setProfile({
@@ -167,7 +167,7 @@ export default function RDCoordinatorDashboard() {
   setNotifCount(0);
 
   try {
-    await axios.put(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`);
+    await axios.put(`/api/auth/notifications/mark-read/${userId}`);
   } catch (err) {
     console.error(err);
   }
@@ -183,7 +183,7 @@ export default function RDCoordinatorDashboard() {
     <img
       src={
         profile?.profilePic
-          ? `http://localhost:5000/${profile.profilePic}`
+          ? `/${profile.profilePic}`
           : "/default-profile.png"
       }
       alt="Profile"

@@ -328,3 +328,197 @@ button {
   align-items: center;
   gap: 10px;
 }
+
+/* ================================
+   RESPONSIVE DESIGN
+   ================================ */
+
+/* Tablets */
+@media (max-width: 900px) {
+
+  .publications-container {
+    padding: 16px;
+  }
+
+  .publication-item {
+    max-width: 100%;
+  }
+
+  .summary-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .analytics-modal {
+    width: 90%;
+    max-width: 600px;
+  }
+}
+
+
+/* Mobile phones */
+@media (max-width: 600px) {
+
+  .publications-container {
+    padding: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .publications-container h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  /* Filters */
+  .filter-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .filter-container input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .filter-container button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Publication cards */
+  .publication-item {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    padding: 12px;
+    margin: 10px 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .pub-title {
+    font-size: 14px;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+
+  .view-btn {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Summary cards */
+  .summary-container {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .summary-card {
+    padding: 12px;
+  }
+
+  /* Leaderboard */
+  .leaderboard-box {
+    padding: 12px;
+    overflow-x: auto;
+  }
+
+  .leaderboard-row {
+    min-width: 280px;
+  }
+
+  /* Ranking table */
+  .ranking-box {
+    padding: 12px;
+    overflow-x: auto;
+  }
+
+  .ranking-table {
+    min-width: 550px;
+  }
+
+  /* Charts */
+  .chart-box {
+    padding: 10px;
+    overflow-x: auto;
+  }
+
+  /* Normal popup */
+  .popup-card {
+    width: calc(100% - 30px);
+    max-width: none;
+    max-height: 85vh;
+    box-sizing: border-box;
+    padding: 20px;
+  }
+
+  /* Analytics popup */
+  .analytics-modal {
+    width: calc(100% - 24px);
+    max-width: none;
+    max-height: 85vh;
+    box-sizing: border-box;
+    padding: 15px;
+  }
+
+  .analytics-header h3 {
+    font-size: 17px;
+  }
+
+  /* Analytics ranking rows */
+  .rank-row {
+    grid-template-columns: 35px 1fr auto;
+    gap: 6px;
+    font-size: 13px;
+  }
+
+  .rank {
+    width: 35px;
+  }
+
+  .dept-name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .score {
+    white-space: nowrap;
+  }
+}
+
+
+/* Very small phones */
+@media (max-width: 380px) {
+
+  .publications-container {
+    padding: 8px;
+  }
+
+  .publications-container h2 {
+    font-size: 18px;
+  }
+
+  .summary-card h2 {
+    font-size: 20px;
+  }
+
+  .publication-item {
+    padding: 10px;
+  }
+
+  .pub-title {
+    font-size: 13px;
+  }
+
+  .popup-card {
+    width: calc(100% - 16px);
+    padding: 15px;
+  }
+
+  .analytics-modal {
+    width: calc(100% - 16px);
+    padding: 12px;
+  }
+}

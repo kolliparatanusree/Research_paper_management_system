@@ -27,13 +27,13 @@ export default function UIDStatusList({ facultyId }) {
       setLoading(true);
       try {
         const res = await fetch(
-          `http://localhost:5000/api/faculty/uid-requests/${facultyId}`
+          `/api/faculty/uid-requests/${facultyId}`
         );
         const data = await res.json();
         setAllRequests(Array.isArray(data) ? data : []);
 
         const rejRes = await fetch(
-          `http://localhost:5000/api/faculty/rejected-uids/${facultyId}`
+          `/api/faculty/rejected-uids/${facultyId}`
         );
         const rejectedData = await rejRes.json();
         setRejectedRequests(rejectedData);
@@ -87,7 +87,7 @@ export default function UIDStatusList({ facultyId }) {
   const handleUpdate = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/faculty/uid-request/${editingRequest._id}/edit/${facultyId}`,
+        `/api/faculty/uid-request/${editingRequest._id}/edit/${facultyId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -348,7 +348,7 @@ export default function UIDStatusList({ facultyId }) {
 // const handleUpdate = async () => {
 //   try {
 //     const res = await fetch(
-//       `http://localhost:5000/api/faculty/uid-request/${editingRequest._id}/edit/${facultyId}`,
+//       `/api/faculty/uid-request/${editingRequest._id}/edit/${facultyId}`,
 //       {
 //         method: 'PUT',
 //         headers: { 'Content-Type': 'application/json' },
@@ -380,18 +380,18 @@ export default function UIDStatusList({ facultyId }) {
 //     const fetchData = async () => {
 //       setLoading(true); // Start loading
 //       try {
-//         // const res = await fetch('http://localhost:5000/api/hod/uid-requests');
+//         // const res = await fetch('/api/hod/uid-requests');
 //         // const data = await res.json();
 //         // setAllRequests(data.filter(req => req.facultyId === facultyId));
 //         const res = await fetch(
-//   `http://localhost:5000/api/faculty/uid-requests/${facultyId}`
+//   `/api/faculty/uid-requests/${facultyId}`
 // );
 // const data = await res.json();
 // setAllRequests(Array.isArray(data) ? data : []);
 
 
 
-//         const rejRes = await fetch(`http://localhost:5000/api/faculty/rejected-uids/${facultyId}`);
+//         const rejRes = await fetch(`/api/faculty/rejected-uids/${facultyId}`);
 //         const rejectedData = await rejRes.json();
 //         setRejectedRequests(rejectedData);
 //       } catch (err) {

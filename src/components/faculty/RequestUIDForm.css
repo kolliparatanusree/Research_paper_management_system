@@ -1,209 +1,626 @@
-/* ===== THEME ===== */
+/* =========================================================
+   REQUEST UID FORM
+   Professional animated academic/research background
+   Works with your existing JSX
+========================================================= */
+
 :root {
-  --primary: #4f46e5;
-  --primary-light: #6366f1;
-  --bg: #f8fafc;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: #dbe3ef;
 }
 
-/* ===== PAGE ===== */
-.centered-form-container {
+/* =========================================================
+   PAGE
+========================================================= */
+
+.request-uid-page {
   min-height: 100vh;
+  width: 100%;
+  padding: 40px 25px;
+
   display: flex;
   justify-content: center;
-  align-items: center;
-  background: radial-gradient(circle at top left, #eef2ff, #f8fafc 60%);
-  padding: 20px;
+  align-items: flex-start;
+
+  position: relative;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eaf4ff 0%,
+      #f5f9ff 45%,
+      #e8f2ff 100%
+    );
 }
 
-/* ===== CARD (FINAL GLASS BLUE) ===== */
+/* =========================================================
+   ANIMATED BACKGROUND
+========================================================= */
+
+/* Large moving blue glow */
+.request-uid-page::before {
+  content: "";
+  position: absolute;
+
+  width: 550px;
+  height: 550px;
+
+  top: -220px;
+  left: -180px;
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(37, 99, 235, 0.20),
+    rgba(96, 165, 250, 0.08),
+    transparent 70%
+  );
+
+  animation: floatingGlow1 12s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Second moving glow */
+.request-uid-page::after {
+  content: "";
+  position: absolute;
+
+  width: 500px;
+  height: 500px;
+
+  right: -180px;
+  bottom: -200px;
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(14, 165, 233, 0.18),
+    rgba(59, 130, 246, 0.06),
+    transparent 70%
+  );
+
+  animation: floatingGlow2 15s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* =========================================================
+   MOVING GLOW ANIMATIONS
+========================================================= */
+
+@keyframes floatingGlow1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(130px, 100px) scale(1.15);
+  }
+
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes floatingGlow2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(-120px, -90px) scale(1.2);
+  }
+
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+/* =========================================================
+   FORM CARD
+========================================================= */
+
 .uid-form-card {
-  padding: 30px;
-  border-radius: 18px;
-  width: 100%;
-  max-width: 900px;
+  position: relative;
+  z-index: 2;
 
-  /* ✅ Your requested blue shade */
-  background: rgba(175, 213, 230, 0.5);
+  width: min(900px, 100%);
 
-  /* Glass effect */
-  /* backdrop-filter: blur(12px); */
+  padding: 32px;
 
-  /* Text readability */
-  color: #1e293b;
+  border-radius: 22px;
 
-  /* Glow */
-  /* box-shadow:
-    0 15px 40px rgba(175,213,230,0.4),
-    0 0 25px rgba(175,213,230,0.6),
-    inset 0 0 15px rgba(255,255,255,0.3); */
+  background: rgba(255, 255, 255, 0.94);
 
-  border: 1px solid rgba(255,255,255,0.4);
+  border: 1px solid rgba(255, 255, 255, 0.9);
 
-  transition: all 0.3s ease;
+  box-shadow:
+    0 20px 50px rgba(30, 64, 175, 0.12),
+    0 5px 15px rgba(15, 23, 42, 0.05);
+
+  animation: cardAppear 0.7s ease-out;
 }
 
-.uid-form-card:hover {
-  transform: translateY(-4px);
-  /* box-shadow:
-    0 20px 50px rgba(175,213,230,0.6),
-    0 0 35px rgba(175,213,230,0.8); */
+/* Card entrance */
+
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* ===== TITLE ===== */
+/* =========================================================
+   FORM TITLE
+========================================================= */
+
 .form-title {
   text-align: center;
-  color: var(--primary);
-  font-size: 24px;
+
+  margin: 0 0 28px;
+
+  color: #1e40af;
+
+  font-size: 27px;
   font-weight: 700;
-  margin-bottom: 20px;
-  text-shadow: 0 2px 10px rgba(79,70,229,0.2);
+
+  position: relative;
 }
 
-/* ===== FORM ===== */
+/* Small line underneath */
+
+.form-title::after {
+  content: "";
+
+  display: block;
+
+  width: 55px;
+  height: 3px;
+
+  margin: 9px auto 0;
+
+  border-radius: 10px;
+
+  background: linear-gradient(
+    90deg,
+    #2563eb,
+    #38bdf8
+  );
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
 .uid-form {
   display: flex;
   flex-direction: column;
 }
 
-/* ===== LABEL ===== */
+/* =========================================================
+   LABELS
+========================================================= */
+
+.uid-form > label,
 .uid-form label {
-  margin-top: 12px;
-  margin-bottom: 5px;
+  margin-top: 14px;
+  margin-bottom: 6px;
+
+  color: var(--text);
+
+  font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
 }
 
-/* ===== INPUT ===== */
+/* =========================================================
+   INPUTS
+========================================================= */
+
 .uid-form input,
 .uid-form select,
 .uid-form textarea {
-  padding: 11px 13px;
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 12px 14px;
+
+  border: 1px solid var(--border);
+
   border-radius: 10px;
-  border: 1px solid #d1d5db;
+
+  background: #f8fafc;
+
+  color: #1e293b;
+
   font-size: 14px;
 
-  /* glass input look */
-  background: rgba(255,255,255,0.8);
+  outline: none;
 
-  transition: 0.25s;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    transform 0.2s ease;
 }
 
-/* Hover glow */
+/* =========================================================
+   INPUT HOVER
+========================================================= */
+
 .uid-form input:hover,
 .uid-form select:hover,
 .uid-form textarea:hover {
-  border-color: var(--primary-light);
-  box-shadow: 0 0 8px rgba(99,102,241,0.25);
+  border-color: #93c5fd;
+
+  background: #ffffff;
 }
 
-/* Focus glow */
+/* =========================================================
+   INPUT FOCUS
+========================================================= */
+
 .uid-form input:focus,
 .uid-form select:focus,
 .uid-form textarea:focus {
-  border-color: var(--primary);
-  background: #fff;
-  outline: none;
+  border-color: #2563eb;
+
+  background: #ffffff;
+
   box-shadow:
-    0 0 0 3px rgba(79,70,229,0.2),
-    0 0 12px rgba(79,70,229,0.3);
+    0 0 0 3px rgba(37, 99, 235, 0.10),
+    0 4px 12px rgba(37, 99, 235, 0.08);
+
+  transform: translateY(-1px);
 }
 
-/* Readonly */
+/* =========================================================
+   READ ONLY FIELDS
+========================================================= */
+
 .uid-form input[readonly] {
-  background: rgba(255,255,255,0.6);
+  background: #eef4fb;
+
+  color: #475569;
+
+  border-color: #dbe7f3;
+
   cursor: not-allowed;
 }
 
-/* ===== RADIO ===== */
-.radio-group {
-  display: flex;
-  gap: 20px;
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
+.uid-form textarea {
+  min-height: 90px;
+
+  resize: vertical;
+
+  line-height: 1.5;
 }
 
-.radio-group input {
-  accent-color: var(--primary);
+/* =========================================================
+   RADIO BUTTON AREA
+========================================================= */
+
+.radio-group {
+  display: flex;
+
+  align-items: center;
+
+  gap: 25px;
+
+  margin-top: 5px;
+
+  padding: 10px 14px;
+
+  border-radius: 10px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+}
+
+.radio-group label {
+  margin: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.radio-group input[type="radio"] {
+  width: auto;
+
+  accent-color: #2563eb;
+
+  cursor: pointer;
+
   transform: scale(1.1);
 }
 
-/* ===== COAUTHOR ===== */
+/* =========================================================
+   CO-AUTHOR TITLE
+========================================================= */
+
 .coauthor-title {
-  margin-top: 15px;
-  color: var(--primary);
-  font-weight: 600;
+  margin: 25px 0 5px;
+
+  padding-bottom: 8px;
+
+  color: #1e40af;
+
+  font-size: 17px;
+
+  border-bottom: 1px solid #e2e8f0;
 }
+
+/* =========================================================
+   CO-AUTHOR BLOCK
+========================================================= */
 
 .coauthor-block {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-  padding: 12px;
-  border-radius: 10px;
+  display: grid;
 
-  background: rgba(255,255,255,0.6);
-  border: 1px solid rgba(255,255,255,0.5);
+  grid-template-columns: 1fr 1fr;
 
-  box-shadow: 0 4px 12px rgba(175,213,230,0.2);
-}
+  gap: 12px;
 
-.coauthor-block input,
-.coauthor-block select {
-  flex: 1;
-}
+  margin-top: 12px;
 
-/* ===== BUTTON ===== */
-.submit-btn {
-  margin-top: 20px;
-  padding: 13px;
-  border: none;
+  padding: 15px;
+
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: 0.3s;
+
+  background: #f8fbff;
+
+  border: 1px solid #dbeafe;
+
+  animation: authorAppear 0.35s ease-out;
 }
 
-/* Shine */
+@keyframes authorAppear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Other affiliation input occupies full row */
+
+.coauthor-block input:last-child {
+  grid-column: 1 / -1;
+}
+
+/* =========================================================
+   SUBMIT BUTTON
+========================================================= */
+
+.submit-btn {
+  position: relative;
+
+  margin-top: 28px;
+
+  width: 100%;
+
+  padding: 13px 20px;
+
+  border: none;
+
+  border-radius: 11px;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #1d4ed8
+  );
+
+  color: white;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  overflow: hidden;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* Moving shine */
+
 .submit-btn::before {
   content: "";
+
   position: absolute;
-  inset: 0;
+
+  top: 0;
+  left: -120%;
+
+  width: 70%;
+  height: 100%;
+
   background: linear-gradient(
-    120deg,
+    90deg,
     transparent,
-    rgba(255,255,255,0.4),
+    rgba(255, 255, 255, 0.35),
     transparent
   );
-  transform: translateX(-100%);
-  transition: 0.6s;
+
+  transform: skewX(-20deg);
+
+  transition: left 0.6s ease;
 }
 
 .submit-btn:hover::before {
-  transform: translateX(100%);
+  left: 130%;
 }
 
-/* Glow */
 .submit-btn:hover {
   transform: translateY(-2px);
+
   box-shadow:
-    0 10px 25px rgba(70,144,229,0.4),
-    0 0 15px rgba(99,102,241,0.5);
+    0 10px 25px rgba(37, 99, 235, 0.25);
 }
 
 .submit-btn:active {
-  transform: scale(0.98);
+  transform: translateY(0) scale(0.99);
 }
 
-/* ===== MOBILE ===== */
-@media (max-width: 768px) {
+/* =========================================================
+   SELECT ARROW / TEXT
+========================================================= */
+
+.uid-form select {
+  cursor: pointer;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .request-uid-page {
+    padding: 30px 20px;
+  }
+
   .uid-form-card {
-    padding: 20px;
+    padding: 28px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+  .request-uid-page {
+    padding: 20px 12px;
+
+    align-items: flex-start;
+  }
+
+  .uid-form-card {
+    width: 100%;
+
+    padding: 20px 16px;
+
+    border-radius: 17px;
+  }
+
+  .form-title {
+    font-size: 23px;
+
+    margin-bottom: 22px;
+  }
+
+  .uid-form > label,
+  .uid-form label {
+    font-size: 13px;
+  }
+
+  .uid-form input,
+  .uid-form select,
+  .uid-form textarea {
+    padding: 11px 12px;
+
+    font-size: 14px;
+  }
+
+  .radio-group {
+    gap: 18px;
+
+    padding: 10px 12px;
   }
 
   .coauthor-block {
+    grid-template-columns: 1fr;
+
+    padding: 12px;
+  }
+
+  .coauthor-block input:last-child {
+    grid-column: auto;
+  }
+
+  .submit-btn {
+    padding: 13px;
+
+    font-size: 14px;
+  }
+}
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+  .request-uid-page {
+    padding: 15px 8px;
+  }
+
+  .uid-form-card {
+    padding: 17px 12px;
+  }
+
+  .form-title {
+    font-size: 21px;
+  }
+
+  .radio-group {
     flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 8px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   Accessibility
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .request-uid-page::before,
+  .request-uid-page::after,
+  .uid-form-card,
+  .coauthor-block {
+    animation: none;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
   }
 }

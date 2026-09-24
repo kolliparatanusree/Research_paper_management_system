@@ -33,7 +33,7 @@ const AddFacultyForm = () => {
   }
 
   try {
-    const response = await fetch('http://localhost:5000/api/main-admin/add-faculty', {
+    const response = await fetch('/api/main-admin/add-faculty', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

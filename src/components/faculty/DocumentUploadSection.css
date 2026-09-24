@@ -183,3 +183,201 @@
   }
 }
 
+/* =========================================================
+   RESPONSIVE ONLY — LAPTOP/DESKTOP CSS ABOVE IS UNCHANGED
+   ========================================================= */
+
+/* ===== TABLETS ===== */
+@media (max-width: 1024px) {
+  .approved-uid-section {
+    max-width: 95%;
+    padding: 18px;
+  }
+
+  .uid-card {
+    padding: 20px;
+  }
+
+  .edit-btn {
+    top: 70px;
+    right: 16px;
+  }
+
+  .uid-card input,
+  .uid-card textarea,
+  .uid-card select {
+    font-size: 15px;
+  }
+}
+
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .approved-uid-section {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+
+  .approved-uid-section input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 15px;
+    padding: 11px;
+  }
+
+  .uid-card {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+
+  .uid-card h3 {
+    padding-right: 0;
+    word-break: break-word;
+  }
+
+  .uid-card p {
+    word-break: break-word;
+  }
+
+  .edit-btn {
+    top: 5px;
+    right: 10px;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .uid-card input,
+  .uid-card textarea,
+  .uid-card select {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
+  /* Co-author inputs stay inside the card */
+  .uid-card input[type="text"] + input[type="text"] {
+    margin-left: 0;
+  }
+
+  .uid-card ul {
+    padding-left: 18px;
+  }
+
+  .uid-card li {
+    word-break: break-word;
+  }
+
+  .form-group {
+    width: 100%;
+  }
+
+  .form-group input[type="file"] {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+
+/* ===== SMALL PHONES ===== */
+@media (max-width: 480px) {
+  .approved-uid-section {
+    padding: 8px;
+  }
+
+  .uid-card {
+    padding: 13px;
+    border-radius: 10px;
+  }
+
+  .uid-card h3 {
+    font-size: 18px;
+  }
+
+  .uid-card p {
+    font-size: 14px;
+  }
+
+  .uid-card input,
+  .uid-card textarea,
+  .uid-card select {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .edit-btn {
+    top: 5px;
+    right: 5px;
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
+  .add-coauthor-btn {
+    width: 100%;
+    padding: 8px 10px;
+  }
+
+  .cancel-btn {
+    padding: 6px 10px;
+  }
+
+  .uid-card > button:last-child {
+    width: 100%;
+    padding: 10px 12px;
+  }
+}
+
+
+/* ===== VERY SMALL PHONES ===== */
+@media (max-width: 360px) {
+  .approved-uid-section {
+    padding: 6px;
+  }
+
+  .uid-card {
+    padding: 11px;
+  }
+
+  .uid-card h3 {
+    font-size: 16px;
+  }
+
+  .uid-card p {
+    font-size: 13px;
+  }
+
+  .edit-btn {
+    font-size: 11px;
+    padding: 4px 7px;
+  }
+}
+
+/* ===== VIEW / HIDE DETAILS BUTTON ===== */
+.see-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: #4f46e5;
+  border: none;
+  padding: 6px 0;
+  margin: 2px 0 14px 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.see-more-btn:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+/* ===== EXPANDED INFORMATION ===== */
+.uid-more-info {
+  margin-top: 8px;
+  padding-top: 8px;
+}

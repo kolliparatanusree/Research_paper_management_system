@@ -37,7 +37,7 @@ const AddUserForm = () => {
 
     const body = { ...form };
     try {
-      const res = await fetch('http://localhost:5000/api/main-admin/add-user', {
+      const res = await fetch('/api/main-admin/add-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -201,7 +201,7 @@ export default AddUserForm;
 
 //     try {
 //       const response = await fetch(
-//         'http://localhost:5000/api/main-admin/add-user',
+//         '/api/main-admin/add-user',
 //         {
 //           method: 'POST',
 //           headers: { 'Content-Type': 'application/json' },
@@ -407,13 +407,13 @@ export default AddUserForm;
 // //   const getApiUrl = () => {
 // //     switch (form.role) {
 // //       case 'faculty':
-// //         return 'http://localhost:5000/api/main-admin/add-faculty';
+// //         return '/api/main-admin/add-faculty';
 // //       case 'hod':
-// //         return 'http://localhost:5000/api/main-admin/add-hod';
+// //         return '/api/main-admin/add-hod';
 // //       case 'rdCoordinator':
-// //         return 'http://localhost:5000/api/main-admin/add-rd-coordinator';
+// //         return '/api/main-admin/add-rd-coordinator';
 // //       case 'rdDean':
-// //         return 'http://localhost:5000/api/main-admin/add-rd-dean';
+// //         return '/api/main-admin/add-rd-dean';
 // //       default:
 // //         return '';
 // //     }

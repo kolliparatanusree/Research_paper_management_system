@@ -63,7 +63,7 @@ const handleNotificationClick = async () => {
   setShowNotifications(!showNotifications);
 
   if (!showNotifications) {
-    await fetch(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`, {
+    await fetch(`/api/auth/notifications/mark-read/${userId}`, {
       method: 'PUT'
     });
   }
@@ -73,7 +73,7 @@ useEffect(() => {
   const userId = localStorage.getItem('userId');
   if (!userId) return;
 
-  fetch(`http://localhost:5000/api/notifications/${userId}`)
+  fetch(`/api/notifications/${userId}`)
     .then(res => res.json())
     .then(data => setNotifications(data))
     .catch(err => console.error(err));
@@ -82,7 +82,7 @@ useEffect(() => {
 useEffect(() => {
   const fetchCounts = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/dashboard/rddean-counts');
+      const res = await fetch('/api/dashboard/rddean-counts');
       const data = await res.json();
       setCounts(data);
     } catch (err) {
@@ -106,7 +106,7 @@ useEffect(() => {
 
   useEffect(() => {
     if (activeSection === 'approved-pids') {
-      fetch('http://localhost:5000/api/admin/approved-pids')
+      fetch('/api/admin/approved-pids')
         .then(res => res.json())
         .then(data => setApprovedPids(data))
        .catch(err => {
@@ -130,7 +130,7 @@ useEffect(() => {
 
   useEffect(() => {
     if (activeSection === 'faculty-uid') {
-      fetch('http://localhost:5000/api/hod/uid-requests')
+      fetch('/api/hod/uid-requests')
         .then(res => res.json())
         .then(data => {
           const filtered = Array.isArray(data) ? data.filter(row => row.hodAccept && row.principalAccept && !row.adminAccept) : [];
@@ -145,7 +145,7 @@ useEffect(() => {
 
   useEffect(() => {
     if (activeSection === 'paper-submission') {
-      fetch('http://localhost:5000/api/admin/all-submitted-documents')
+      fetch('/api/admin/all-submitted-documents')
         .then(res => res.json())
         .then(data => {
           setSubmissions(data);
@@ -160,7 +160,7 @@ useEffect(() => {
   useEffect(() => {
   const fetchAnalytics = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/dashboard/analytics");
+      const res = await fetch("/api/dashboard/analytics");
       const data = await res.json();
 
       setMonthlyData(data.monthly || []);
@@ -244,7 +244,7 @@ useEffect(() => {
 
 
       try {
-        const res = await fetch(`http://localhost:5000/api/admin/document-submission/${id}/reject`, {
+        const res = await fetch(`/api/admin/document-submission/${id}/reject`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ reason })
@@ -263,7 +263,7 @@ useEffect(() => {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/document-submission/${id}/accept`, {
+      const res = await fetch(`/api/admin/document-submission/${id}/accept`, {
         method: 'PUT'
       });
 
@@ -353,7 +353,7 @@ if (status === 'reject') {
   body = JSON.stringify({ reason });
 }
 
-const res = await fetch(`http://localhost:5000/api/admin/uid-request/${id}/${status}`, {
+const res = await fetch(`/api/admin/uid-request/${id}/${status}`, {
   method: 'PUT',
   headers: { 'Content-Type': 'application/json' },
   body
@@ -368,7 +368,7 @@ Swal.fire('Success', data.message, 'success');
       //   body = JSON.stringify({ reason });
       // }
 
-      // const res = await fetch(`http://localhost:5000/api/admin/uid-request/${id}/${status}`, {
+      // const res = await fetch(`/api/admin/uid-request/${id}/${status}`, {
       //   method: 'PUT',
       //   headers: { 'Content-Type': 'application/json' },
       //   body
@@ -1220,7 +1220,7 @@ const workload =
 
 //   useEffect(() => {
 //     if (activeSection === 'approved-pids') {
-//       fetch('http://localhost:5000/api/admin/approved-pids')
+//       fetch('/api/admin/approved-pids')
 //         .then(res => res.json())
 //         .then(data => setApprovedPids(data))
 //         .catch(err => {
@@ -1233,7 +1233,7 @@ const workload =
 
 //   useEffect(() => {
 //     if (activeSection === 'faculty-uid') {
-//       fetch('http://localhost:5000/api/hod/uid-requests')
+//       fetch('/api/hod/uid-requests')
 //         .then(res => res.json())
 //         .then(data => {
 //           const filtered = Array.isArray(data) ? data.filter(row => row.hodAccept && row.principalAccept && !row.adminAccept) : [];
@@ -1248,7 +1248,7 @@ const workload =
 
 //   useEffect(() => {
 //     if (activeSection === 'paper-submission') {
-//       fetch('http://localhost:5000/api/admin/all-submitted-documents')
+//       fetch('/api/admin/all-submitted-documents')
 //         .then(res => res.json())
 //         .then(data => {
 //           setSubmissions(data);
@@ -1266,7 +1266,7 @@ const workload =
 //       if (!reason?.trim()) return alert('Rejection reason is required.');
 
 //       try {
-//         const res = await fetch(`http://localhost:5000/api/admin/document-submission/${id}/reject`, {
+//         const res = await fetch(`/api/admin/document-submission/${id}/reject`, {
 //           method: 'PUT',
 //           headers: { 'Content-Type': 'application/json' },
 //           body: JSON.stringify({ reason })
@@ -1284,7 +1284,7 @@ const workload =
 //     }
 
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/admin/document-submission/${id}/accept`, {
+//       const res = await fetch(`/api/admin/document-submission/${id}/accept`, {
 //         method: 'PUT'
 //       });
 
@@ -1307,7 +1307,7 @@ const workload =
 //         body = JSON.stringify({ reason });
 //       }
 
-//       const res = await fetch(`http://localhost:5000/api/admin/uid-request/${id}/${status}`, {
+//       const res = await fetch(`/api/admin/uid-request/${id}/${status}`, {
 //         method: 'PUT',
 //         headers: { 'Content-Type': 'application/json' },
 //         body

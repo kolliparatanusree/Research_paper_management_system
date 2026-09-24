@@ -15,8 +15,8 @@ const [departments, setDepartments] = useState([]);
       try {
         const url =
           type === "faculty"
-            ? "http://localhost:5000/api/principal/faculty"
-            : "http://localhost:5000/api/principal/hod";
+            ? "/api/principal/faculty"
+            : "/api/principal/hod";
         const res = await axios.get(url);
         setList(res.data);
         setFilteredList(res.data);
@@ -34,8 +34,8 @@ const [departments, setDepartments] = useState([]);
     try {
       const url =
         type === "faculty"
-          ? "http://localhost:5000/api/principal/faculty"
-          : "http://localhost:5000/api/principal/hod";
+          ? "/api/principal/faculty"
+          : "/api/principal/hod";
 
       const res = await axios.get(url);
 
@@ -86,8 +86,8 @@ useEffect(() => {
     try {
       const url =
         type === "faculty"
-          ? `http://localhost:5000/api/principal/faculty-details/${userId}`
-          : `http://localhost:5000/api/principal/hod-details/${userId}`;
+          ? `/api/principal/faculty-details/${userId}`
+          : `/api/principal/hod-details/${userId}`;
       const res = await axios.get(url);
       setSelectedPerson(res.data);
     } catch (err) {
@@ -137,7 +137,7 @@ useEffect(() => {
         {filteredList.map(p => (
           <div key={p.userId} className="profile-card">
             <img
-  src={`http://localhost:5000/${p.profilePic}`}
+  src={`/${p.profilePic}`}
   alt="profile"
   className="profile-img"
 />
@@ -163,11 +163,11 @@ useEffect(() => {
             </button>
             <div style={{ textAlign: "center", marginBottom: 20 }}>
               {/* <img
-  src={`http://localhost:5000/${selectedPerson.profilePic}`}
+  src={`/${selectedPerson.profilePic}`}
   alt="profile"
   className="modal-profile-img"
 /> */}<img
-  src={`http://localhost:5000/${selectedPerson.profilePic}`}
+  src={`/${selectedPerson.profilePic}`}
   alt="profile"
   className="modal-profile-img"
   onError={(e) => (e.target.src = "/default-avatar.png")}

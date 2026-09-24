@@ -148,7 +148,7 @@ const handleRemovePublication = (idx) => {
       formData.append('profilePic', profilePic);
 
       await axios.put(
-        `http://localhost:5000/api/auth/complete-profile/${userId}`,
+        `/api/auth/complete-profile/${userId}`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
@@ -534,7 +534,7 @@ const handleRemovePublication = (idx) => {
 //       }
 
 //       await axios.put(
-//         `http://localhost:5000/api/auth/complete-profile/${userId}`,
+//         `/api/auth/complete-profile/${userId}`,
 //         formData
 //       );
 
@@ -806,7 +806,7 @@ const handleRemovePublication = (idx) => {
 //     ).join('; ');
 
 //     const response = await axios.put(
-//       `http://localhost:5000/api/auth/complete-profile/${userId}`,
+//       `/api/auth/complete-profile/${userId}`,
 //       {
 //         educationDetails: eduStr,
 //         experienceDetails: expStr,
@@ -829,7 +829,7 @@ const handleRemovePublication = (idx) => {
 // //     e.preventDefault();
 
 // //     try {
-// //       await axios.put(`http://localhost:5000/api/auth/complete-profile/${userId}`, {
+// //       await axios.put(`/api/auth/complete-profile/${userId}`, {
 // //         educationDetails: educationList,
 // //         experienceDetails: experienceList,
 // //         publications,

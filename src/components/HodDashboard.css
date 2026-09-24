@@ -253,16 +253,187 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-@media (max-width: 768px) {
+/* ================================
+   RESPONSIVE DESIGN
+   ================================ */
+
+/* Tablets */
+@media (max-width: 900px) {
   .sidebar {
-    width: 200px;
+    width: 210px;
   }
 
-  .welcome-text {
+  .main-content {
+    padding: 20px;
+  }
+
+  .dashboard-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .dashboard-card {
+    width: auto;
+    padding: 30px 20px;
+  }
+}
+
+
+/* Mobile phones */
+@media (max-width: 600px) {
+
+  .hod-dashboard {
+    display: block;
+    min-height: 100vh;
+  }
+
+  /* Sidebar becomes a normal top section for now */
+ .sidebar {
+  position: fixed;
+  top: 0;
+  left: -270px;
+  width: 250px;
+  height: 100vh;
+  z-index: 1500;
+  transition: left 0.3s ease;
+}
+.sidebar.open {
+  left: 0;
+}
+
+  .sidebar ul li {
+    padding: 9px 10px;
+    font-size: 13px;
+    border-left: none;
+    border-radius: 6px;
+  }
+
+  .sidebar ul li:hover,
+  .sidebar ul li.active {
+    border-left: none;
+  }
+
+  .sidebar ul li:last-child {
+    margin-top: 0;
+  }
+
+
+  .main-content {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 14px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+  .top-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+ .welcome-text {
+  font-size: 16px;
+  margin: 0;
+  padding-left: 55px;
+}
+
+  .right-section {
+    gap: 8px;
+  }
+
+  .profile-small {
+    width: 38px;
+    height: 38px;
+  }
+
+  .notification-btn {
+    padding: 8px;
     font-size: 16px;
+  }
+
+  /* Dashboard cards */
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .dashboard-card {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 25px 15px;
   }
 
   .dashboard-card p {
     font-size: 22px;
+  }
+
+  .section-card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  /* Tables can scroll horizontally instead of breaking the page */
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .table-container table {
+    min-width: 600px;
+  }
+}
+
+
+/* Very small phones */
+@media (max-width: 380px) {
+  .sidebar ul li {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .main-content {
+    padding: 10px;
+  }
+
+  .welcome-text {
+    font-size: 14px;
+  }
+
+  .dashboard-card {
+    padding: 20px 12px;
+  }
+}
+
+/* Mobile menu button */
+.mobile-menu-btn {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .top-header {
+  margin-top: 0;
+}
+  .mobile-menu-btn {
+    display: block;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 2000;
+
+    width: 42px;
+    height: 42px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #1e3a8a;
+    color: white;
+
+    font-size: 24px;
+    cursor: pointer;
   }
 }

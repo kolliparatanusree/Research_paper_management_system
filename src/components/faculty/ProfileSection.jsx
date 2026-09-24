@@ -45,7 +45,7 @@ const [previewImage, setPreviewImage] = useState("");
 //   useEffect(() => {
 //   if (!facultyDetails?.userId) return;
 
-//   fetch(`http://localhost:5000/api/faculty/all-publications/${facultyDetails.userId}`)
+//   fetch(`/api/faculty/all-publications/${facultyDetails.userId}`)
 //     .then(res => res.json())
 //     .then(data => setPublications(data))
 //     .catch(err => console.error(err));
@@ -54,7 +54,7 @@ const [previewImage, setPreviewImage] = useState("");
 useEffect(() => {
   if (!facultyDetails?.userId) return;
 
-  fetch(`http://localhost:5000/api/faculty/all-publications/${facultyDetails.userId}`)
+  fetch(`/api/faculty/all-publications/${facultyDetails.userId}`)
     .then(res => res.json())
     .then(data => {
       console.log("🔥 PUBLICATIONS API RESPONSE:", data);
@@ -172,7 +172,7 @@ const suggestions = useMemo(() => {
     }
 
     const res = await fetch(
-      `http://localhost:5000/api/auth/update-profile/${safeProfile.userId}`,
+      `/api/auth/update-profile/${safeProfile.userId}`,
       {
         method: "PUT",
         body: formData
@@ -184,7 +184,7 @@ const suggestions = useMemo(() => {
 
     // 🔥 CRITICAL FIX
     if (data.profilePic) {
-      setPreviewImage(`http://localhost:5000/${data.profilePic}`);
+      setPreviewImage(`/${data.profilePic}`);
     }
 
     Swal.fire("Success", "Profile updated successfully", "success");
@@ -206,7 +206,7 @@ const suggestions = useMemo(() => {
 //     }
 
 //     const res = await fetch(
-//       `http://localhost:5000/api/auth/update-profile/${safeProfile.userId}`,
+//       `/api/auth/update-profile/${safeProfile.userId}`,
 //       {
 //         method: "PUT",
 //         body: formData
@@ -302,14 +302,14 @@ const suggestions = useMemo(() => {
   previewImage
     ? previewImage
     : safeProfile?.profilePic
-    ? `http://localhost:5000/${safeProfile.profilePic}`
+    ? `/${safeProfile.profilePic}`
     : "/default-profile.png"
 }
                 // src={
                 //   previewImage
                 //     ? previewImage
                 //     : safeProfile?.profilePic
-                //     ? `http://localhost:5000/${safeProfile.profilePic}`
+                //     ? `/${safeProfile.profilePic}`
                 //     : "/default-profile.png"
                 // }
                 sx={{

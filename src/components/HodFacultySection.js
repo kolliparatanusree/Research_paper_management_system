@@ -29,7 +29,7 @@ export default function HodFacultySection({ hodProfile }) {
       try {
         setLoading(true);
         const res = await axios.get(
-          `http://localhost:5000/api/hod/faculty?dept=${dept}`
+          `/api/hod/faculty?dept=${dept}`
         );
         setFacultyList(res.data || []);
       } catch {
@@ -83,9 +83,9 @@ export default function HodFacultySection({ hodProfile }) {
   const viewDetails = async (facultyUserId) => {
   try {
     const [facultyRes, pubRes, coRes] = await Promise.all([
-      axios.get(`http://localhost:5000/api/hod/faculty-details/${facultyUserId}`),
-      axios.get(`http://localhost:5000/api/faculty/publications/${facultyUserId}`),
-      axios.get(`http://localhost:5000/api/faculty/coauthors/${facultyUserId}`)
+      axios.get(`/api/hod/faculty-details/${facultyUserId}`),
+      axios.get(`/api/faculty/publications/${facultyUserId}`),
+      axios.get(`/api/faculty/coauthors/${facultyUserId}`)
     ]);
 
     setSelectedFaculty({
@@ -101,7 +101,7 @@ export default function HodFacultySection({ hodProfile }) {
   // const viewDetails = async (facultyUserId) => {
   //   try {
   //     const res = await axios.get(
-  //       `http://localhost:5000/api/hod/faculty-details/${facultyUserId}`
+  //       `/api/hod/faculty-details/${facultyUserId}`
   //     );
   //     setSelectedFaculty(res.data);
   //   } catch {
@@ -147,7 +147,7 @@ export default function HodFacultySection({ hodProfile }) {
             <img
               src={
                 faculty.profilePic
-                  ? `http://localhost:5000/${faculty.profilePic}`
+                  ? `/${faculty.profilePic}`
                   : "/default-profile.png"
               }
               alt=""
@@ -178,7 +178,7 @@ export default function HodFacultySection({ hodProfile }) {
           <img
             src={
               hovered.profilePic
-                ? `http://localhost:5000/${hovered.profilePic}`
+                ? `/${hovered.profilePic}`
                 : "/default-profile.png"
             }
           />
@@ -201,7 +201,7 @@ export default function HodFacultySection({ hodProfile }) {
               <img
                 src={
                   selectedFaculty.profilePic
-                    ? `http://localhost:5000/${selectedFaculty.profilePic}`
+                    ? `/${selectedFaculty.profilePic}`
                     : "/default-profile.png"
                 }
               />
@@ -246,7 +246,7 @@ export default function HodFacultySection({ hodProfile }) {
 //     const fetchFaculty = async () => {
 //       try {
 //         const res = await axios.get(
-//           `http://localhost:5000/api/hod/faculty?dept=${dept}`
+//           `/api/hod/faculty?dept=${dept}`
 //         );
 //         setFacultyList(res.data);
 //         setFilteredFaculty(res.data);
@@ -274,7 +274,7 @@ export default function HodFacultySection({ hodProfile }) {
 //   const viewDetails = async (facultyUserId) => {
 //     try {
 //       const res = await axios.get(
-//         `http://localhost:5000/api/hod/faculty-details/${facultyUserId}`
+//         `/api/hod/faculty-details/${facultyUserId}`
 //       );
 //       setSelectedFaculty(res.data);
 //     } catch (err) {
@@ -306,7 +306,7 @@ export default function HodFacultySection({ hodProfile }) {
 //         {filteredFaculty.map((faculty) => (
 //           <div key={faculty.userId} className="faculty-card">
 //             <img
-//               src={`http://localhost:5000/${faculty.profilePic}`}
+//               src={`/${faculty.profilePic}`}
 //               alt="profile"
 //             />
 //             <h4>{faculty.fullName}</h4>
@@ -330,7 +330,7 @@ export default function HodFacultySection({ hodProfile }) {
 //             </button>
 //             <div className="modal-header">
 //               <img
-//                 src={`http://localhost:5000/${selectedFaculty.profilePic}`}
+//                 src={`/${selectedFaculty.profilePic}`}
 //                 alt="profile"
 //               />
 //               <h3>{selectedFaculty.fullName}</h3>

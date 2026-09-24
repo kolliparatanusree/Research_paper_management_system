@@ -10,7 +10,7 @@ const RemoveHOD = () => {
   useEffect(() => {
     const fetchHods = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/main-admin/hods');
+        const response = await fetch('/api/main-admin/hods');
         const data = await response.json();
         setHods(data);
         setFilteredHods(data);
@@ -53,7 +53,7 @@ const RemoveHOD = () => {
     if (!result.isConfirmed) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/main-admin/remove-faculty/${userId}`, {
+      const response = await fetch(`/api/main-admin/remove-faculty/${userId}`, {
         method: 'DELETE',
       });
       const data = await response.json();
@@ -130,7 +130,7 @@ export default RemoveHOD;
 //   useEffect(() => {
 //     const fetchHods = async () => {
 //       try {
-//         const response = await fetch('http://localhost:5000/api/main-admin/hods');
+//         const response = await fetch('/api/main-admin/hods');
 //         const data = await response.json();
 //         setHods(data);
 //         setFilteredHods(data);
@@ -156,7 +156,7 @@ export default RemoveHOD;
 //     if (!window.confirm('Are you sure you want to remove this HOD?')) return;
 
 //     try {
-//       const response = await fetch(`http://localhost:5000/api/main-admin/remove-hod/${hodId}`, {
+//       const response = await fetch(`/api/main-admin/remove-hod/${hodId}`, {
 //         method: 'DELETE',
 //       });
 //       const data = await response.json();

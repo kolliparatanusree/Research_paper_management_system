@@ -12,7 +12,7 @@ const RemoveRDCoordinator = () => {
   useEffect(() => {
     const fetchRDCoordinators = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/main-admin/rdcoordinators');
+        const response = await fetch('/api/main-admin/rdcoordinators');
         if (!response.ok) throw new Error('Failed to fetch RD Coordinators');
         const data = await response.json();
         setRdCoordinators(data);
@@ -56,7 +56,7 @@ const RemoveRDCoordinator = () => {
     if (!result.isConfirmed) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/main-admin/remove-rdcoordinator/${userId}`, {
+      const response = await fetch(`/api/main-admin/remove-rdcoordinator/${userId}`, {
         method: 'DELETE',
       });
 

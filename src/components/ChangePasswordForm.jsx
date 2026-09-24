@@ -17,7 +17,7 @@ export default function ChangePasswordForm({ userId }) {
 
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/change-password', {
+      const res = await axios.post('/api/auth/change-password', {
         facultyId: userId,
         oldPassword,
         newPassword,

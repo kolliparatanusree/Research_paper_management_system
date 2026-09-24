@@ -7,7 +7,7 @@ export default function NotificationsSection({ userId }) {
 
   const fetchNotifications = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/notifications/${userId}`);
+      const res = await fetch(`/api/notifications/${userId}`);
       const data = await res.json();
       setNotifications(data);
     } catch (err) {
@@ -21,7 +21,7 @@ export default function NotificationsSection({ userId }) {
 
  const markAsRead = async () => {
   try {
-    await fetch(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`, {
+    await fetch(`/api/auth/notifications/mark-read/${userId}`, {
       method: "PUT"
     });
 
@@ -183,7 +183,7 @@ export default function NotificationsSection({ userId }) {
 
 //   const fetchNotifications = async () => {
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/notifications/${userId}`);
+//       const res = await fetch(`/api/notifications/${userId}`);
 //       const data = await res.json();
 //       setNotifications(data);
 //     } catch (err) {
@@ -197,7 +197,7 @@ export default function NotificationsSection({ userId }) {
 
 //  const markAsRead = async () => {
 //   try {
-//     await fetch(`http://localhost:5000/api/auth/notifications/mark-read/${userId}`, {
+//     await fetch(`/api/auth/notifications/mark-read/${userId}`, {
 //       method: "PUT"
 //     });
 

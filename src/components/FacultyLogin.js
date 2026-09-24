@@ -13,7 +13,7 @@ export default function FacultyLogin() {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/api/faculty/login', {
+      const response = await axios.post('/api/faculty/login', {
         facultyId,
         password
       });

@@ -51,7 +51,7 @@ Swal.fire({
 
 
     try {
-      const res = await fetch(`http://localhost:5000/api/faculty/pid-status/${facultyId}`);
+      const res = await fetch(`/api/faculty/pid-status/${facultyId}`);
       const data = await res.json();
       setSubmissions(data);
     } catch (err) {
@@ -87,7 +87,7 @@ Swal.fire({
   //   const fetchSubmissions = async () => {
   //     setLoading(true); // Start loading
   //     try {
-  //       const res = await fetch(`http://localhost:5000/api/faculty/pid-status/${facultyId}`);
+  //       const res = await fetch(`/api/faculty/pid-status/${facultyId}`);
   //       const data = await res.json();
   //       setSubmissions(data);
   //     } catch (err) {

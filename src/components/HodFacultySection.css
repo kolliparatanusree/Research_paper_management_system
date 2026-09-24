@@ -42,18 +42,13 @@
 /* ===== GRID ===== */
 .faculty-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-
-  /* MORE SPACE */
-  gap: 45px;
-
-  /* CRITICAL FIXES */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
   align-items: stretch;
-  grid-auto-rows: 1fr;
 }
 /* ===== CARD ===== */
 .faculty-card {
-   backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 
   background: rgba(255, 255, 255, 0.25);
@@ -61,15 +56,14 @@
 
   border: 1px solid rgba(255, 255, 255, 0.3);
 
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 0 0 rgba(255,255,255,0.2);
-  background: #fff;
-  border-radius: 18px;
+    inset 0 0 0 rgba(255, 255, 255, 0.2);
+
   padding: 20px;
   text-align: center;
   transition: 0.3s ease;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+
   position: relative;
   overflow: hidden;
 }
@@ -196,8 +190,12 @@
   background: #fff;
   padding: 25px;
   width: 400px;
+  max-width: calc(100% - 30px);
+  max-height: 85vh;
+  overflow-y: auto;
   border-radius: 20px;
   position: relative;
+  box-sizing: border-box;
   animation: scaleUp 0.3s ease;
 }
 
@@ -261,4 +259,226 @@
 .close-btn:hover {
   background: #ff4d4f;
   color: white;
+}
+/* =========================================
+   RESPONSIVE DESIGN
+   ========================================= */
+
+/* ---------- LARGE LAPTOP / DESKTOP ---------- */
+@media (max-width: 1200px) {
+  .hod-faculty-section {
+    padding: 30px;
+  }
+
+  .faculty-container {
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 25px;
+  }
+}
+
+
+/* ---------- TABLET ---------- */
+@media (max-width: 900px) {
+  .hod-faculty-section {
+    padding: 25px 20px;
+  }
+
+  .hod-faculty-section h2 {
+    font-size: 24px;
+  }
+
+  .faculty-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .faculty-search {
+    max-width: 450px;
+  }
+
+  .faculty-modal {
+    width: 80%;
+    max-width: 400px;
+  }
+}
+
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 600px) {
+  .hod-faculty-section {
+    padding: 20px 12px;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+
+  .hod-faculty-section h2 {
+    font-size: 22px;
+    margin-bottom: 18px;
+  }
+
+  .faculty-search {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    padding: 11px 15px;
+    margin-bottom: 20px;
+  }
+
+  .faculty-container {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .faculty-card {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px 15px;
+  }
+
+  .faculty-card img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .faculty-card h4 {
+    font-size: 17px;
+  }
+
+  .faculty-card p {
+    font-size: 13px;
+  }
+
+  .faculty-card button {
+    padding: 9px 16px;
+  }
+
+  /* Hover preview becomes smaller on phones */
+  .hover-preview {
+    right: 10px;
+    bottom: 10px;
+    width: 180px;
+    padding: 12px;
+  }
+
+  .hover-preview img {
+    width: 60px;
+    height: 60px;
+  }
+
+  /* Modal */
+  .faculty-modal-overlay {
+    padding: 15px;
+    box-sizing: border-box;
+  }
+
+  .faculty-modal {
+    width: 100%;
+    max-width: 400px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 22px 18px;
+  }
+
+  .modal-header img {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+
+/* ---------- VERY SMALL MOBILE ---------- */
+@media (max-width: 380px) {
+  .hod-faculty-section {
+    padding: 15px 10px;
+  }
+
+  .hod-faculty-section h2 {
+    font-size: 20px;
+  }
+
+  .faculty-container {
+    gap: 15px;
+  }
+
+  .faculty-card {
+    padding: 18px 12px;
+  }
+
+  .faculty-card img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .faculty-card h4 {
+    font-size: 16px;
+  }
+
+  .badge {
+    font-size: 11px;
+  }
+
+  .faculty-card button {
+    font-size: 12px;
+    padding: 8px 13px;
+  }
+
+  .faculty-modal {
+    padding: 20px 15px;
+  }
+
+  .faculty-modal p {
+    font-size: 13px;
+  }
+}
+
+/* ===== RESPONSIVE FACULTY SECTION ===== */
+
+@media (max-width: 900px) {
+  .hod-faculty-section {
+    padding: 25px 20px;
+  }
+
+  .faculty-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .hod-faculty-section {
+    padding: 20px 12px;
+  }
+
+  .hod-faculty-section h2 {
+    font-size: 23px;
+  }
+
+  .faculty-search {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+  }
+
+  .faculty-container {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .faculty-card {
+    padding: 18px 15px;
+  }
+
+  .faculty-modal {
+    width: calc(100% - 30px);
+    max-height: 85vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+  .hover-preview {
+    width: 180px;
+    right: 10px;
+    bottom: 10px;
+  }
 }
