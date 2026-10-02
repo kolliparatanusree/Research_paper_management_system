@@ -42,6 +42,7 @@ exports.getDepartmentPublicationHistory = async (req, res) => {
       title: pub.paperTitle || "Untitled",
       userId: pub.userId,
       journal: pub.target || "Unknown",
+      type: pub.type || "Unknown",
       abstract: pub.abstract || "",
       year: pub.uploadedAt ? new Date(pub.uploadedAt).getFullYear() : null,
       pid: pub.pid,

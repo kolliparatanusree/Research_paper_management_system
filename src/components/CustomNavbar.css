@@ -1,137 +1,857 @@
-/* ===== NAVBAR HEADER (WHITE) ===== */
+/* =========================================================
+   RPMS PREMIUM ANIMATED NAVBAR
+========================================================= */
+
 .navbar-header {
   width: 100%;
-  background: #ffffff; /* changed to white */
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 1000;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e2e8f0;
+
+  overflow: hidden;
 }
 
-/* ===== MAIN WRAPPER ===== */
-.logo-line-wrapper {
-  display: grid;
-  grid-template-columns: auto 1fr auto; /* FIXED */
-  align-items: center;
-  padding: 12px 30px;
+
+/* =========================================================
+   SUBTLE ANIMATED TOP ACCENT
+========================================================= */
+
+.navbar-header::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 3px;
+
+  background: linear-gradient(
+    90deg,
+    #2563eb,
+    #38bdf8,
+    #6366f1,
+    #2563eb
+  );
+
+  background-size: 300% 100%;
+
+  animation: navbarGradient 7s ease infinite;
 }
 
-/* ===== LOGO ===== */
-.navbar-logo {
-  width: 350px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 10px;
+
+@keyframes navbarGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-/* ===== CENTER TITLE ===== */
-.line-with-title {
-  text-align: center;
+
+/* =========================================================
+   MAIN CONTAINER
+========================================================= */
+
+.navbar-container {
+  width: 94%;
+  max-width: 1500px;
+
+  margin: 0 auto;
+
+  padding: 13px 22px 8px;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+
+  position: relative;
 }
 
-/* TITLE */
-.system-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #1e293b; /* dark text for white bg */
-  letter-spacing: 0.5px;
-}
 
-/* LINE */
-.horizontal-line-only {
-  border: none;
-  height: 1px;
-  width: 60%;
-  margin: 6px auto;
-  background: linear-gradient(to right, transparent, #6366f1, transparent);
-}
+/* =========================================================
+   TOP SECTION
+========================================================= */
 
-/* ===== RIGHT SIDE NAV ===== */
-.nav-bar-row {
+.navbar-top {
+  position: relative;
+
+  min-height: 68px;
+
   display: flex;
-  justify-content: flex-end;
   align-items: center;
+  justify-content: space-between;
+
   gap: 20px;
 }
 
-/* ===== NAV LINKS ===== */
-.nav-links {
-  display: flex;
-  gap: 18px;
-}
 
-.nav-links a {
-  text-decoration: none;
-  color: #334155;
-  font-size: 14px;
-  font-weight: 500;
-  padding: 6px 10px;
-  border-radius: 6px;
-  transition: 0.25s;
-}
+/* =========================================================
+   BRAND / LOGO
+========================================================= */
 
-/* Hover */
-.nav-links a:hover {
-  color: #4f46e5;
-  background: rgba(79,70,229,0.08);
-}
-
-/* ===== LOGIN BUTTON ===== */
-.dropdown-menu {
+.navbar-brand {
   display: flex;
   align-items: center;
-}
 
-/* 🔥 PUSH LOGIN TO RIGHT EDGE */
-.nav-bar-row {
-  width: 100%;
-}
+  gap: 15px;
 
-/* LOGIN BUTTON */
-.login-btn {
   text-decoration: none;
-  padding: 8px 18px;
-  border-radius: 8px;
-  background: #4f46e5;
-  color: white;
+
+  color: inherit;
+
+  min-width: 0;
+
+  z-index: 2;
+}
+
+
+/* =========================================================
+   LOGO BOX
+========================================================= */
+
+.navbar-logo-box {
+  width: 82px;
+  height: 82px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  background: linear-gradient(
+    145deg,
+    #ffffff,
+    #f1f5f9
+  );
+
+  border: 1px solid #dbe4ef;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 5px 15px rgba(15, 23, 42, 0.08);
+
+  overflow: hidden;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+
+.navbar-logo-box:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 9px 22px rgba(37, 99, 235, 0.15);
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.navbar-logo {
+  width: 58px;
+  height: 58px;
+
+  object-fit: cover;
+
+  border-radius: 10px;
+}
+
+
+/* =========================================================
+   CENTER BRAND CONTENT
+========================================================= */
+
+.brand-content {
+  position: absolute;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  text-align: center;
+
+  white-space: nowrap;
+
+  z-index: 1;
+}
+
+
+/* =========================================================
+   SYSTEM TITLE
+========================================================= */
+
+.system-title {
+  position: relative;
+
+  color: #172554;
+
+  font-size: 32px;
+
+  font-weight: 800;
+
+  line-height: 1.2;
+
+  letter-spacing: -0.45px;
+}
+
+
+/* Animated gradient underline */
+
+.system-title::after {
+  content: "";
+
+  display: block;
+
+  width: 55px;
+  height: 3px;
+
+  margin: 8px auto 0;
+
+  border-radius: 10px;
+
+  background: linear-gradient(
+    90deg,
+    #2563eb,
+    #38bdf8,
+    #6366f1
+  );
+
+  background-size: 200% 100%;
+
+  animation: titleLine 5s ease infinite;
+}
+
+
+@keyframes titleLine {
+
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+
+}
+
+
+/* =========================================================
+   SUBTITLE
+========================================================= */
+
+.system-subtitle {
+  margin-top: 7px;
+
+  color: #64748b;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.6px;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+========================================================= */
+
+.navbar-login {
+  position: relative;
+
+  z-index: 2;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  min-width: 88px;
+
+  padding: 10px 17px;
+
+  border-radius: 10px;
+
+  text-decoration: none;
+
+  color: #ffffff;
+
   font-size: 14px;
-  font-weight: 600;
-  transition: 0.3s;
+
+  font-weight: 700;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #3b82f6,
+    #1d4ed8
+  );
+
+  background-size: 200% 200%;
+
+  box-shadow:
+    0 6px 17px rgba(37, 99, 235, 0.24);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
+  animation: loginGradient 6s ease infinite;
 }
 
-/* Hover */
-.login-btn:hover {
-  background: #4338ca;
+
+@keyframes loginGradient {
+
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+
+}
+
+
+.navbar-login:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 9px 22px rgba(37, 99, 235, 0.34);
+}
+
+
+.login-icon {
+  font-size: 17px;
+}
+
+
+/* =========================================================
+   NAVIGATION SECTION
+========================================================= */
+
+.navbar-navigation {
+  margin-top: 10px;
+
+  padding-top: 10px;
+
+  border-top: 1px solid #edf1f5;
+
+  display: flex;
+  justify-content: center;
+}
+
+
+/* =========================================================
+   NAV LINKS
+========================================================= */
+
+.nav-links {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+}
+
+
+/* =========================================================
+   NAV LINK
+========================================================= */
+
+.nav-link {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 7px 15px;
+
+  border-radius: 8px;
+
+  text-decoration: none;
+
+  color: #64748b;
+
+  font-size: 13px;
+
+  font-weight: 650;
+
+  transition:
+    color 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+
+.nav-link svg {
+  font-size: 16px;
+
+  stroke-width: 2;
+}
+
+
+.nav-link:hover {
+  color: #2563eb;
+
+  background: #eff6ff;
+
   transform: translateY(-1px);
-  box-shadow: 0 6px 15px rgba(79,70,229,0.3);
 }
 
-/* ===== RESPONSIVE ===== */
+
+/* =========================================================
+   ACTIVE NAVIGATION
+========================================================= */
+
+.nav-link.active {
+  color: #2563eb;
+
+  background: linear-gradient(
+    135deg,
+    #eff6ff,
+    #e0edff
+  );
+
+  font-weight: 750;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(37, 99, 235, 0.06);
+}
+
+
+.nav-link.active svg {
+  stroke-width: 2.5;
+}
+
+
+/* Animated active indicator */
+
+.nav-link.active::after {
+  content: "";
+
+  position: absolute;
+
+  bottom: -10px;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: 22px;
+  height: 3px;
+
+  border-radius: 10px;
+
+  background: linear-gradient(
+    90deg,
+    #2563eb,
+    #38bdf8
+  );
+
+  animation: activeIndicator 0.35s ease;
+}
+
+
+@keyframes activeIndicator {
+
+  from {
+    width: 0;
+    opacity: 0;
+  }
+
+  to {
+    width: 22px;
+    opacity: 1;
+  }
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
 @media (max-width: 900px) {
 
-  .logo-line-wrapper {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 10px;
+  .navbar-container {
+    width: 96%;
+
+    padding: 12px 16px 8px;
   }
 
-  .navbar-logo {
-    width: 220px;
-    height: auto;
-    margin: auto;
-  }
-
-  .nav-bar-row {
-    justify-content: center;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .nav-links {
-    justify-content: center;
-  }
 
   .system-title {
-    font-size: 18px;
+    font-size: 19px;
   }
+
+
+  .navbar-logo-box {
+    width: 56px;
+    height: 56px;
+  }
+
+
+  .navbar-logo {
+    width: 52px;
+    height: 52px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+  .navbar-container {
+    width: 100%;
+
+    padding: 10px 14px 8px;
+  }
+
+
+  .navbar-top {
+    min-height: 56px;
+
+    gap: 10px;
+  }
+
+
+  /* Stop absolute centering on small screens */
+
+  .brand-content {
+    position: static;
+
+    transform: none;
+
+    align-items: flex-start;
+
+    text-align: left;
+
+    white-space: normal;
+  }
+
+
+  .navbar-logo-box {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 11px;
+  }
+
+
+  .navbar-logo {
+    width: 45px;
+    height: 45px;
+  }
+
+
+  .system-title {
+    font-size: 15px;
+
+    letter-spacing: -0.2px;
+  }
+
+
+  .system-title::after {
+    width: 35px;
+
+    margin: 5px 0 0;
+  }
+
+
+  .system-subtitle {
+    margin-top: 4px;
+
+    font-size: 8px;
+
+    letter-spacing: 0.9px;
+  }
+
+
+  .navbar-login {
+    min-width: auto;
+
+    padding: 8px 12px;
+
+    font-size: 12px;
+  }
+
+
+  .login-icon {
+    font-size: 15px;
+  }
+
+
+  .navbar-navigation {
+    margin-top: 8px;
+
+    padding-top: 8px;
+  }
+
+
+  .nav-links {
+    gap: 5px;
+  }
+
+
+  .nav-link {
+    padding: 6px 11px;
+
+    font-size: 12px;
+  }
+
+
+  .nav-link svg {
+    font-size: 15px;
+  }
+
+
+  .nav-link.active::after {
+    bottom: -8px;
+
+    height: 2px;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+  .navbar-container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+
+  .navbar-logo-box {
+    width: 43px;
+    height: 43px;
+  }
+
+
+  .navbar-logo {
+    width: 41px;
+    height: 41px;
+  }
+
+
+  .system-title {
+    font-size: 13px;
+  }
+
+
+  .system-title::after {
+    display: none;
+  }
+
+
+  .system-subtitle {
+    display: none;
+  }
+
+
+  .navbar-login {
+    padding: 7px 10px;
+
+    font-size: 11px;
+  }
+
+
+  .nav-link {
+    padding: 6px 9px;
+
+    font-size: 11px;
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .navbar-header::before,
+  .system-title::after,
+  .navbar-login {
+    animation: none;
+  }
+
+  .navbar-logo-box,
+  .navbar-login,
+  .nav-link {
+    transition: none;
+  }
+
+}
+
+.navbar-login {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-width: 88px;
+  padding: 10px 17px;
+
+  border-radius: 10px;
+
+  text-decoration: none;
+
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      180deg,
+      #60a5fa 0%,
+      #3b82f6 35%,
+      #2563eb 70%,
+      #1d4ed8 100%
+    );
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.55),
+    inset 0 -2px 4px rgba(15, 23, 42, 0.12),
+    0 7px 18px rgba(37, 99, 235, 0.28);
+
+  overflow: hidden;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+/* Gloss reflection */
+.navbar-login::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: -80%;
+
+  width: 55%;
+  height: 100%;
+
+  background: linear-gradient(
+    110deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+
+  transform: skewX(-20deg);
+
+  animation: loginGloss 4s ease-in-out infinite;
+}
+
+
+@keyframes loginGloss {
+
+  0% {
+    left: -80%;
+  }
+
+  45%,
+  100% {
+    left: 140%;
+  }
+
+}
+
+
+.navbar-login:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.65),
+    inset 0 -2px 4px rgba(15, 23, 42, 0.12),
+    0 10px 25px rgba(37, 99, 235, 0.38);
+}
+.navbar-logo-box {
+  position: relative;
+  width: 230px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  background: linear-gradient(
+    145deg,
+    #ffffff 0%,
+    #f8fbff 45%,
+    #eaf2ff 100%
+  );
+
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 12px;
+
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.95),
+    0 6px 18px rgba(15, 23, 42, 0.09);
+
+  overflow: hidden;
+}
+
+.navbar-logo {
+  width: 220px;
+  height: auto;
+  max-height: 62px;
+  object-fit: contain;
+  display: block;
+  border-radius: 6px;
 }

@@ -1,383 +1,1502 @@
-/* ===== MAIN SECTION ===== */
+/* =====================================================
+   MAIN SECTION
+===================================================== */
+
 .approved-uid-section {
-  max-width: 1000px;
-  margin: auto;
-  padding: 20px;
-}
-
-/* ===== SEARCH BAR ===== */
-.approved-uid-section input[type="text"] {
   width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-  margin-bottom: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  box-sizing: border-box;
 }
 
-/* ===== UID CARD ===== */
-.uid-card {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 22px;
+/* =====================================================
+   HEADER
+===================================================== */
+
+.documents-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
   margin-bottom: 22px;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-  position: relative; /* IMPORTANT for edit button positioning */
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.documents-header h2 {
+  margin: 0 0 6px;
+  font-size: 24px;
+  color: #172033;
+  font-weight: 700;
+}
+
+.documents-header p {
+  margin: 0;
+  color: #718096;
+  font-size: 14px;
+}
+
+.request-count {
+  min-width: 90px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  text-align: center;
+}
+
+.request-count strong {
+  display: block;
+  font-size: 22px;
+  color: #2563eb;
+}
+
+.request-count span {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+.uid-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.uid-search-wrapper input {
+  width: 100%;
+  height: 46px;
+  padding: 0 45px 0 42px;
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  outline: none;
+  font-size: 14px;
+  box-sizing: border-box;
+  background: #fff;
+  transition: 0.2s ease;
+}
+
+.uid-search-wrapper input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  z-index: 2;
+  font-size: 17px;
+}
+
+.clear-search {
+  position: absolute;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.clear-search:hover {
+  background: #e2e8f0;
+}
+
+/* =====================================================
+   CARD LIST
+===================================================== */
+
+.uid-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* =====================================================
+   UID CARD
+===================================================== */
+
+.uid-card {
+  background: #fff;
+  border: 1px solid #e5eaf0;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .uid-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
 }
 
-.uid-card h4 {
-  margin-bottom: 12px;
-  color: #4f46e5;
+.uid-card-expanded {
+  border-color: #bfdbfe;
 }
 
-/* ===== EDIT BUTTON (TOP RIGHT) ===== */
-.edit-btn {
-  position: absolute;
-  top: 80px;
-  right: 18px;
-  background: #2d36d0;
-  color: white;
-  border: none;
-  padding: 6px 14px;
+/* =====================================================
+   CARD HEADER
+===================================================== */
+
+.uid-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.uid-card-title {
+  min-width: 0;
+  flex: 1;
+}
+
+.uid-card-title h3 {
+  margin: 0 0 12px;
+  color: #172033;
+  font-size: 19px;
+  line-height: 1.45;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.edit-title-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #2563eb;
   border-radius: 8px;
-  cursor: pointer;
+  outline: none;
+  font-size: 17px;
+  box-sizing: border-box;
+}
+
+/* =====================================================
+   META
+===================================================== */
+
+.uid-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.uid-number {
+  padding: 5px 10px;
+  border-radius: 7px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 12px;
   font-weight: 600;
-  font-size: 14px;
-  transition: 0.2s;
+}
+
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* =====================================================
+   TYPE COLORS
+   Change these colors if needed
+===================================================== */
+
+.type-journal {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.type-conference {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+.type-book {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.type-book-chapter {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.type-patent {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* =====================================================
+   EDIT BUTTON
+===================================================== */
+
+.edit-btn {
+  flex-shrink: 0;
+  border: none;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 9px;
+  padding: 9px 13px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .edit-btn:hover {
-  background: #2563eb;
+  background: #dbeafe;
 }
 
-/* ===== LABEL TEXT ===== */
-.uid-card strong {
-  color: #111827;
+/* =====================================================
+   QUICK INFO
+===================================================== */
+
+.uid-quick-info {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
 }
 
-/* ===== FORM INPUTS ===== */
-.uid-card input,
-.uid-card textarea,
-.uid-card select {
+.quick-info-item {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #edf1f5;
+}
+
+.quick-info-item span {
+  display: block;
+  color: #64748b;
+  font-size: 11px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.quick-info-item strong {
+  display: block;
+  color: #334155;
+  font-size: 13px;
+  word-break: break-word;
+}
+
+/* =====================================================
+   SHOW DETAILS
+===================================================== */
+
+.see-more-btn {
   width: 100%;
-  padding: 8px 10px;
-  margin: 6px 0 14px 0;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-
-.uid-card textarea {
-  min-height: 80px;
-  resize: vertical;
-}
-
-/* ===== CO AUTHOR ROW ===== */
-.uid-card input[type="text"] + input[type="text"] {
-  margin-left: 6px;
-}
-
-/* Remove co-author button */
-.uid-card button {
-  margin-top: 6px;
-}
-
-/* ===== ADD CO AUTHOR BUTTON ===== */
-.add-coauthor-btn {
-  background: #10b981;
-  color: white;
-  border: none;
-  padding: 7px 14px;
-  border-radius: 6px;
+  margin-top: 16px;
+  height: 42px;
+  border: 1px solid #dbeafe;
+  border-radius: 9px;
+  background: #f8fbff;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
-  font-weight: 600;
-  margin-top: 8px;
+  transition: 0.2s ease;
 }
 
-.add-coauthor-btn:hover {
-  background: #059669;
+.see-more-btn:hover {
+  background: #eff6ff;
 }
 
-/* ===== SAVE / CANCEL BUTTONS ===== */
-.cancel-btn {
-  background: #ef4444;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
+/* =====================================================
+   EXPANDED SECTION
+===================================================== */
+
+.uid-expanded-info {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e8edf3;
+  animation: detailsOpen 0.25s ease;
 }
 
-.cancel-btn:hover {
-  background: #dc2626;
+@keyframes detailsOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Save button already inline green — keeping consistent */
-.uid-card button[style*="green"] {
-  border-radius: 6px;
-  font-weight: 600;
+/* =====================================================
+   SECTION HEADINGS
+===================================================== */
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
 }
 
-/* ===== FILE INPUT GROUP ===== */
+.section-heading h4 {
+  margin: 0 0 4px;
+  color: #1e293b;
+  font-size: 16px;
+}
+
+.section-heading p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+/* =====================================================
+   FORM
+===================================================== */
+
 .form-group {
-  margin-top: 12px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
   display: block;
+  margin-bottom: 7px;
+  color: #334155;
+  font-size: 13px;
   font-weight: 600;
-  margin-bottom: 4px;
 }
 
-/* ===== SUBMIT DOCUMENT BUTTON ===== */
-.uid-card > button:last-child {
-  margin-top: 16px;
-  background: linear-gradient(145deg, #6366f1, #4f46e5);
-  color: white;
-  border: none;
-  padding: 10px 18px;
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #dbe2ea;
   border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #334155;
+  background: #fff;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.form-group input,
+.form-group select {
+  height: 42px;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 110px;
+  line-height: 1.6;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.readonly-value {
+  min-height: 42px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #edf1f5;
+  color: #475569;
+  font-size: 14px;
+}
+
+.abstract-box {
+  padding: 14px;
+  border-radius: 9px;
+  background: #f8fafc;
+  border: 1px solid #edf1f5;
+  color: #475569;
+  line-height: 1.7;
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
+/* =====================================================
+   CO AUTHORS
+===================================================== */
+
+.details-section {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #edf1f5;
+}
+
+.coauthor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.coauthor-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.coauthor-row input {
+  width: 100%;
+  height: 40px;
+  box-sizing: border-box;
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+  padding: 0 11px;
+  outline: none;
+}
+
+.coauthor-row input:focus {
+  border-color: #2563eb;
+}
+
+.remove-coauthor-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background: #fef2f2;
   cursor: pointer;
+}
+
+.remove-coauthor-btn:hover {
+  background: #fee2e2;
+}
+
+.add-coauthor-btn {
+  border: none;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 9px 13px;
+  font-size: 12px;
   font-weight: 700;
-  font-size: 15px;
-  transition: 0.2s;
+  cursor: pointer;
 }
 
-.uid-card > button:last-child:hover:not(:disabled) {
+.add-coauthor-btn:hover {
+  background: #dbeafe;
+}
+
+/* =====================================================
+   CO AUTHOR DISPLAY
+===================================================== */
+
+.coauthor-display-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.coauthor-display-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #f8fafc;
+  border: 1px solid #edf1f5;
+}
+
+.author-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #dbeafe;
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.coauthor-display-list li div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.coauthor-display-list strong {
+  color: #334155;
+  font-size: 13px;
+}
+
+.coauthor-display-list small {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.no-coauthors {
+  color: #94a3b8 !important;
+  font-size: 13px;
+  background: #f8fafc;
+}
+
+/* =====================================================
+   EDIT ACTIONS
+===================================================== */
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 18px;
+  padding-top: 15px;
+  border-top: 1px solid #edf1f5;
+}
+
+.save-btn,
+.cancel-btn {
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.save-btn {
+  border: none;
+  background: #2563eb;
+  color: #fff;
+}
+
+.save-btn:hover {
+  background: #1d4ed8;
+}
+
+.cancel-btn {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #64748b;
+}
+
+.cancel-btn:hover {
+  background: #f8fafc;
+}
+
+/* =====================================================
+   UPLOAD SECTION
+===================================================== */
+
+.upload-section {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid #e8edf3;
+}
+
+.publication-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 15px;
+}
+
+/* =====================================================
+   FILE UPLOAD GRID
+===================================================== */
+
+.file-upload-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+  margin-top: 18px;
+}
+
+.file-upload-card {
+  position: relative;
+  min-height: 150px;
+  padding: 16px;
+  box-sizing: border-box;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  transition: 0.2s ease;
+}
+
+.file-upload-card:hover {
+  border-color: #93c5fd;
+  background: #f8fbff;
+}
+
+.file-icon {
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+
+.file-info h5 {
+  margin: 0 0 4px;
+  color: #334155;
+  font-size: 13px;
+}
+
+.file-info p {
+  margin: 0 0 12px;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.file-upload-card input[type="file"] {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.selected-file {
+  display: block;
+  margin-top: 9px;
+  color: #059669;
+  font-size: 11px;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+/* =====================================================
+   SUBMIT
+===================================================== */
+
+.upload-submit-area {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.submit-documents-btn {
+  min-height: 44px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 9px;
+  background: #2563eb;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.submit-documents-btn:hover:not(:disabled) {
+  background: #1d4ed8;
   transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(79, 70, 229, 0.4);
 }
 
-.uid-card > button:last-child:disabled {
-  background: #9ca3af;
+.submit-documents-btn:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* ===== LIST OF CO AUTHORS ===== */
-.uid-card ul {
-  padding-left: 20px;
-  margin: 6px 0 12px 0;
+/* =====================================================
+   EMPTY STATE
+===================================================== */
+
+.uid-empty-state {
+  padding: 55px 20px;
+  text-align: center;
+  border: 1px dashed #dbe2ea;
+  border-radius: 15px;
+  background: #fafcff;
 }
 
-.uid-card li {
-  margin-bottom: 4px;
+.empty-icon {
+  font-size: 42px;
+  margin-bottom: 12px;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .uid-card {
-    padding: 16px;
+.uid-empty-state h3 {
+  margin: 0 0 7px;
+  color: #334155;
+  font-size: 18px;
+}
+
+.uid-empty-state p {
+  margin: 0 auto 15px;
+  max-width: 450px;
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.clear-search-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 9px 15px;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =====================================================
+   PAGINATION
+===================================================== */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 25px;
+}
+
+.pagination button {
+  min-width: 38px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+  background: #fff;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pagination .active-page {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 900px) {
+
+  .file-upload-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .edit-btn {
-    top: 12px;
-    right: 12px;
-    padding: 5px 10px;
-    font-size: 13px;
-  }
 }
 
-/* =========================================================
-   RESPONSIVE ONLY — LAPTOP/DESKTOP CSS ABOVE IS UNCHANGED
-   ========================================================= */
+/* =====================================================
+   MOBILE
+===================================================== */
 
-/* ===== TABLETS ===== */
-@media (max-width: 1024px) {
+@media (max-width: 650px) {
+
   .approved-uid-section {
-    max-width: 95%;
-    padding: 18px;
+    padding: 14px;
   }
 
-  .uid-card {
-    padding: 20px;
+  .documents-header {
+    align-items: flex-start;
   }
 
-  .edit-btn {
-    top: 70px;
-    right: 16px;
+  .documents-header h2 {
+    font-size: 20px;
   }
 
-  .uid-card input,
-  .uid-card textarea,
-  .uid-card select {
-    font-size: 15px;
-  }
-}
-
-
-/* ===== MOBILE ===== */
-@media (max-width: 768px) {
-  .approved-uid-section {
-    width: 100%;
-    max-width: 100%;
-    padding: 12px;
-    box-sizing: border-box;
+  .documents-header p {
+    font-size: 12px;
   }
 
-  .approved-uid-section input[type="text"] {
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 15px;
-    padding: 11px;
+  .request-count {
+    min-width: 65px;
+    padding: 8px 10px;
   }
 
-  .uid-card {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 16px;
-    margin-bottom: 18px;
-  }
-
-  .uid-card h3 {
-    padding-right: 0;
-    word-break: break-word;
-  }
-
-  .uid-card p {
-    word-break: break-word;
-  }
-
-  .edit-btn {
-    top: 5px;
-    right: 10px;
-    padding: 5px 10px;
-    font-size: 11px;
-  }
-
-  .uid-card input,
-  .uid-card textarea,
-  .uid-card select {
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 14px;
-  }
-
-  /* Co-author inputs stay inside the card */
-  .uid-card input[type="text"] + input[type="text"] {
-    margin-left: 0;
-  }
-
-  .uid-card ul {
-    padding-left: 18px;
-  }
-
-  .uid-card li {
-    word-break: break-word;
-  }
-
-  .form-group {
-    width: 100%;
-  }
-
-  .form-group input[type="file"] {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-}
-
-
-/* ===== SMALL PHONES ===== */
-@media (max-width: 480px) {
-  .approved-uid-section {
-    padding: 8px;
-  }
-
-  .uid-card {
-    padding: 13px;
-    border-radius: 10px;
-  }
-
-  .uid-card h3 {
+  .request-count strong {
     font-size: 18px;
   }
 
-  .uid-card p {
-    font-size: 14px;
+  .request-count span {
+    font-size: 10px;
   }
 
-  .uid-card input,
-  .uid-card textarea,
-  .uid-card select {
-    font-size: 14px;
-    padding: 8px;
+  .uid-card {
+    padding: 15px;
+    border-radius: 13px;
+  }
+
+  .uid-card-header {
+    flex-direction: column;
+  }
+
+  .uid-card-title {
+    width: 100%;
+  }
+
+  .uid-card-title h3 {
+    font-size: 16px;
   }
 
   .edit-btn {
-    top: 5px;
-    right: 5px;
-    padding: 5px 8px;
-    font-size: 12px;
+    width: 100%;
+  }
+
+  .uid-quick-info {
+    grid-template-columns: 1fr;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .add-coauthor-btn {
     width: 100%;
-    padding: 8px 10px;
   }
 
-  .cancel-btn {
-    padding: 6px 10px;
+  .coauthor-row {
+    grid-template-columns: 1fr;
   }
 
-  .uid-card > button:last-child {
+  .remove-coauthor-btn {
     width: 100%;
-    padding: 10px 12px;
-  }
-}
-
-
-/* ===== VERY SMALL PHONES ===== */
-@media (max-width: 360px) {
-  .approved-uid-section {
-    padding: 6px;
   }
 
-  .uid-card {
-    padding: 11px;
+  .publication-fields {
+    grid-template-columns: 1fr;
   }
 
-  .uid-card h3 {
-    font-size: 16px;
+  .file-upload-grid {
+    grid-template-columns: 1fr;
   }
 
-  .uid-card p {
-    font-size: 13px;
+  .upload-submit-area {
+    justify-content: stretch;
   }
 
-  .edit-btn {
+  .submit-documents-btn {
+    width: 100%;
+  }
+
+  .edit-actions {
+    flex-direction: column;
+  }
+
+  .save-btn,
+  .cancel-btn {
+    width: 100%;
+  }
+
+  .pagination {
+    gap: 4px;
+  }
+
+  .pagination button {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 7px;
     font-size: 11px;
-    padding: 4px 7px;
   }
+
 }
 
-/* ===== VIEW / HIDE DETAILS BUTTON ===== */
-.see-more-btn {
-  display: inline-flex;
+/* =====================================================
+   VERY SMALL MOBILE
+===================================================== */
+
+@media (max-width: 400px) {
+
+  .approved-uid-section {
+    padding: 10px;
+  }
+
+  .documents-header h2 {
+    font-size: 18px;
+  }
+
+  .uid-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .uid-number,
+  .type-badge {
+    font-size: 10px;
+  }
+
+  .see-more-btn {
+    height: 40px;
+  }
+
+}
+
+/* =====================================================
+   CO-AUTHOR EDITING AREA
+===================================================== */
+
+.coauthor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* Individual co-author row/card */
+.coauthor-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 44px;
+  gap: 10px;
   align-items: center;
-  gap: 6px;
-  background: transparent;
-  color: #4f46e5;
-  border: none;
-  padding: 6px 0;
-  margin: 2px 0 14px 0;
+
+  padding: 12px;
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+
+  transition: all 0.2s ease;
+}
+
+.coauthor-row:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.08);
+}
+
+/* Inputs */
+.coauthor-row input {
+  width: 100%;
+  height: 42px;
+  box-sizing: border-box;
+
+  padding: 0 12px;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #334155;
+
+  font-size: 13px;
+  outline: none;
+
+  transition: all 0.2s ease;
+}
+
+.coauthor-row input::placeholder {
+  color: #94a3b8;
+}
+
+.coauthor-row input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+/* Remove button */
+.remove-coauthor-btn {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+
+  background: #fff5f5;
+  color: #dc2626;
+
   cursor: pointer;
   font-size: 14px;
-  font-weight: 600;
+
+  transition: all 0.2s ease;
+}
+
+.remove-coauthor-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  transform: scale(1.05);
+}
+
+/* =====================================================
+   ADD CO-AUTHOR BUTTON
+===================================================== */
+
+.add-coauthor-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  margin-top: 12px;
+
+  min-height: 40px;
+  padding: 0 15px;
+
+  border: 1px solid #bfdbfe;
+  border-radius: 9px;
+
+  background: #eff6ff;
+  color: #2563eb;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.add-coauthor-btn:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+.add-coauthor-btn:active {
+  transform: translateY(0);
+}
+
+/* =====================================================
+   NO CO-AUTHOR MESSAGE
+===================================================== */
+
+.no-coauthors {
+  padding: 15px;
+
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+
+  background: #f8fafc;
+
+  color: #94a3b8;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 650px) {
+
+  .coauthor-row {
+    grid-template-columns: 1fr;
+    gap: 9px;
+    padding: 12px;
+  }
+
+  .coauthor-row input {
+    height: 42px;
+  }
+
+  .remove-coauthor-btn {
+    width: 100%;
+    height: 38px;
+  }
+
+  .add-coauthor-btn {
+    width: 100%;
+  }
+}/* =====================================================
+   SWEETALERT - ADD CO-AUTHOR
+===================================================== */
+
+.swal2-popup {
+  border-radius: 16px !important;
+  padding: 25px !important;
+}
+
+/* Popup title */
+.swal2-title {
+  color: #1e293b !important;
+  font-size: 21px !important;
+  font-weight: 700 !important;
+  margin-bottom: 15px !important;
+}
+
+/* Name input */
+.swal2-popup .swal2-input {
+  width: 85% !important;
+  height: 45px !important;
+  margin: 10px auto !important;
+
+  box-sizing: border-box !important;
+
+  border: 1px solid #dbe2ea !important;
+  border-radius: 9px !important;
+
+  background: #fff !important;
+  color: #334155 !important;
+
+  font-size: 14px !important;
+  padding: 0 12px !important;
+
+  outline: none !important;
+}
+
+/* Input focus */
+.swal2-popup .swal2-input:focus {
+  border-color: #2563eb !important;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* Select */
+.swal2-popup .swal2-select {
+  width: 85% !important;
+  height: 45px !important;
+
+  margin: 10px auto !important;
+  padding: 0 12px !important;
+
+  border: 1px solid #dbe2ea !important;
+  border-radius: 9px !important;
+
+  background: #fff !important;
+  color: #334155 !important;
+
+  font-size: 14px !important;
+
+  outline: none !important;
+  cursor: pointer !important;
+}
+
+.swal2-popup .swal2-select:focus {
+  border-color: #2563eb !important;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* Other college input */
+.swal2-popup #otherAffiliation {
+  width: 85% !important;
+}
+
+/* Buttons container */
+.swal2-popup .swal2-actions {
+  gap: 10px !important;
+  margin-top: 18px !important;
+}
+
+/* Add button */
+.swal2-popup .swal2-confirm {
+  min-width: 100px !important;
+  height: 40px !important;
+
+  border-radius: 8px !important;
+
+  background: #2563eb !important;
+
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+/* Cancel button */
+.swal2-popup .swal2-cancel {
+  min-width: 100px !important;
+  height: 40px !important;
+
+  border-radius: 8px !important;
+
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+.swal2-popup .swal2-cancel:hover {
+  background: #e2e8f0 !important;
+}
+
+/* =====================================================
+   MOBILE SWEETALERT
+===================================================== */
+
+@media (max-width: 500px) {
+
+  .swal2-popup {
+    width: calc(100% - 30px) !important;
+    padding: 20px !important;
+    border-radius: 14px !important;
+  }
+
+  .swal2-title {
+    font-size: 19px !important;
+  }
+
+  .swal2-popup .swal2-input,
+  .swal2-popup .swal2-select {
+    width: 100% !important;
+  }
+
+  .swal2-popup #otherAffiliation {
+    width: 100% !important;
+  }
+
+  .swal2-popup .swal2-actions {
+    width: 100% !important;
+    flex-direction: column !important;
+  }
+
+  .swal2-popup .swal2-confirm,
+  .swal2-popup .swal2-cancel {
+    width: 100% !important;
+    margin: 3px 0 !important;
+  }
+}
+/* =====================================================
+   SORT DROPDOWN HOVER EFFECTS
+===================================================== */
+
+.uid-sort-wrapper select {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.uid-sort-wrapper select:hover {
+  border-color: #93c5fd;
+  background-color: #f8fbff;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.08);
+  cursor: pointer;
+}
+
+.uid-sort-wrapper select:focus {
+  border-color: #2563eb;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  outline: none;
+}
+
+/* Sort icon hover */
+.sort-icon {
+  transition: transform 0.2s ease;
+}
+
+.uid-sort-wrapper:hover .sort-icon {
+  transform: translateY(-1px);
+}
+
+/* Optional: label hover */
+.uid-sort-wrapper label {
   transition: color 0.2s ease;
 }
 
-.see-more-btn:hover {
+.uid-sort-wrapper:hover label {
   color: #2563eb;
-  text-decoration: underline;
 }
-/* ===== EXPANDED INFORMATION ===== */
-.uid-more-info {
-  margin-top: 8px;
-  padding-top: 8px;
+/* =====================================================
+   SEARCH + SORT CONTROLS
+===================================================== */
+
+.uid-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+/* Search */
+
+.uid-search-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.uid-search-wrapper input {
+  width: 100%;
+  height: 46px;
+  padding: 0 42px;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #334155;
+
+  font-size: 14px;
+  outline: none;
+
+  transition: 0.2s ease;
+}
+
+.uid-search-wrapper input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  z-index: 2;
+  font-size: 16px;
+}
+
+.clear-search {
+  position: absolute;
+  right: 8px;
+
+  width: 30px;
+  height: 30px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #f1f5f9;
+  color: #64748b;
+
+  cursor: pointer;
+}
+
+.clear-search:hover {
+  background: #e2e8f0;
+}
+
+/* Sort */
+
+.uid-sort-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.uid-sort-wrapper select {
+  height: 46px;
+  min-width: 170px;
+
+  padding: 0 35px 0 12px;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #334155;
+
+  font-size: 14px;
+  cursor: pointer;
+
+  outline: none;
+}
+
+.uid-sort-wrapper select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.sort-icon {
+  font-size: 16px;
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 650px) {
+
+  .uid-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .uid-search-wrapper {
+    width: 100%;
+  }
+
+  .uid-sort-wrapper {
+    width: 100%;
+  }
+
+  .uid-sort-wrapper select {
+    width: 100%;
+    flex: 1;
+  }
+}
+/* =====================================================
+   SORT DROPDOWN HOVER EFFECTS
+===================================================== */
+
+.uid-sort-wrapper select {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.uid-sort-wrapper select:hover {
+  border-color: #93c5fd;
+  background-color: #f8fbff;
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.08);
+  cursor: pointer;
+}
+
+.uid-sort-wrapper select:focus {
+  border-color: #2563eb;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  outline: none;
+}
+
+/* Sort icon hover */
+.sort-icon {
+  transition: transform 0.2s ease;
+}
+
+.uid-sort-wrapper:hover .sort-icon {
+  transform: translateY(-1px);
+}
+
+/* Optional: label hover */
+.uid-sort-wrapper label {
+  transition: color 0.2s ease;
+}
+
+.uid-sort-wrapper:hover label {
+  color: #2563eb;
+}
+.uid-sort-wrapper select option:hover {
+  background-color: #eff6ff;
+  color: #2563eb;
+}.uid-sort-wrapper select option {
+  background: #ffffff;
+  color: #334155;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.uid-sort-wrapper select option:checked {
+  background: #2563eb;
+  color: #ffffff;
 }

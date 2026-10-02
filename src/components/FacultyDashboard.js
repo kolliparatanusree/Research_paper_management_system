@@ -12,6 +12,19 @@ import NotificationsSection from './NotificationsSection';
 import Swal from 'sweetalert2';
 import PublicationsSection from './faculty/PublicationsSection';
 import logo from "./logo2.jpeg";
+import { Doughnut } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend
+);
 
 export default function FacultyDashboard() {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -27,6 +40,82 @@ export default function FacultyDashboard() {
 
   const facultyId = localStorage.getItem('userId');
   const navigate = useNavigate();
+
+  // ================= DASHBOARD CALCULATIONS =================
+
+const totalUIDs =
+  counts.approvedUIDs + counts.pendingUIDs;
+
+const totalPIDs =
+  counts.approvedPIDs + counts.pendingPIDs;
+
+const totalApproved =
+  counts.approvedUIDs + counts.approvedPIDs;
+
+const totalPending =
+  counts.pendingUIDs + counts.pendingPIDs;
+
+const totalResearchItems =
+  totalUIDs + totalPIDs;
+
+const approvalRate =
+  totalResearchItems > 0
+    ? Math.round((totalApproved / totalResearchItems) * 100)
+    : 0;
+
+    const [pendingPage, setPendingPage] = useState(1);
+
+const pendingActions = [
+  ...(counts.pendingUIDs > 0
+    ? [{
+        type: 'uid',
+        title: `${counts.pendingUIDs} UID${counts.pendingUIDs > 1 ? 's' : ''} pending`,
+        description: `Your UID request${counts.pendingUIDs > 1 ? 's are' : ' is'} currently awaiting processing.`,
+        icon: '⏳',
+        className: 'warning',
+        section: 'uid-status'
+      }]
+    : []),
+
+  ...(counts.pendingPIDs > 0
+    ? [{
+        type: 'pid',
+        title: `${counts.pendingPIDs} PID${counts.pendingPIDs > 1 ? 's' : ''} pending`,
+        description: `Your research submission${counts.pendingPIDs > 1 ? 's are' : ' is'} awaiting processing.`,
+        icon: '📄',
+        className: 'danger',
+        section: 'my-submissions'
+      }]
+    : [])
+];
+
+const pendingItemsPerPage = 5;
+
+const totalPendingPages = Math.ceil(
+  pendingActions.length / pendingItemsPerPage
+);
+
+const currentPendingActions = pendingActions.slice(
+  (pendingPage - 1) * pendingItemsPerPage,
+  pendingPage * pendingItemsPerPage
+);
+
+
+// Progress values
+const uidProgress =
+  totalUIDs > 0
+    ? Math.round((counts.approvedUIDs / totalUIDs) * 100)
+    : 0;
+
+const pidProgress =
+  totalPIDs > 0
+    ? Math.round((counts.approvedPIDs / totalPIDs) * 100)
+    : 0;
+
+const overallProgress =
+  totalResearchItems > 0
+    ? Math.round((totalApproved / totalResearchItems) * 100)
+    : 0;
 
   // fetch counts
   const fetchCounts = async () => {
@@ -91,11 +180,11 @@ export default function FacultyDashboard() {
   return (
     <>
       {/* <CustomNavbar /> */}
-      <div className="dashboard-container">
+      <div className="dashboard1-container">
         <div className={`sidebar1 ${sidebarOpen ? 'open' : ''}`}>
           <nav className="menu">
             <ul>
-              <img src={logo} alt="Logo" className="logo" />
+              <img src={logo} alt="Logo" className="logo1" />
               <li 
                 className={activeSection === 'dashboard' ? 'active' : ''} 
                 onClick={() => {setActiveSection('dashboard'); setSidebarOpen(false);
@@ -103,12 +192,7 @@ export default function FacultyDashboard() {
               >
                 📊 Dashboard
               </li>
-              {/* <li
-  className={activeSection === 'notifications' ? 'active' : ''}
-  onClick={() => setActiveSection('notifications')}
->
-  🔔 Notifications
-</li> */}
+             
               <li className={activeSection === 'request-uid' ? 'active' : ''} onClick={() => {setActiveSection('request-uid'); setSidebarOpen(false);
   }}>📄 Request UID</li>
               <li className={activeSection === 'uid-status' ? 'active' : ''} onClick={() => {setActiveSection('uid-status'); setSidebarOpen(false);
@@ -124,7 +208,14 @@ export default function FacultyDashboard() {
 >
   📚 Publications
 </li>
-              {/* <li className={activeSection === 'profile' ? 'active' : ''} onClick={() => setActiveSection('profile')}>👤 Profile</li> */}
+ <li
+  className={activeSection === 'notifications' ? 'active' : ''}
+  onClick={() => {setActiveSection('notifications'); setSidebarOpen(false);}}
+>
+  🔔 Notifications
+</li>
+              <li className={activeSection === 'profile' ? 'active' : ''}  onClick={() => {setActiveSection('profile'); setSidebarOpen(false);
+  }}>👤 Profile</li>
               <li className="btn" onClick={() => {handleLogout(); setSidebarOpen(false);}} style={{ color: 'white', marginTop: '0px', cursor: 'pointer', fontSize: '20px' }}>🔚 Logout</li>
             </ul>
           </nav>
@@ -138,17 +229,17 @@ export default function FacultyDashboard() {
   ☰
 </button>
 
-        <div className="main-content">
+        <div className="main1-content">
           {/* <p style={{ color: 'purple', fontSize: '25px' }}>Welcome, {facultyDetails?.fullName || 'Faculty'}</p> */}
- <div className="top-header">
-  <p className="welcome-text">
+ <div className="top1-header">
+  <p className="welcome1-text">
     Welcome, {facultyDetails?.fullName || "Faculty"}
   </p>
 
-  <div className="right-section">
+  <div className="right1-section">
     {/* Notification */}
     <button
-  className="notification-btn"
+  className="notification1-btn"
   onClick={() => {
   setActiveSection("notifications");
   setNotifCount(0); // optional immediate reset
@@ -156,7 +247,7 @@ export default function FacultyDashboard() {
 >
   🔔
    {notifCount > 0 && (
-    <span className="notif-badge">{notifCount}</span>
+    <span className="notif1-badge">{notifCount}</span>
   )}
 </button>
 
@@ -168,7 +259,7 @@ export default function FacultyDashboard() {
       : "/default-profile.png"
   }
   alt="Profile"
-  className="profile-small"
+  className="profile1-small"
   onClick={() => setActiveSection("profile")}
   onError={(e) => {
     e.target.src = "/default-profile.png";
@@ -183,7 +274,769 @@ export default function FacultyDashboard() {
          {activeSection === 'publications' && facultyDetails && (
   <PublicationsSection userId={facultyId} />
 )}
-          {activeSection === 'dashboard' && (
+       {activeSection === 'dashboard' && (
+  <div className="faculty1-dashboard">
+
+        {/* ================= QUICK ACTIONS ================= */}
+    <div className="dashboard1-panel quick-actions-panel">
+
+      <div className="panel1-header">
+        <div>
+          <h3>Quick Actions</h3>
+          <p>Frequently used research functions</p>
+        </div>
+      </div>
+
+      <div className="quick1-actions">
+
+        <button
+          className="quick1-action-btn"
+          onClick={() => setActiveSection('request-uid')}
+        >
+          <span>📄</span>
+          <div>
+            <strong>Request UID</strong>
+            <small>Request a new UID</small>
+          </div>
+        </button>
+
+
+        <button
+          className="quick1-action-btn"
+          onClick={() => setActiveSection('indexing')}
+        >
+          <span>📤</span>
+          <div>
+            <strong>Submit Documents</strong>
+            <small>Upload research documents</small>
+          </div>
+        </button>
+
+
+        <button
+          className="quick1-action-btn"
+          onClick={() => setActiveSection('uid-status')}
+        >
+          <span>🔄</span>
+          <div>
+            <strong>UID Status</strong>
+            <small>Track your UID requests</small>
+          </div>
+        </button>
+
+
+        <button
+          className="quick1-action-btn"
+          onClick={() => setActiveSection('my-submissions')}
+        >
+          <span>📊</span>
+          <div>
+            <strong>PID Status</strong>
+            <small>Track your submissions</small>
+          </div>
+        </button>
+
+
+        <button
+          className="quick1-action-btn"
+          onClick={() => setActiveSection('publications')}
+        >
+          <span>📚</span>
+          <div>
+            <strong>Publications</strong>
+            <small>View your publications</small>
+          </div>
+        </button>
+
+      </div>
+
+    </div>
+
+    {/* ================= SUMMARY CARDS ================= */}
+    <div className="dashboard1-summary">
+
+      <div className="summary1-card total-uid">
+        <div className="summary1-icon">📄</div>
+        <div>
+          <h4>Total UIDs</h4>
+          <p>{counts.approvedUIDs + counts.pendingUIDs}</p>
+        </div>
+      </div>
+
+      <div className="summary1-card total-pid">
+        <div className="summary1-icon">📚</div>
+        <div>
+          <h4>Total PIDs</h4>
+          <p>{counts.approvedPIDs + counts.pendingPIDs}</p>
+        </div>
+      </div>
+
+      <div className="summary1-card pending-card">
+        <div className="summary1-icon">⏳</div>
+        <div>
+          <h4>Pending UIDs</h4>
+          <p>{counts.pendingUIDs}</p>
+        </div>
+      </div>
+
+      <div className="summary1-card pending-pid-card">
+        <div className="summary1-icon">🔄</div>
+        <div>
+          <h4>Pending PIDs</h4>
+          <p>{counts.pendingPIDs}</p>
+        </div>
+      </div>
+
+    </div>
+
+
+    {/* ================= CHART + ACTIVITY ================= */}
+    <div className="dashboard1-middle">
+
+      {/* UID/PID STATUS */}
+      <div className="dashboard1-panel status-panel neon-chart-panel">
+
+        <div className="panel1-header">
+          <div>
+            <h3>UID / PID Status</h3>
+            <p>Overview of your research submissions</p>
+          </div>
+        </div>
+
+        <div className="chart1-container neon-chart-container">
+
+          <Doughnut
+            data={{
+              labels: [
+                'Approved UIDs',
+                'Pending UIDs',
+                'Approved PIDs',
+                'Pending PIDs'
+              ],
+              datasets: [
+                {
+                  data: [
+                    counts.approvedUIDs,
+                    counts.pendingUIDs,
+                    counts.approvedPIDs,
+                    counts.pendingPIDs
+                  ],
+                  backgroundColor: [
+                    '#10b981',
+                    '#f59e0b',
+                    '#3b82f6',
+                    '#ef4444'
+                  ],
+                  borderWidth: 0
+                }
+              ]
+            }}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'bottom'
+                }
+              }
+            }}
+          />
+
+        </div>
+
+      </div>
+
+
+      {/* RESEARCH OVERVIEW */}
+      <div className="dashboard1-panel activity-panel">
+
+        <div className="panel1-header">
+          <div>
+            <h3>Research Overview</h3>
+            <p>Your current research activity</p>
+          </div>
+        </div>
+
+        <div className="activity1-list">
+
+          <div className="activity1-item">
+            <div className="activity1-icon uid-icon">
+              📄
+            </div>
+
+            <div className="activity1-info">
+              <span>UID Requests</span>
+              <strong>
+                {counts.approvedUIDs + counts.pendingUIDs}
+              </strong>
+            </div>
+          </div>
+
+
+          <div className="activity1-item">
+            <div className="activity1-icon pid-icon">
+              📚
+            </div>
+
+            <div className="activity1-info">
+              <span>Research Papers</span>
+              <strong>
+                {counts.approvedPIDs + counts.pendingPIDs}
+              </strong>
+            </div>
+          </div>
+
+
+          <div className="activity1-item">
+            <div className="activity1-icon approved-icon">
+              ✅
+            </div>
+
+            <div className="activity1-info">
+              <span>Approved Submissions</span>
+              <strong>
+                {counts.approvedUIDs + counts.approvedPIDs}
+              </strong>
+            </div>
+          </div>
+
+
+          <div className="activity1-item">
+            <div className="activity1-icon pending-icon">
+              ⏳
+            </div>
+
+            <div className="activity1-info">
+              <span>Pending Submissions</span>
+              <strong>
+                {counts.pendingUIDs + counts.pendingPIDs}
+              </strong>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+            {/* =====================================================
+    RESEARCH SUMMARY
+===================================================== */}
+
+<div className="research1-summary-panel dashboard-panel">
+
+  <div className="panel-header">
+    <div>
+      <h3>Research Summary</h3>
+      <p>Overview of your research activities</p>
+    </div>
+
+    <div className="approval1-rate">
+      <span>{approvalRate}%</span>
+      <small>Approval Rate</small>
+    </div>
+  </div>
+
+
+  <div className="research1-summary-grid">
+
+    <div className="research1-summary-item">
+      <div className="summary1-small-icon green">
+        📄
+      </div>
+
+      <div>
+        <span>Total UID Requests</span>
+        <strong>{totalUIDs}</strong>
+      </div>
+    </div>
+
+
+    <div className="research1-summary-item">
+      <div className="summary1-small-icon blue">
+        📚
+      </div>
+
+      <div>
+        <span>Total Research Papers</span>
+        <strong>{totalPIDs}</strong>
+      </div>
+    </div>
+
+
+    <div className="research1-summary-item">
+      <div className="summary1-small-icon success">
+        ✅
+      </div>
+
+      <div>
+        <span>Approved</span>
+        <strong>{totalApproved}</strong>
+      </div>
+    </div>
+
+
+    <div className="research1-summary-item">
+      <div className="summary1-small-icon orange">
+        ⏳
+      </div>
+
+      <div>
+        <span>Pending</span>
+        <strong>{totalPending}</strong>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div className="research1-bottom-grid">
+{/* =====================================================
+    RESEARCH PROGRESS
+===================================================== */}
+
+    <div className="dashboard1-panel progress-panel">
+
+      <div className="panel1-header">
+        <div>
+          <h3>Research Progress</h3>
+          <p>Track your current research workflow</p>
+        </div>
+      </div>
+
+
+      <div className="progress1-list">
+
+        {/* UID PROGRESS */}
+        <div className="progress1-item">
+
+          <div className="progress1-title">
+            <span>
+              📄 UID Processing
+            </span>
+
+            <strong>
+              {uidProgress}%
+            </strong>
+          </div>
+
+          <div className="progress1-bar">
+            <div
+              className="progress1-fill uid-progress"
+              style={{
+                width: `${uidProgress}%`
+              }}
+            />
+          </div>
+
+          <small>
+            {counts.approvedUIDs} approved out of {totalUIDs}
+          </small>
+
+        </div>
+
+
+        {/* PID PROGRESS */}
+        <div className="progress1-item">
+
+          <div className="progress1-title">
+            <span>
+              📚 Research Paper Processing
+            </span>
+
+            <strong>
+              {pidProgress}%
+            </strong>
+          </div>
+
+          <div className="progress1-bar">
+            <div
+              className="progress1-fill pid-progress"
+              style={{
+                width: `${pidProgress}%`
+              }}
+            />
+          </div>
+
+          <small>
+            {counts.approvedPIDs} approved out of {totalPIDs}
+          </small>
+
+        </div>
+
+
+        {/* OVERALL PROGRESS */}
+        <div className="progress1-item">
+
+          <div className="progress1-title">
+            <span>
+              🎯 Overall Research Progress
+            </span>
+
+            <strong>
+              {overallProgress}%
+            </strong>
+          </div>
+
+          <div className="progress1-bar">
+            <div
+              className="progress1-fill overall-progress"
+              style={{
+                width: `${overallProgress}%`
+              }}
+            />
+          </div>
+
+          <small>
+            {totalApproved} approved out of {totalResearchItems} research items
+          </small>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    {/* =====================================================
+        RECENT ACTIVITY
+    ===================================================== */}
+
+    <div className="dashboard1-panel recent-activity-panel">
+
+      <div className="panel1-header">
+
+        <div>
+          <h3>Research Activity</h3>
+          <p>Your recent research workflow</p>
+        </div>
+
+      </div>
+
+
+      <div className="timeline1">
+
+        <div className="timeline1-item">
+
+          <div className="timeline1-dot green-dot">
+            ✓
+          </div>
+
+          <div className="timeline1-content">
+
+            <strong>
+              UID requests approved
+            </strong>
+
+            <p>
+              {counts.approvedUIDs} UID
+              {counts.approvedUIDs !== 1 ? 's have' : ' has'}
+              been approved.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div className="timeline1-item">
+
+          <div className="timeline1-dot blue-dot">
+            📚
+          </div>
+
+          <div className="timeline1-content">
+
+            <strong>
+              Research papers processed
+            </strong>
+
+            <p>
+              {counts.approvedPIDs} research paper
+              {counts.approvedPIDs !== 1 ? 's have' : ' has'}
+              been approved.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div className="timeline1-item">
+
+          <div className="timeline1-dot orange-dot">
+            ⏳
+          </div>
+
+          <div className="timeline1-content">
+
+            <strong>
+              Pending research items
+            </strong>
+
+            <p>
+              {totalPending} item
+              {totalPending !== 1 ? 's are' : ' is'}
+              currently pending.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div className="timeline1-item">
+
+          <div className="timeline1-dot purple-dot">
+            🎯
+          </div>
+
+          <div className="timeline1-content">
+
+            <strong>
+              Overall progress
+            </strong>
+
+            <p>
+              Your current approval rate is {approvalRate}%.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+</div>
+
+{/* ================= PENDING ACTIONS ================= */}
+<div className="dashboard1-panel pending-actions-panel">
+
+  <div className="panel1-header">
+    <div>
+      <h3>Pending Actions</h3>
+      <p>Items that may require your attention</p>
+    </div>
+
+    {pendingActions.length > 0 && (
+      <span className="pending1-page-info">
+        {pendingPage} / {totalPendingPages}
+      </span>
+    )}
+  </div>
+
+
+  {pendingActions.length > 0 ? (
+
+    <>
+      <div className="pending1-actions">
+
+        {currentPendingActions.map((action) => (
+
+          <div
+            key={action.type}
+            className={`pending1-action ${action.className}`}
+          >
+
+            <span className="pending1-action-icon">
+              {action.icon}
+            </span>
+
+
+            <div>
+              <strong>
+                {action.title}
+              </strong>
+
+              <p>
+                {action.description}
+              </p>
+            </div>
+
+
+            <button
+              onClick={() => setActiveSection(action.section)}
+            >
+              View
+            </button>
+
+          </div>
+
+        ))}
+
+      </div>
+
+
+      {/* PAGINATION */}
+      {totalPendingPages > 1 && (
+
+        <div className="pending1-pagination">
+
+          <button
+            disabled={pendingPage === 1}
+            onClick={() =>
+              setPendingPage(prev => prev - 1)
+            }
+          >
+            ← Previous
+          </button>
+
+
+          <div className="pending1-page-numbers">
+
+            {Array.from(
+              { length: totalPendingPages },
+              (_, index) => index + 1
+            ).map((page) => (
+
+              <button
+                key={page}
+                className={
+                  pendingPage === page
+                    ? 'active'
+                    : ''
+                }
+                onClick={() =>
+                  setPendingPage(page)
+                }
+              >
+                {page}
+              </button>
+
+            ))}
+
+          </div>
+
+
+          <button
+            disabled={pendingPage === totalPendingPages}
+            onClick={() =>
+              setPendingPage(prev => prev + 1)
+            }
+          >
+            Next →
+          </button>
+
+        </div>
+
+      )}
+
+    </>
+
+  ) : (
+
+    <div className="no1-pending">
+
+      <span>✅</span>
+
+      <div>
+        <strong>
+          No pending actions
+        </strong>
+
+        <p>
+          All your research requests and submissions
+          have been processed.
+        </p>
+      </div>
+
+    </div>
+
+  )}
+
+</div>
+
+    {/* ================= PENDING ACTIONS =================
+    <div className="dashboard-panel pending-actions-panel">
+
+      <div className="panel-header">
+        <div>
+          <h3>Pending Actions</h3>
+          <p>Items that may require your attention</p>
+        </div>
+      </div>
+
+      <div className="pending-actions">
+
+        {counts.pendingUIDs > 0 ? (
+          <div className="pending-action warning">
+            <span className="pending-action-icon">⏳</span>
+
+            <div>
+              <strong>
+                {counts.pendingUIDs} UID
+                {counts.pendingUIDs > 1 ? 's' : ''} pending
+              </strong>
+
+              <p>
+                Your UID request
+                {counts.pendingUIDs > 1 ? 's are' : ' is'} currently
+                awaiting processing.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setActiveSection('uid-status')}
+            >
+              View
+            </button>
+          </div>
+        ) : (
+          <div className="no-pending">
+            <span>✅</span>
+            <div>
+              <strong>No pending UID requests</strong>
+              <p>All your UID requests have been processed.</p>
+            </div>
+          </div>
+        )}
+
+
+        {counts.pendingPIDs > 0 ? (
+          <div className="pending-action danger">
+            <span className="pending-action-icon">📄</span>
+
+            <div>
+              <strong>
+                {counts.pendingPIDs} PID
+                {counts.pendingPIDs > 1 ? 's' : ''} pending
+              </strong>
+
+              <p>
+                Your research submission
+                {counts.pendingPIDs > 1 ? 's are' : ' is'} awaiting
+                processing.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setActiveSection('my-submissions')}
+            >
+              View
+            </button>
+          </div>
+        ) : (
+          <div className="no-pending">
+            <span>✅</span>
+            <div>
+              <strong>No pending PID submissions</strong>
+              <p>Your research submissions are up to date.</p>
+            </div>
+          </div>
+        )}
+
+      </div>
+
+    </div> */}
+
+  </div>
+)}
+       
+          {/* {activeSection === 'dashboard' && (
             <div
               className="dashboard-counts"
               style={{
@@ -193,7 +1046,7 @@ export default function FacultyDashboard() {
                 flexWrap: 'wrap'
               }}
             >
-              {/* Total UIDs */}
+              
               <div
                 className="count-card"
                 style={{
@@ -212,7 +1065,7 @@ export default function FacultyDashboard() {
                 <p style={{ fontSize: '20px' }}>{counts.approvedUIDs + counts.pendingUIDs}</p>
               </div>
 
-              {/* Total PIDs */}
+              
               <div
                 className="count-card"
                 style={{
@@ -231,7 +1084,6 @@ export default function FacultyDashboard() {
                 <p style={{ fontSize: '20px' }}>{counts.approvedPIDs + counts.pendingPIDs}</p>
               </div>
 
-              {/* Approved UIDs */}
               <div
                 className="count-card"
                 style={{
@@ -250,7 +1102,7 @@ export default function FacultyDashboard() {
                 <p style={{ fontSize: '20px' }}>{counts.approvedUIDs}</p>
               </div>
 
-              {/* Pending UIDs */}
+              
               <div
                 className="count-card"
                 style={{
@@ -269,7 +1121,7 @@ export default function FacultyDashboard() {
                 <p style={{ fontSize: '20px' }}>{counts.pendingUIDs}</p>
               </div>
 
-              {/* Approved PIDs */}
+             
               <div
                 className="count-card"
                 style={{
@@ -288,7 +1140,7 @@ export default function FacultyDashboard() {
                 <p style={{ fontSize: '20px' }}>{counts.approvedPIDs}</p>
               </div>
 
-              {/* Pending PIDs */}
+             
               <div
                 className="count-card"
                 style={{
@@ -307,7 +1159,7 @@ export default function FacultyDashboard() {
                 <p style={{ fontSize: '20px' }}>{counts.pendingPIDs}</p>
               </div>
             </div>
-          )}
+          )} */}
           {activeSection === 'profile' && <ProfileSection facultyDetails={facultyDetails} />}
           {activeSection === 'request-uid' && <RequestUIDForm facultyDetails={facultyDetails} />}
           {activeSection === 'uid-status' && facultyDetails && <UIDStatusList facultyId={facultyId} />}

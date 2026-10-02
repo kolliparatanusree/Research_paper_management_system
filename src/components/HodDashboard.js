@@ -1,556 +1,1311 @@
 // src/pages/HodDashboard.js
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './HodDashboard.css';
-import HodUidApproval from './HodUidApproval';
-import CustomNavbar from './CustomNavbar';
-import logo from './logo2.jpeg';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import ProfileSection from './faculty/ProfileSection';
-import DepartmentPublicationsSection from './DepartmentPublicationsSection';
-import HodFacultySection from './HodFacultySection';
-import NotificationsSection from './NotificationsSection';
+
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./HodDashboard.css";
+import HodUidApproval from "./HodUidApproval";
+import axios from "axios";
+import Swal from "sweetalert2";
+import ProfileSection from "./faculty/ProfileSection";
+import DepartmentPublicationsSection from "./DepartmentPublicationsSection";
+import HodFacultySection from "./HodFacultySection";
+import NotificationsSection from "./NotificationsSection";
+import HodAnalytics from "./HodAnalytics";
+import HODUIDStatusList from "./HODUIDStatusList";
+// import {
+//   ResponsiveContainer,
+//   BarChart,
+//   Bar,
+//   XAxis,
+//   YAxis,
+//   CartesianGrid,
+//   Tooltip,
+//   PieChart,
+//   Pie,
+//   Cell
+// } from "recharts";
+
 export default function HodDashboard() {
-  const [activeSection, setActiveSection] = useState('dashboard');
+  const [activeSection, setActiveSection] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const [hodProfile, setHodProfile] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [error, setError] = useState(null);
-const [notifications, setNotifications] = useState([]);
+
+  const [notifications, setNotifications] = useState([]);
+  const [facultyCount, setFacultyCount] = useState(0);
+  const [pendingUidCount, setPendingUidCount] = useState(0);
+  const [approvedUidCount, setApprovedUidCount] = useState(0);
+  const [notifCount, setNotifCount] = useState(0);
+
   const navigate = useNavigate();
-  const userId = localStorage.getItem('userId'); // read HOD ID
-const [facultyCount, setFacultyCount] = useState(0);
-const [pendingUidCount, setPendingUidCount] = useState(0);
-const [approvedUidCount, setApprovedUidCount] = useState(0);
-const [notifCount, setNotifCount] = useState(0);
-  useEffect(() => {
-
-     const userId = localStorage.getItem("userId");
-  if (!userId) return;
-
-  fetch(`/api/notifications/${userId}`)
-    .then(res => res.json())
-    .then(data => setNotifications(data))
-    .catch(err => console.error(err));
-
-}, []);
-
-useEffect(() => {
   const userId = localStorage.getItem("userId");
 
-  fetch(`/api/auth/notifications/unread-count/${userId}`)
-    .then(res => res.json())
-    .then(data => setNotifCount(data.count))
-    .catch(err => console.error(err));
-}, []);
+  /* =========================================================
+     FETCH NOTIFICATIONS
+  ========================================================= */
+  useEffect(() => {
+    if (!userId) return;
 
-useEffect(() => {
+    fetch(`/api/notifications/${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setNotifications(data);
+        }
+      })
+      .catch((err) => console.error("Notification fetch error:", err));
+  }, [userId]);
 
-  if (!hodProfile?.department) return;
+  /* =========================================================
+     FETCH UNREAD NOTIFICATION COUNT
+  ========================================================= */
+  const fetchNotificationCount = async () => {
+    if (!userId) return;
 
-  const department = hodProfile.department;
+    try {
+      const res = await fetch(
+        `/api/auth/notifications/unread-count/${userId}`
+      );
 
-  axios.get(`/api/faculty/count/${department}`)
-       .then(res => setFacultyCount(res.data.count));
-
-  axios.get(`/api/hod/uid/pending/${department}`)
-       .then(res => setPendingUidCount(res.data.count));
-
-  axios.get(`/api/hod/uid/approved/${department}`)
-       .then(res => setApprovedUidCount(res.data.count));
-
-}, [hodProfile]);
+      const data = await res.json();
+      setNotifCount(data.count || 0);
+    } catch (err) {
+      console.error("Unread notification count error:", err);
+    }
+  };
 
   useEffect(() => {
+    fetchNotificationCount();
+  }, [userId]);
+
+  /* =========================================================
+     FETCH HOD PROFILE
+  ========================================================= */
+  useEffect(() => {
     if (!userId) {
-      console.error('No HOD ID found in localStorage');
-      setError('No HOD ID found. Please login again.');
+      console.error("No HOD ID found in localStorage");
+      setError("No HOD ID found. Please login again.");
       setLoadingProfile(false);
       return;
     }
 
     const fetchHodProfile = async () => {
-  try {
-    // 🔵 SHOW LOADING POPUP
-    Swal.fire({
-      title: 'Loading Profile...',
-      text: 'Please wait',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
+      try {
+        setLoadingProfile(true);
+
+        const res = await axios.get(`/api/faculty/${userId}`);
+        const data = res.data;
+
+        setHodProfile({
+          fullName: data.fullName,
+          userId: data.userId,
+          department: data.department,
+          email: data.email,
+          phoneNumber: data.phoneNumber,
+          gender: data.gender,
+          profilePic: data.profilePic,
+        });
+      } catch (err) {
+        console.error("Error fetching HOD profile:", err);
+
+        setError("Failed to fetch HOD profile.");
+
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to fetch HOD profile",
+        });
+      } finally {
+        setLoadingProfile(false);
       }
-    });
-
-    setLoadingProfile(true);
-
-    const res = await axios.get(`/api/faculty/${userId}`);
-    const data = res.data;
-
-    setHodProfile({
-  fullName: data.fullName,
-  userId: data.userId,       // ProfileSection expects userId
-  department: data.department,
-  email: data.email,
-  phoneNumber: data.phoneNumber,
-  gender: data.gender
-});
-
-    Swal.close(); // ✅ CLOSE LOADER after success
-  } catch (err) {
-    console.error('Error fetching HOD profile:', err);
-
-    Swal.close(); // close loader if error
-
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Failed to fetch HOD profile'
-    });
-
-    setError('Failed to fetch HOD profile.');
-  } finally {
-    setLoadingProfile(false);
-  }
-};
-
-
-    // const fetchHodProfile = async () => {
-    //   try {
-    //     setLoadingProfile(true);
-    //     const res = await axios.get(`/api/hod/${hodId}`);
-    //     setHodProfile(res.data);
-    //   } catch (err) {
-    //     console.error('Error fetching HOD profile:', err);
-    //     setError('Failed to fetch HOD profile. Please try again.');
-    //   } finally {
-    //     setLoadingProfile(false);
-    //   }
-    // };
+    };
 
     fetchHodProfile();
   }, [userId]);
 
-const handleNavigation = (section) => {
-  if (section === 'logout') {
-    localStorage.clear();
+  /* =========================================================
+     FETCH DEPARTMENT COUNTS
+  ========================================================= */
+  useEffect(() => {
+    if (!hodProfile?.department) return;
 
-    Swal.fire({
-    title: 'Are you sure?',
-    text: "Do you really want to log out?",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, log me out',
-    cancelButtonText: 'Cancel',
-    confirmButtonColor: '#10b981', // green
-    cancelButtonColor: '#f87171',  // red
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // ✅ User confirmed logout
-      Swal.fire({
-        icon: 'success',
-        title: 'Logged Out',
-        text: 'You have successfully logged out!',
-        timer: 2000,
-        showConfirmButton: false
-      }).then(() => {
-        navigate('/login'); // Redirect after success message
-      });
-    }
-});
+    const department = hodProfile.department;
 
+    const fetchCounts = async () => {
+      try {
+        const [facultyRes, pendingRes, approvedRes] = await Promise.all([
+          axios.get(`/api/faculty/count/${department}`),
+          axios.get(`/api/hod/uid/pending/${department}`),
+          axios.get(`/api/hod/uid/approved/${department}`),
+        ]);
 
-    return;
-  }
-  setActiveSection(section);
-};
-
-// const handleNotificationClick = async () => {
-
-//   const userId = localStorage.getItem("userId");
-
-//   setShowNotifications(!showNotifications);
-
-//   if (!showNotifications) {
-//     await axios.put(`/api/auth/notifications/mark-read/${userId}`);
-//   }
-// };
-
-  // const handleNavigation = (section) => {
-  //   if (section === 'logout') {
-  //     localStorage.clear();
-  //     navigate('/login');
-  //     return;
-  //   }
-  //   setActiveSection(section);
-  // };
-
-  return (
-    <>
-      {/* <CustomNavbar /> */}
-      <div className="hod-dashboard">
-        
-        {/* Sidebar */}
-        <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-          <div className="logo-container">
-            {/* <img src={logo} alt="Logo" className="logo" /> */}
-          </div>
-          <h2>HOD Dashboard</h2>
-         
-          <ul>
-          <li
-  onClick={() => {
-    setActiveSection('dashboard');
-    setSidebarOpen(false);
-  }}
->
-  📊 Dashboard
-</li>
-            <li
-              className={activeSection === 'requests' ? 'active' : ''}
-              onClick={() => {
-                handleNavigation('requests');
-                setSidebarOpen(false);
-              }}
-            >
-              📨 Requesting UIDs
-            </li>
-            <li
-  className={activeSection === 'publications' ? 'active' : ''}
-  onClick={() => {
-    handleNavigation('publications');
-    setSidebarOpen(false);
-  }}
->
-  📚 Department Publications
-</li>
-<li
-  className={activeSection === 'faculty' ? 'active' : ''}
-  onClick={() => {
-    handleNavigation('faculty');
-    setSidebarOpen(false);
-  }}
->
-  👥 View Faculty Details
-</li>
-            <li
-              className={activeSection === 'profile' ? 'active' : ''}
-              onClick={() => {
-                handleNavigation('profile');
-                setSidebarOpen(false);
-              }}
-            >
-              👤 Profile
-            </li>
-            <li
-              onClick={() => {
-                handleNavigation('logout');
-                setSidebarOpen(false);
-              }}
-              style={{ cursor: 'pointer', color: 'white', marginTop: 'auto' }}
-            >
-              🔚 Logout
-            </li>
-          </ul>
-        </div>
-
-        <div className="dashboard-cards">
-
-
-
-</div>
-
-        {/* Main Content */}
-        <button
-  className="mobile-menu-btn"
-  onClick={() => setSidebarOpen(!sidebarOpen)}
-  aria-label="Toggle menu"
->
-  ☰
-</button>
-        <div className="main-content">
-          <div className="top-header">
-  <p className="welcome-text">
-    Welcome, {hodProfile?.fullName || "HOD"}
-  </p>
-
-  <div className="right-section">
-    {/* Notification Button */}
-    <button
-  className="notification-btn"
-  onClick={async () => {
-    setActiveSection("notifications");
-
-    const userId = localStorage.getItem("userId");
-    await axios.put(`/api/auth/notifications/mark-read/${userId}`);
-
-    setNotifCount(0); // reset badge
-  }}
->
-  🔔
-  {notifCount > 0 && (
-    <span className="notif-badge">{notifCount}</span>
-  )}
-</button>
-    {/* Profile Image */}
-    <img
-      src={
-        hodProfile?.profilePic
-          ? `/${hodProfile.profilePic}`
-          : "/default-profile.png"
+        setFacultyCount(facultyRes.data.count || 0);
+        setPendingUidCount(pendingRes.data.count || 0);
+        setApprovedUidCount(approvedRes.data.count || 0);
+      } catch (err) {
+        console.error("Dashboard count error:", err);
       }
-      alt="Profile"
-      className="profile-small"
-      onClick={() => setActiveSection("profile")}
-      onError={(e) => {
-        e.target.src = "/default-profile.png";
-      }}
-    />
-  </div>
-</div>
-          {activeSection === 'notifications' && (
-  <NotificationsSection userId={userId} />
-)}
-         {activeSection === 'dashboard' && (
+    };
 
-<div className="dashboard-cards"> 
-        <div className="dashboard-card">
-<h3>👨‍🏫 Faculty</h3>
-<p>{facultyCount}</p>
-</div>
+    fetchCounts();
+  }, [hodProfile]);
 
-<div className="dashboard-card">
-<h3>📨 Pending UID</h3>
-<p>{pendingUidCount}</p>
-</div>
+  /* =========================================================
+     UID APPROVAL CALCULATIONS
+  ========================================================= */
+  const totalUidRequests = pendingUidCount + approvedUidCount;
 
-<div className="dashboard-card">
-<h3>✅ Approved UID</h3>
-<p>{approvedUidCount}</p>
-</div>
 
-<div className="top-bar">
 
-{/* <button
-className="notification-btn"
-onClick={handleNotificationClick}
+  const pendingRate =
+    totalUidRequests > 0
+      ? Math.round((pendingUidCount / totalUidRequests) * 100)
+      : 0;
+
+  /* =========================================================
+     RECENT NOTIFICATIONS
+  ========================================================= */
+  const recentNotifications = useMemo(() => {
+    return [...notifications]
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+      )
+      .slice(0, 4);
+  }, [notifications]);
+
+  /* =========================================================
+     TIME BASED GREETING
+  ========================================================= */
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+
+    if (hour < 12) return "Good Morning";
+    if (hour < 17) return "Good Afternoon";
+    return "Good Evening";
+  }, []);
+
+  /* =========================================================
+     NAVIGATION
+  ========================================================= */
+  const handleNavigation = async (section) => {
+    if (section === "logout") {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you really want to log out?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, log me out",
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#2563eb",
+        cancelButtonColor: "#ef4444",
+      });
+
+      if (result.isConfirmed) {
+        localStorage.clear();
+
+        await Swal.fire({
+          icon: "success",
+          title: "Logged Out",
+          text: "You have successfully logged out!",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        navigate("/login");
+      }
+
+      return;
+    }
+
+    setActiveSection(section);
+    setSidebarOpen(false);
+  };
+
+  /* =========================================================
+     OPEN NOTIFICATIONS
+  ========================================================= */
+  const handleNotificationClick = async () => {
+    setActiveSection("notifications");
+    setSidebarOpen(false);
+
+    try {
+      await axios.put(`/api/auth/notifications/mark-read/${userId}`);
+      setNotifCount(0);
+    } catch (err) {
+      console.error("Unable to mark notifications as read:", err);
+    }
+  };
+
+  /* =========================================================
+     FORMAT DATE
+  ========================================================= */
+  const formatNotificationDate = (date) => {
+    if (!date) return "";
+
+    const notificationDate = new Date(date);
+
+    if (Number.isNaN(notificationDate.getTime())) {
+      return "";
+    }
+
+    return notificationDate.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const uidChartData = [
+  {
+    name: "Approved",
+    value: approvedUidCount || 0
+  },
+  {
+    name: "Pending",
+    value: pendingUidCount || 0
+  }
+];
+
+const departmentChartData = [
+  {
+    name: "Faculty",
+    value: facultyCount || 0
+  },
+  {
+    name: "Approved UID",
+    value: approvedUidCount || 0
+  },
+  {
+    name: "Pending UID",
+    value: pendingUidCount || 0
+  }
+];
+
+const totalUid =
+  (approvedUidCount || 0) +
+  (pendingUidCount || 0);
+
+const approvalRate =
+  totalUid > 0
+    ? Math.round(
+        ((approvedUidCount || 0) / totalUid) * 100
+      )
+    : 0;
+
+
+  /* =========================================================
+     DASHBOARD
+  ========================================================= */
+  const renderDashboard = () => {
+    return (
+      <div className="hod-home">
+
+        {/* =====================================================
+            WELCOME SECTION
+        ===================================================== */}
+        <section className="hod-welcome-section">
+          <div className="hod-welcome-content">
+            <div>
+              <p className="hod-eyebrow">
+                Department Research Management
+              </p>
+
+              <h1>
+                {greeting},{" "}
+                {hodProfile?.fullName || "HOD"}{" "}
+                <span className="wave">👋</span>
+              </h1>
+
+              <p className="hod-welcome-subtitle">
+                Here's an overview of your department's research
+                activities and UID workflow.
+              </p>
+            </div>
+
+            <div className="department-badge">
+              <span className="department-icon">🏛️</span>
+
+              <div>
+                <small>Department</small>
+                <strong>
+                  {hodProfile?.department || "Department"}
+                </strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =====================================================
+            SUMMARY CARDS
+        ===================================================== */}
+        <section className="hod-summary-grid">
+
+          <div
+            className="hod-summary-card faculty1-card"
+            onClick={() => handleNavigation("faculty")}
+          >
+            <div className="summary-card-top">
+              <div className="summary-icon">
+                👥
+              </div>
+
+              <span className="summary-arrow">
+                →
+              </span>
+            </div>
+
+            <div className="summary-label">
+              Faculty
+            </div>
+
+            <div className="summary-value">
+              {facultyCount}
+            </div>
+
+            <div className="summary-description">
+              Department faculty members
+            </div>
+          </div>
+
+          <div
+            className="hod-summary-card pending-card"
+            onClick={() => handleNavigation("requests")}
+          >
+            <div className="summary-card-top">
+              <div className="summary-icon">
+                📨
+              </div>
+
+              <span className="summary-arrow">
+                →
+              </span>
+            </div>
+
+            <div className="summary-label">
+              Pending UID
+            </div>
+
+            <div className="summary-value">
+              {pendingUidCount}
+            </div>
+
+            <div className="summary-description">
+              Requests awaiting review
+            </div>
+          </div>
+
+          <div className="hod-summary-card approved-card">
+            <div className="summary-card-top">
+              <div className="summary-icon">
+                ✓
+              </div>
+
+              <span className="summary-status">
+                Approved
+              </span>
+            </div>
+
+            <div className="summary-label">
+              Approved UID
+            </div>
+
+            <div className="summary-value">
+              {approvedUidCount}
+            </div>
+
+            <div className="summary-description">
+              Department UID approvals
+            </div>
+          </div>
+
+          <div
+            className="hod-summary-card research-card"
+            onClick={() => handleNavigation("publications")}
+          >
+            <div className="summary-card-top">
+              <div className="summary-icon">
+                📚
+              </div>
+
+              <span className="summary-arrow">
+                →
+              </span>
+            </div>
+
+            <div className="summary-label">
+              Research
+            </div>
+
+            <div className="summary-value">
+              —
+            </div>
+
+            <div className="summary-description">
+              Explore department publications
+            </div>
+          </div>
+
+        </section>
+
+        {/* =====================================================
+            QUICK ACTIONS
+        ===================================================== */}
+        <section className="hod-section">
+          <div className="hod-section-header">
+            <div>
+              <h2>Quick Actions</h2>
+              <p>
+                Access frequently used department functions
+              </p>
+            </div>
+          </div>
+
+          <div className="hod-quick-actions">
+
+            <button
+              className="quick-action-card"
+              onClick={() => handleNavigation("requests")}
+            >
+              <span className="quick-action-icon blue">
+                📨
+              </span>
+
+              <span className="quick-action-text">
+                <strong>Review UID Requests</strong>
+                <small>
+                  {pendingUidCount} request
+                  {pendingUidCount !== 1 ? "s" : ""} pending
+                </small>
+              </span>
+
+              <span className="quick-action-arrow">
+                →
+              </span>
+            </button>
+
+            <button
+              className="quick-action-card"
+              onClick={() => handleNavigation("faculty")}
+            >
+              <span className="quick-action-icon purple">
+                👥
+              </span>
+
+              <span className="quick-action-text">
+                <strong>View Faculty</strong>
+                <small>
+                  Manage department faculty information
+                </small>
+              </span>
+
+              <span className="quick-action-arrow">
+                →
+              </span>
+            </button>
+
+            <button
+              className="quick-action-card"
+              onClick={() => handleNavigation("publications")}
+            >
+              <span className="quick-action-icon green">
+                📚
+              </span>
+
+              <span className="quick-action-text">
+                <strong>Department Publications</strong>
+                <small>
+                  Explore research publications
+                </small>
+              </span>
+
+              <span className="quick-action-arrow">
+                →
+              </span>
+            </button>
+            
+            <button
+                className="quick-action-card"
+                onClick={() => handleNavigation("analytics")}
+              >
+                <span className="quick-action-icon blue">
+                  📊
+                </span>
+
+                <span className="quick-action-text">
+                  <strong>Research Analytics</strong>
+                  <small>
+                    View department research insights and statistics
+                  </small>
+                </span>
+
+                <span className="quick-action-arrow">
+                  →
+                </span>
+            </button>
+
+            <button
+              className="quick-action-card"
+              onClick={handleNotificationClick}
+            >
+              <span className="quick-action-icon orange">
+                🔔
+              </span>
+
+              <span className="quick-action-text">
+                <strong>Notifications</strong>
+                <small>
+                  {notifCount > 0
+                    ? `${notifCount} unread notification${
+                        notifCount !== 1 ? "s" : ""
+                      }`
+                    : "You're all caught up"}
+                </small>
+              </span>
+
+              <span className="quick-action-arrow">
+                →
+              </span>
+            </button>
+
+          </div>
+        </section>
+
+    
+
+        <section className="hod-analytics-grid">
+
+          {/* UID WORKFLOW */}
+          <div className="hod-panel uid-overview-panel">
+
+            <div className="hod-panel-header">
+              <div>
+                <h2>UID Approval Overview</h2>
+                <p>
+                  Current department approval workflow
+                </p>
+              </div>
+
+              <span className="panel-icon">
+                🎯
+              </span>
+            </div>
+
+            <div className="uid-overview-content">
+
+              <div className="approval-circle">
+                <div
+                  className="approval-circle-progress"
+                  style={{
+                    "--approval": `${approvalRate * 3.6}deg`,
+                  }}
+                >
+                  <div className="approval-circle-inner">
+                    <strong>{approvalRate}%</strong>
+                    <span>Approved</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="uid-stat-list">
+
+                <div className="uid-stat-item">
+                  <div className="uid-stat-label">
+                    <span className="status-dot approved-dot"></span>
+                    Approved
+                  </div>
+
+                  <strong>
+                    {approvedUidCount}
+                  </strong>
+                </div>
+
+                <div className="uid-stat-item">
+                  <div className="uid-stat-label">
+                    <span className="status-dot pending-dot"></span>
+                    Pending
+                  </div>
+
+                  <strong>
+                    {pendingUidCount}
+                  </strong>
+                </div>
+
+                <div className="uid-stat-item total-stat">
+                  <div className="uid-stat-label">
+                    Total Requests
+                  </div>
+
+                  <strong>
+                    {totalUidRequests}
+                  </strong>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div className="approval-progress-wrapper">
+              <div className="approval-progress-header">
+                <span>Approval progress</span>
+                <strong>{approvalRate}%</strong>
+              </div>
+
+              <div className="approval-progress">
+                <div
+                  className="approval-progress-fill"
+                  style={{
+                    width: `${approvalRate}%`,
+                  }}
+                ></div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* DEPARTMENT SNAPSHOT */}
+          <div className="hod-panel department-snapshot-panel">
+
+            <div className="hod-panel-header">
+              <div>
+                <h2>Department Snapshot</h2>
+                <p>
+                  Quick view of your department
+                </p>
+              </div>
+
+              <span className="panel-icon">
+                📊
+              </span>
+            </div>
+
+            <div className="snapshot-list">
+
+              <div className="snapshot-item">
+                <div className="snapshot-icon faculty-bg">
+                  👥
+                </div>
+
+                <div className="snapshot-info">
+                  <span>Faculty Members</span>
+                  <small>
+                    Registered in department
+                  </small>
+                </div>
+
+                <strong>
+                  {facultyCount}
+                </strong>
+              </div>
+
+              <div className="snapshot-item">
+                <div className="snapshot-icon pending-bg">
+                  📨
+                </div>
+
+                <div className="snapshot-info">
+                  <span>Pending Requests</span>
+                  <small>
+                    Requires your attention
+                  </small>
+                </div>
+
+                <strong>
+                  {pendingUidCount}
+                </strong>
+              </div>
+
+              <div className="snapshot-item">
+                <div className="snapshot-icon approved-bg">
+                  ✓
+                </div>
+
+                <div className="snapshot-info">
+                  <span>Approved Requests</span>
+                  <small>
+                    Successfully approved
+                  </small>
+                </div>
+
+                <strong>
+                  {approvedUidCount}
+                </strong>
+              </div>
+
+            </div>
+
+            <button
+              className="panel-link-button"
+              onClick={() => handleNavigation("requests")}
+            >
+              Open UID Management
+              <span>→</span>
+            </button>
+
+          </div>
+
+        </section>
+
+        {/* =====================================================
+            UID WORKFLOW
+        ===================================================== */}
+        <section className="hod-panel workflow-panel">
+
+          <div className="hod-panel-header">
+            <div>
+              <h2>UID Workflow</h2>
+              <p>
+                Understand the current request flow
+              </p>
+            </div>
+
+            <span className="panel-icon">
+              🔄
+            </span>
+          </div>
+
+          <div className="workflow-container">
+
+            <div className="workflow-step completed">
+              <div className="workflow-number">
+                1
+              </div>
+
+              <div>
+                <strong>Faculty Submission</strong>
+                <span>
+                  Researcher submits UID request
+                </span>
+              </div>
+            </div>
+
+            <div className="workflow-line"></div>
+
+            <div className="workflow-step active-step">
+              <div className="workflow-number">
+                2
+              </div>
+
+              <div>
+                <strong>HOD Review</strong>
+                <span>
+                  Department-level verification
+                </span>
+              </div>
+            </div>
+
+            <div className="workflow-line"></div>
+
+            <div className="workflow-step">
+              <div className="workflow-number">
+                3
+              </div>
+
+              <div>
+                <strong>Further Approval</strong>
+                <span>
+                  Request moves through workflow
+                </span>
+              </div>
+            </div>
+
+            <div className="workflow-line"></div>
+
+            <div className="workflow-step">
+              <div className="workflow-number">
+                4
+              </div>
+
+              <div>
+                <strong>UID Completion</strong>
+                <span>
+                  Research request completed
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        {/* =====================================================
+            RECENT NOTIFICATIONS
+        ===================================================== */}
+        <section className="hod-panel notifications-preview">
+
+          <div className="hod-panel-header">
+            <div>
+              <h2>Recent Notifications</h2>
+              <p>
+                Latest updates related to your account
+              </p>
+            </div>
+
+            <button
+              className="view-all-button"
+              onClick={handleNotificationClick}
+            >
+              View All →
+            </button>
+          </div>
+
+          {recentNotifications.length === 0 ? (
+            <div className="empty-notifications">
+              <div className="empty-notification-icon">
+                🔔
+              </div>
+
+              <h3>No recent notifications</h3>
+
+              <p>
+                You're all caught up. New updates will
+                appear here.
+              </p>
+            </div>
+          ) : (
+            <div className="recent-notification-list">
+
+              {recentNotifications.map((notification) => (
+                <div
+                  className={`recent-notification-item ${
+                    notification.isRead ? "read" : "unread"
+                  }`}
+                  key={notification._id}
+                >
+                  <div className="notification-status-icon">
+                    {notification.isRead ? "✓" : "•"}
+                  </div>
+
+                  <div className="notification-content">
+                    <p>
+                      {notification.message}
+                    </p>
+
+                    <span>
+                      {formatNotificationDate(
+                        notification.createdAt
+                      )}
+                    </span>
+                  </div>
+
+                  {!notification.isRead && (
+                    <span className="new-label">
+                      NEW
+                    </span>
+                  )}
+                </div>
+              ))}
+
+            </div>
+          )}
+
+        </section>
+
+      </div>
+    );
+  };
+
+  /* =========================================================
+     MAIN RENDER
+  ========================================================= */
+  return (
+    <div className="hod-dashboard">
+
+      {/* =====================================================
+          MOBILE OVERLAY
+      ===================================================== */}
+      {sidebarOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
+
+      {/* =====================================================
+          SIDEBAR
+      ===================================================== */}
+      <aside
+        className={`sidebar ${
+          sidebarOpen ? "open" : ""
+        }`}
+      >
+
+        <div className="sidebar-brand">
+
+          <div className="sidebar-brand-icon">
+            RP
+          </div>
+
+          <div>
+            <strong>RPMS</strong>
+            <span>Research Management</span>
+          </div>
+
+        </div>
+
+        <div className="sidebar-role">
+          <span className="role-dot"></span>
+          HOD Portal
+        </div>
+
+        <nav className="sidebar-navigation">
+
+          <p className="nav-section-title">
+            MAIN
+          </p>
+
+          <button
+            className={`sidebar-item ${
+              activeSection === "dashboard"
+                ? "active"
+                : ""
+            }`}
+            onClick={() => handleNavigation("dashboard")}
+          >
+            <span className="sidebar-icon">▣</span>
+            <span>Dashboard</span>
+          </button>
+
+          <button
+            className={`sidebar-item ${
+              activeSection === "requests"
+                ? "active"
+                : ""
+            }`}
+            onClick={() => handleNavigation("requests")}
+          >
+            <span className="sidebar-icon">📨</span>
+            <span>Pending UID Requests</span>
+
+            {pendingUidCount > 0 && (
+              <span className="sidebar-count">
+                {pendingUidCount}
+              </span>
+            )}
+          </button>
+
+          <button
+  className={`sidebar-item ${
+    activeSection === "uid-status" ? "active" : ""
+  }`}
+  onClick={() => handleNavigation("uid-status")}
 >
-🔔 Notifications ({notifications.filter(n => !n.isRead).length})
-</button> */}
-
-{/* {showNotifications && (
-
-<div className="notification-popup">
-
-<div className="notification-header">
-<h4>Notifications</h4>
-
-<button
-className="close-btn"
-onClick={() => setShowNotifications(false)}
->
-❌
+  <span className="sidebar-icon">📋</span>
+  <span>UID Status</span>
 </button>
 
-</div>
+          <button
+            className={`sidebar-item ${
+              activeSection === "publications"
+                ? "active"
+                : ""
+            }`}
+            onClick={() =>
+              handleNavigation("publications")
+            }
+          >
+            <span className="sidebar-icon">📚</span>
+            <span>Department Publications</span>
+          </button>
 
-{notifications.filter(note => !note.isRead).length === 0 ? (
-  <p>No notifications</p>
-) : (
-  notifications
-    .filter(note => !note.isRead)
-    .map((note) => (
-      <div key={note._id} className="notification-item">
-        <p>{note.message}</p>
-        <small>{new Date(note.createdAt).toLocaleString()}</small>
-      </div>
-    ))
-)}
+          <button
+            className={`sidebar-item ${
+              activeSection === "faculty"
+                ? "active"
+                : ""
+            }`}
+            onClick={() =>
+              handleNavigation("faculty")
+            }
+          >
+            <span className="sidebar-icon">👥</span>
+            <span>Faculty</span>
+          </button>
 
-</div>
+          <button
+            className={`sidebar-item ${
+              activeSection === "analytics"
+                ? "active"
+                : ""
+            }`}
+            onClick={() =>
+              handleNavigation("analytics")
+            }
+          >
+            <span className="sidebar-icon">📊</span>
+            <span>Analytics</span>
+          </button>
 
-)} */}
+          <p className="nav-section-title account-title">
+            ACCOUNT
+          </p>
 
-</div>
+          <button
+            className={`sidebar-item ${
+              activeSection === "notifications"
+                ? "active"
+                : ""
+            }`}
+            onClick={handleNotificationClick}
+          >
+            <span className="sidebar-icon">🔔</span>
+            <span>Notifications</span>
 
-</div>
+            {notifCount > 0 && (
+              <span className="sidebar-count notification-count">
+                {notifCount}
+              </span>
+            )}
+          </button>
 
-)}
+          <button
+            className={`sidebar-item ${
+              activeSection === "profile"
+                ? "active"
+                : ""
+            }`}
+            onClick={() =>
+              handleNavigation("profile")
+            }
+          >
+            <span className="sidebar-icon">👤</span>
+            <span>Profile</span>
+          </button>
 
+        </nav>
 
+        {/* ===================================================
+            SIDEBAR BOTTOM
+        =================================================== */}
+        <div className="sidebar-bottom">
 
-     
-          {activeSection === 'publications' && hodProfile && (
-  <DepartmentPublicationsSection department={hodProfile.department} />
-)}
-{/* // In HodDashboard.js */}
-{activeSection === "faculty" && hodProfile && (
-  <HodFacultySection hodProfile={hodProfile} />
-)}
-          {activeSection === 'requests' && <HodUidApproval />}
-          {activeSection === 'profile' && hodProfile && (
-  <ProfileSection facultyDetails={hodProfile} />
-)}
-          {/* {activeSection === 'profile' && (
-            <div className="profile-section">
-              <h2>HOD Profile</h2>
+          <div className="sidebar-user">
 
+            <img
+              src={
+                hodProfile?.profilePic
+                  ? `/${hodProfile.profilePic}`
+                  : "/default-profile.png"
+              }
+              alt="HOD"
+              onError={(e) => {
+                e.target.src =
+                  "/default-profile.png";
+              }}
+            />
 
-              {error && <p style={{ color: 'red' }}>{error}</p>}
+            <div>
+              <strong>
+                {hodProfile?.fullName || "HOD"}
+              </strong>
 
-              {!loadingProfile && !error && hodProfile && (
-                <div className="profile-card">
-                  <p><strong>Name:</strong> {hodProfile.fullName}</p>
-                  <p><strong>Employee ID:</strong> {hodProfile.userId}</p>
-                  <p><strong>Department:</strong> {hodProfile.department}</p>
-                  <p><strong>Email:</strong> {hodProfile.email}</p>
-                  <p><strong>Phone:</strong> {hodProfile.phoneNumber}</p>
-                  <p><strong>Gender:</strong> {hodProfile.gender}</p>
-                </div>
-              )}
+              <span>
+                {hodProfile?.department || "Department"}
+              </span>
             </div>
-          )} */}
+
+          </div>
+
+          <button
+            className="sidebar-logout"
+            onClick={() =>
+              handleNavigation("logout")
+            }
+          >
+            <span>↪</span>
+            Logout
+          </button>
+
         </div>
-      </div>
-    </>
+
+      </aside>
+
+      {/* =====================================================
+          MAIN AREA
+      ===================================================== */}
+      <main className="hod-main">
+
+        {/* ===================================================
+            TOP HEADER
+        =================================================== */}
+        <header className="hod-top-header">
+
+          <button
+            className="mobile-menu-btn"
+            onClick={() =>
+              setSidebarOpen(!sidebarOpen)
+            }
+            aria-label="Toggle menu"
+          >
+            ☰
+          </button>
+
+          <div className="header-title-area">
+
+            <span className="header-page-label">
+              {activeSection === "dashboard"
+                ? "Dashboard"
+                : activeSection === "requests"
+                ? "UID Requests"
+                : activeSection === "uid-status"
+                ? "UID Status"
+                : activeSection === "publications"
+                ? "Department Publications"
+                : activeSection === "faculty"
+                ? "Faculty"
+                 : activeSection === "analytics"
+                ? "Analytics"
+                : activeSection === "notifications"
+                ? "Notifications"
+                : "Profile"}
+            </span>
+
+            <span className="header-separator">
+              /
+            </span>
+
+            <span className="header-department">
+              {hodProfile?.department || "Department"}
+            </span>
+
+          </div>
+
+          <div className="header-actions">
+
+            <button
+              className="header-notification-button"
+              onClick={handleNotificationClick}
+              aria-label="Notifications"
+            >
+              🔔
+
+              {notifCount > 0 && (
+                <span className="header-notification-badge">
+                  {notifCount > 9
+                    ? "9+"
+                    : notifCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              className="header-profile-button"
+              onClick={() =>
+                handleNavigation("profile")
+              }
+            >
+              <img
+                src={
+                  hodProfile?.profilePic
+                    ? `/${hodProfile.profilePic}`
+                    : "/default-profile.png"
+                }
+                alt="Profile"
+                onError={(e) => {
+                  e.target.src =
+                    "/default-profile.png";
+                }}
+              />
+
+              <div className="header-profile-info">
+                <strong>
+                  {hodProfile?.fullName || "HOD"}
+                </strong>
+
+                <span>
+                  Head of Department
+                </span>
+              </div>
+
+              <span className="profile-chevron">
+                ▾
+              </span>
+            </button>
+
+          </div>
+
+        </header>
+
+        {/* ===================================================
+            CONTENT
+        =================================================== */}
+        <div className="hod-content">
+
+          {loadingProfile && !hodProfile ? (
+            <div className="hod-loading">
+              <div className="loading-spinner"></div>
+              <p>Loading dashboard...</p>
+            </div>
+          ) : error && !hodProfile ? (
+            <div className="hod-error">
+              <div>⚠️</div>
+              <h3>Unable to load dashboard</h3>
+              <p>{error}</p>
+            </div>
+          ) : (
+            <>
+              {activeSection === "dashboard" &&
+                renderDashboard()}
+
+              {activeSection === "notifications" && (
+                <NotificationsSection
+                  userId={userId}
+                />
+              )}
+
+              {activeSection === "publications" &&
+                hodProfile && (
+                  <DepartmentPublicationsSection
+                    department={
+                      hodProfile.department
+                    }
+                  />
+                )}
+
+              {activeSection === "faculty" &&
+                hodProfile && (
+                  <HodFacultySection
+                    hodProfile={hodProfile}
+                  />
+                )}
+
+                {activeSection === "analytics" &&
+  hodProfile && (
+    <HodAnalytics
+    facultyCount={facultyCount}
+    pendingUidCount={pendingUidCount}
+    approvedUidCount={approvedUidCount}
+      department={hodProfile.department}
+    />
+  )}
+
+              {activeSection === "requests" && (
+                <>
+                  <HodUidApproval />
+                </>
+              )}
+
+              {activeSection === "uid-status" && (
+  <HODUIDStatusList
+  userId={userId}
+    department={hodProfile?.department}
+  />
+)}
+
+              {activeSection === "profile" &&
+                hodProfile && (
+                  <ProfileSection
+                    facultyDetails={hodProfile}
+                  />
+                )}
+            </>
+          )}
+
+        </div>
+
+      </main>
+    </div>
   );
 }
-
-
-
-// // src/pages/HodDashboard.js
-// import React, { useEffect, useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import './HodDashboard.css';
-// import HodUidApproval from './HodUidApproval';
-// import CustomNavbar from './CustomNavbar'; 
-// import logo from './logo2.jpeg';
-
-// export default function HodDashboard() {
-//   const [activeSection, setActiveSection] = useState('requests');
-//   const [hodProfile, setHodProfile] = useState(null);
-//   const navigate = useNavigate();
-//   const user = JSON.parse(localStorage.getItem("user"));
-//   const hodId = user?.hodId;
-
-//   // ✅ Define this BEFORE JSX
-//   const handleNavigation = (section) => {
-//     if (section === 'logout') {
-//       localStorage.clear(); // Clear stored data
-//       navigate('/hod-login');
-//       return;
-//     }
-//     setActiveSection(section);
-//   };
-
-//   useEffect(() => {
-//   const fetchHodProfile = async () => {
-//     if (!hodId) {
-//       console.error("No HOD ID found in localStorage");
-//       return;
-//     }
-
-//     try {
-//       const res = await fetch(`/api/hod/${hodId}`);
-//       if (!res.ok) {
-//         throw new Error(`HTTP error! Status: ${res.status}`);
-//       }
-//       const data = await res.json();
-//       console.log("Fetched HOD profile:", data); // 🔥 check this in browser console
-//       setHodProfile(data);
-//     } catch (err) {
-//       console.error('Error fetching HOD profile:', err);
-//     }
-//   };
-
-//   fetchHodProfile();
-// }, [hodId]);
-
-
-
-//   // useEffect(() => {
-//   //   const fetchHodProfile = async () => {
-//   //     try {
-//   //       const res = await fetch(`/api/hod/${hodId}`);
-//   //       if (!res.ok) {
-//   //         throw new Error('Failed to fetch HOD profile');
-//   //       }
-//   //       const data = await res.json();
-//   //       setHodProfile(data);
-//   //     } catch (err) {
-//   //       console.error('Error fetching HOD profile:', err);
-//   //     }
-//   //   };
-
-//   //   if (hodId) {
-//   //     fetchHodProfile();
-//   //   }
-//   // }, [hodId]);
-
-//   // const handleNavigation = (section) => {
-//   //   if (section === 'logout') {
-//   //     localStorage.clear(); // Clear stored data
-//   //     navigate('/hod-login');
-//   //     return;
-//   //   }
-//   //   setActiveSection(section);
-//   // };
-
-//   return (
-//     <>
-//       <CustomNavbar />
-//     <div className="hod-dashboard">
-//       {/* Sidebar */}
-//       <div className="sidebar">
-//         <div className="logo-container">
-//           {/* <img src={logo} alt="Logo" className="logo" /> */}
-//         </div>
-//         <h2>HOD Dashboard</h2>
-//         <ul>
-//           <li
-//             className={activeSection === 'requests' ? 'active' : ''}
-//             onClick={() => handleNavigation('requests')}
-//           >
-//             📨 Requesting UIDs
-//           </li>
-//           <li
-//             className={activeSection === 'profile' ? 'active' : ''}
-//             onClick={() => handleNavigation('profile')}
-//           >
-//             👤 Profile
-//           </li>
-//           <li
-//             onClick={() => handleNavigation('logout')}
-//             style={{ cursor: 'pointer', color: 'white', marginTop: 'auto' }}
-//           >
-//             🔚 Logout
-//           </li>
-//         </ul>
-//       </div>
-
-//       {/* Main Content */}
-//       <div className="main-content">
-//         {activeSection === 'requests' && <HodUidApproval hodId={hodId} />
-// }
-
-//         {activeSection === 'profile' && (
-//           <div className="profile-section">
-//             <h2>HOD Profile</h2>
-//             {hodProfile ? (
-//               <div className="profile-card">
-//                 <p><strong>Name:</strong> {hodProfile.fullName}</p>
-//                 <p><strong>Employee ID:</strong> {hodProfile.hodId}</p>
-//                 <p><strong>Department:</strong> {hodProfile.department}</p>
-//                 <p><strong>Email:</strong> {hodProfile.email}</p>
-//                 <p><strong>Phone:</strong> {hodProfile.phoneNumber}</p>
-//               </div>
-//             ) : (
-//               <p>Loading profile...</p>
-//             )}
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//     </>
-//   );
-// }

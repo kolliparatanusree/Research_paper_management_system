@@ -12,7 +12,7 @@ const mainAdminRoutes = require('./routes/mainadminRoutes');
 const authRoutes = require('./routes/authRoutes');
 const notificationRoutes = require("./routes/notificationRoutes");
 const rdcoordinatorRoutes = require('./routes/rdcoordinatorRoutes');
-
+const analyticsRoutes = require("./routes/analyticsRoutes");
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -27,6 +27,8 @@ app.use('/api/rdcoordinator', rdcoordinatorRoutes);
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
+
+app.use("/api/analytics", analyticsRoutes);
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));

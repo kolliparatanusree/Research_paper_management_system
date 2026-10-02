@@ -1,114 +1,1680 @@
+/* =========================================================
+   RPMS PREMIUM LOGIN
+========================================================= */
 
-.login-page-wrapper {
-height: 100vh;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-} 
+.rpms-login-page {
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 
-/* Card top accent */
-.login-page-wrapper .login-card {
-  border-top: 5px solid #10b981;
+  background:
+    radial-gradient(
+      circle at 10% 10%,
+      rgba(37, 99, 235, 0.08),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 90% 90%,
+      rgba(124, 58, 237, 0.08),
+      transparent 28%
+    ),
+    #f5f7fb;
 }
 
-/* Heading text gradient */
-.login-page-wrapper .login-card h2 {
-  background: linear-gradient(90deg, #10b981, #3b82f6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* =========================================================
+   MAIN
+========================================================= */
+
+.rpms-login-main {
+  width: 100%;
+  height: calc(100vh - 64px);
+  min-height: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 15px 25px;
+  box-sizing: border-box;
+
+  position: relative;
+  overflow: hidden;
 }
 
-/* Input background */
-.login-page-wrapper .login-card input[type="text"],
-.login-page-wrapper .login-card input[type="password"],
-.login-page-wrapper .login-card input[type="email"] {
-  background: #f3f4f6;
+/* =========================================================
+   MAIN WRAPPER
+========================================================= */
+
+.rpms-login-wrapper {
+  width: 100%;
+  height: 100%;
+  max-width: 1280px;
+  max-height: 100%;
+  min-height: 0;
+
+  display: flex;
+  position: relative;
+  z-index: 5;
+
+  overflow: hidden;
+  border-radius: 30px;
+
+  background: rgba(255, 255, 255, 0.92);
+
+  box-shadow:
+    0 35px 90px rgba(15, 23, 42, 0.15),
+    0 10px 35px rgba(37, 99, 235, 0.08);
+
+  animation: rpmsLoginWrapperIn 0.8s ease-out;
 }
 
-.login-page-wrapper .login-card input:focus {
-  background: #fff;
+@keyframes rpmsLoginWrapperIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-/* Button gradient */
-.login-page-wrapper .login-card button {
-  background: linear-gradient(90deg, #10b981, #3b82f6);
+/* =========================================================
+   LEFT BRANDING
+========================================================= */
+
+.rpms-login-brand {
+  width: 53%;
+  position: relative;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+
+  color: #ffffff;
+
+  /* IMPORTANT:
+     NO IMAGE HERE
+  */
+  background:
+    linear-gradient(
+      135deg,
+      #07152f 0%,
+      #10285b 30%,
+      #1d4ed8 68%,
+      #4f46e5 100%
+    );
+
+  isolation: isolate;
 }
 
-.login-page-wrapper .login-card button:hover {
-  background: linear-gradient(90deg, #3b82f6, #10b981);
+/* =========================================================
+   MAIN GLOW
+========================================================= */
+
+.rpms-login-brand::before {
+  content: "";
+
+  position: absolute;
+
+  width: 650px;
+  height: 650px;
+
+  border-radius: 50%;
+
+  top: -300px;
+  right: -250px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(96, 165, 250, 0.25),
+      transparent 68%
+    );
+
+  animation: rpmsLoginGlow 8s ease-in-out infinite alternate;
+
+  z-index: 1;
 }
 
-/* Forgot password link color */
-.login-page-wrapper .login-card .forgot-link {
-  color: #fbbf24;
+@keyframes rpmsLoginGlow {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(-80px, 70px) scale(1.15);
+  }
 }
 
-.login-page-wrapper .login-card .forgot-link:hover {
-  color: #f59e0b;
+/* =========================================================
+   SINGLE RESEARCH IMAGE
+========================================================= */
+
+.rpms-login-brand::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background-image: url("../assets/rpms-login-bg.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+
+  opacity: 0.28;
+
+  pointer-events: none;
+
+  z-index: 2;
+
+  animation: rpmsBrandImageFlow 18s ease-in-out infinite;
 }
 
-.login-page-wrapper .login-card {
-  max-width: 360px;
-  border-top: 5px solid #10b981;
-  margin: 60px auto;
-  padding: 30px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+@keyframes rpmsBrandImageFlow {
+  0% {
+    transform: scale(1) translate3d(0, 0, 0);
+    background-position: 50% 50%;
+  }
+
+  25% {
+    transform: scale(1.04) translate3d(-12px, -7px, 0);
+    background-position: 46% 48%;
+  }
+
+  50% {
+    transform: scale(1.08) translate3d(-22px, 10px, 0);
+    background-position: 42% 53%;
+  }
+
+  75% {
+    transform: scale(1.04) translate3d(-10px, 17px, 0);
+    background-position: 47% 48%;
+  }
+
+  100% {
+    transform: scale(1) translate3d(0, 0, 0);
+    background-position: 50% 50%;
+  }
+}
+
+/* =========================================================
+   BRAND OVERLAY / LIGHT SWEEP
+========================================================= */
+
+.rpms-login-brand-overlay {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      120deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.06) 45%,
+      transparent 70%
+    );
+
+  background-size: 200% 100%;
+
+  animation: rpmsLoginShine 8s linear infinite;
+
+  pointer-events: none;
+
+  z-index: 5;
+}
+
+@keyframes rpmsLoginShine {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* =========================================================
+   BRAND CONTENT
+========================================================= */
+
+.rpms-login-brand-content {
+  position: relative;
+  z-index: 10;
+
+  width: 100%;
+
+  padding: 30px 50px;
+
+  box-sizing: border-box;
+
+  animation: rpmsLoginBrandIn 1s ease-out 0.15s both;
+}
+
+@keyframes rpmsLoginBrandIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* =========================================================
+   BRAND ICON
+========================================================= */
+
+.rpms-login-brand-icon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 16px;
+
+  border-radius: 19px;
+
+  background: rgba(255, 255, 255, 0.11);
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  backdrop-filter: blur(15px);
+
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.2);
+
+  animation: rpmsLoginFloat 4s ease-in-out infinite;
+}
+
+@keyframes rpmsLoginFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.rpms-login-brand-icon span {
+  font-size: 27px;
+}
+
+/* =========================================================
+   BRAND TITLE
+========================================================= */
+
+.rpms-login-brand-small {
+  display: inline-block;
+
+  margin-bottom: 8px;
+
+  color: #bfdbfe;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: 4px;
+
+  animation: rpmsLoginFadeUp 0.8s ease 0.3s both;
+}
+
+.rpms-login-brand-title h1 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 32px;
+  line-height: 1.12;
+
+  font-weight: 850;
+
+  letter-spacing: -1.2px;
+
+  animation: rpmsLoginFadeUp 0.8s ease 0.4s both;
+}
+
+@keyframes rpmsLoginFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   BRAND DESCRIPTION
+========================================================= */
+
+.rpms-login-brand-description {
+  max-width: 535px;
+
+  margin: 14px 0 20px;
+
+  color: rgba(255, 255, 255, 0.75);
+
+  font-size: 13px;
+  line-height: 1.5;
+
+  animation: rpmsLoginFadeUp 0.8s ease 0.5s both;
+}
+
+/* =========================================================
+   FEATURES
+========================================================= */
+
+.rpms-login-feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  animation: rpmsLoginFadeUp 0.8s ease 0.6s both;
+}
+
+.rpms-login-feature {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  color: rgba(255, 255, 255, 0.9);
+
+  font-size: 12px;
+
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
+}
+
+.rpms-login-feature:hover {
+  transform: translateX(7px);
+  color: #ffffff;
+}
+
+.rpms-login-feature-icon {
+  width: 23px;
+  height: 23px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.13);
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease;
+}
+
+.rpms-login-feature:hover .rpms-login-feature-icon {
+  transform: scale(1.12) rotate(8deg);
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* =========================================================
+   DECORATIVE SHAPES
+========================================================= */
+
+.rpms-login-decoration {
+  position: absolute;
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  z-index: 3;
+}
+
+.rpms-login-decoration-one {
+  width: 470px;
+  height: 470px;
+
+  right: -260px;
+  top: -190px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  animation: rpmsLoginRotate 20s linear infinite;
+}
+
+.rpms-login-decoration-two {
+  width: 330px;
+  height: 330px;
+
+  left: -190px;
+  bottom: -170px;
+
+  background: rgba(255, 255, 255, 0.045);
+
+  animation: rpmsLoginPulse 6s ease-in-out infinite;
+}
+
+.rpms-login-decoration-three {
+  width: 160px;
+  height: 160px;
+
+  right: 60px;
+  bottom: 55px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  animation: rpmsLoginFloat 5s ease-in-out infinite;
+}
+
+@keyframes rpmsLoginRotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rpmsLoginPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+/* =========================================================
+   RIGHT LOGIN AREA
+========================================================= */
+
+.rpms-login-form-area {
+  width: 47%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px 40px;
+
+  box-sizing: border-box;
+
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(79, 70, 229, 0.05),
+      transparent 30%
+    ),
+    #ffffff;
+}
+
+/* =========================================================
+   LOGIN CARD
+========================================================= */
+
+.rpms-login-card {
+  width: 100%;
+  max-width: 450px;
+
+  padding: 5px 10px;
+
+  box-sizing: border-box;
+
+  animation: rpmsLoginCardIn 0.9s ease-out 0.2s both;
+}
+
+@keyframes rpmsLoginCardIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* =========================================================
+   LOGIN HEADER
+========================================================= */
+
+.rpms-login-header {
   text-align: center;
-  font-family: 'Poppins', sans-serif;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  margin-bottom: 18px;
 }
 
-.login-page-wrapper .login-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+.rpms-login-header-icon {
+  width: 52px;
+  height: 52px;
+
+  margin: 0 auto 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 17px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #2563eb,
+      #4f46e5
+    );
+
+  font-size: 22px;
+
+  box-shadow:
+    0 15px 35px rgba(37, 99, 235, 0.25);
+
+  animation: rpmsLoginIconPulse 3s ease-in-out infinite;
 }
 
-.login-page-wrapper .login-card h2 {
-  font-size: 26px;
-  color: #1f2937;
+@keyframes rpmsLoginIconPulse {
+  0%,
+  100% {
+    transform: translateY(0);
+
+    box-shadow:
+      0 15px 35px rgba(37, 99, 235, 0.25);
+  }
+
+  50% {
+    transform: translateY(-4px);
+
+    box-shadow:
+      0 20px 42px rgba(37, 99, 235, 0.34);
+  }
+}
+
+.rpms-login-header h2 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 25px;
+  font-weight: 800;
+
+  letter-spacing: -0.8px;
+}
+
+.rpms-login-header p {
+  margin: 5px 0 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.rpms-login-form {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+/* =========================================================
+   FIELD
+========================================================= */
+
+.rpms-login-field {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.rpms-login-field label {
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  letter-spacing: 0.2px;
+}
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.rpms-login-input-box {
+  position: relative;
+
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+}
+
+.rpms-login-input-box input {
+  width: 100%;
+  height: 44px;
+
+  box-sizing: border-box;
+
+  padding: 0 48px;
+
+  border: 1.5px solid #dce3ec;
+
+  border-radius: 14px;
+
+  outline: none;
+
+  background: #f8fafc;
+
+  color: #172033;
+
+  font-size: 13px;
+
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+
+.rpms-login-input-box input:hover {
+  border-color: #b8c4d4;
+
+  background: #ffffff;
+
+  transform: translateY(-1px);
+}
+
+.rpms-login-input-box input:focus {
+  border-color: #2563eb;
+
+  background: #ffffff;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 25px rgba(37, 99, 235, 0.09),
+    0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.rpms-login-input-box input::placeholder {
+  color: #94a3b8;
+}
+
+/* =========================================================
+   INPUT ICON
+========================================================= */
+
+.rpms-login-input-icon {
+  position: absolute;
+
+  left: 16px;
+
+  z-index: 3;
+
+  font-size: 16px;
+
+  pointer-events: none;
+
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.rpms-login-input-box:focus-within
+.rpms-login-input-icon {
+  transform: scale(1.12);
+}
+
+/* =========================================================
+   PASSWORD TOGGLE
+========================================================= */
+
+.rpms-login-password-toggle {
+  position: absolute;
+
+  right: 10px;
+
+  width: 35px;
+  height: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  font-size: 15px;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.rpms-login-password-toggle:hover {
+  background: #eef2ff;
+
+  transform: scale(1.08);
+}
+
+/* =========================================================
+   OPTIONS
+========================================================= */
+
+.rpms-login-options {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-top: -3px;
+}
+
+.rpms-login-show-password {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: #64748b;
+
+  font-size: 13px;
+
+  cursor: pointer;
+
+  user-select: none;
+}
+
+.rpms-login-show-password input {
+  width: 15px;
+  height: 15px;
+
+  margin: 0;
+
+  cursor: pointer;
+
+  accent-color: #2563eb;
+}
+
+.rpms-login-forgot-link {
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #2563eb;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.rpms-login-forgot-link:hover {
+  color: #1d4ed8;
+
+  transform: translateX(-2px);
+
+  text-decoration: underline;
+}
+
+/* =========================================================
+   LOGIN BUTTON
+========================================================= */
+
+.rpms-login-submit {
+  width: 100%;
+  height: 46px;
+
+  margin-top: 1px;
+
+  position: relative;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 13px;
+
+  border: none;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      110deg,
+      #2563eb,
+      #4f46e5,
+      #2563eb
+    );
+
+  background-size: 200% 100%;
+
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 750;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 14px 30px rgba(37, 99, 235, 0.25);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
+  animation: rpmsLoginButtonGradient 4s linear infinite;
+}
+
+@keyframes rpmsLoginButtonGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.rpms-login-submit::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: -120%;
+
+  width: 70%;
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.18),
+      transparent
+    );
+
+  transform: skewX(-20deg);
+
+  transition: left 0.7s ease;
+}
+
+.rpms-login-submit:hover::before {
+  left: 140%;
+}
+
+.rpms-login-submit:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 19px 38px rgba(37, 99, 235, 0.34);
+}
+
+.rpms-login-submit:active {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 18px rgba(37, 99, 235, 0.23);
+}
+
+.rpms-login-submit-arrow {
+  font-size: 21px;
+
+  transition:
+    transform 0.3s ease;
+}
+
+.rpms-login-submit:hover
+.rpms-login-submit-arrow {
+  transform: translateX(6px);
+}
+
+/* =========================================================
+   FORGOT PASSWORD
+========================================================= */
+
+.rpms-login-forgot-panel {
+  width: 100%;
+
+  margin-top: 28px;
+
+  padding-top: 25px;
+
+  border-top: 1px solid #e2e8f0;
+
+  animation: rpmsLoginForgotIn 0.35s ease both;
+}
+
+@keyframes rpmsLoginForgotIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rpms-login-forgot-heading {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
   margin-bottom: 20px;
 }
 
-.login-page-wrapper .login-card input[type="text"],
-.login-page-wrapper .login-card input[type="password"],
-.login-page-wrapper .login-card input[type="email"] {
-  width: 100%;
-  padding: 12px 15px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  outline: none;
+.rpms-login-forgot-icon {
+  width: 46px;
+  height: 46px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eef2ff,
+      #e0e7ff
+    );
+
+  font-size: 20px;
+
+  box-shadow:
+    0 7px 18px rgba(79, 70, 229, 0.1);
 }
 
-.login-page-wrapper .login-card input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+.rpms-login-forgot-heading h3 {
+  margin: 0;
+
+  color: #1e293b;
+
+  font-size: 17px;
+  font-weight: 750;
 }
 
-.login-page-wrapper .login-card button {
+.rpms-login-forgot-heading p {
+  margin: 4px 0 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.rpms-login-forgot-form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+/* =========================================================
+   OTP BUTTON
+========================================================= */
+
+.rpms-login-otp-button {
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: bold;
+  height: 48px;
+
   border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  color: #fff;
-  background: linear-gradient(90deg, #10b981, #34d399);
-  margin-top: 10px;
-}
 
-.login-page-wrapper .login-card button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
+  border-radius: 11px;
 
-/* Forgot password link */
-.login-page-wrapper .login-card .forgot-link {
-  display: block;
-  margin: 10px 0;
+  background:
+    linear-gradient(
+      135deg,
+      #2563eb,
+      #4f46e5
+    );
+
+  color: #ffffff;
+
   font-size: 14px;
-  color: #3b82f6;
+  font-weight: 700;
+
   cursor: pointer;
-  text-align: right;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.rpms-login-otp-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 23px rgba(37, 99, 235, 0.24);
+}
+
+/* =========================================================
+   CANCEL BUTTON
+========================================================= */
+
+.rpms-login-cancel-button {
+  width: 100%;
+  height: 45px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 11px;
+
+  background: #f8fafc;
+
+  color: #475569;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.rpms-login-cancel-button:hover {
+  background: #f1f5f9;
+
+  border-color: #cbd5e1;
+
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.rpms-login-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  margin-top: 9px;
+
+  color: #94a3b8;
+
+  font-size: 10px;
+
+  letter-spacing: 0.2px;
+
+  animation: rpmsLoginFadeUp 0.8s ease 0.7s both;
+}
+
+.rpms-login-footer-dot {
+  width: 4px;
+  height: 4px;
+
+  border-radius: 50%;
+
+  background: #cbd5e1;
+}
+
+/* =========================================================
+   LARGE DESKTOP
+========================================================= */
+
+@media (min-width: 1400px) {
+  .rpms-login-brand-content {
+    padding: 55px 65px;
+  }
+
+  .rpms-login-brand-title h1 {
+    font-size: 40px;
+  }
+
+  .rpms-login-brand-description {
+    font-size: 14px;
+    margin: 18px 0 25px;
+  }
+
+  .rpms-login-feature-list {
+    gap: 11px;
+  }
+
+  .rpms-login-feature {
+    font-size: 13px;
+  }
+
+  .rpms-login-brand::after {
+    opacity: 0.30;
+  }
+}
+
+/* =========================================================
+   DESKTOP
+========================================================= */
+
+@media (min-width: 1051px) and (max-width: 1399px) {
+  .rpms-login-brand-content {
+    padding: 35px 50px;
+  }
+
+  .rpms-login-brand-title h1 {
+    font-size: 34px;
+  }
+
+  .rpms-login-brand::after {
+    opacity: 0.28;
+  }
+}
+
+/* =========================================================
+   TABLET / LAPTOP
+========================================================= */
+
+@media (min-width: 801px) and (max-width: 1050px) {
+  .rpms-login-main {
+    padding: 12px 20px;
+  }
+
+  .rpms-login-brand {
+    width: 53%;
+  }
+
+  .rpms-login-brand-content {
+    padding: 30px 35px;
+  }
+
+  .rpms-login-brand-title h1 {
+    font-size: 29px;
+  }
+
+  .rpms-login-brand-description {
+    font-size: 12px;
+  }
+
+  .rpms-login-feature {
+    font-size: 11px;
+  }
+
+  .rpms-login-form-area {
+    width: 47%;
+    padding: 15px 28px;
+  }
+
+  .rpms-login-brand::after {
+    opacity: 0.26;
+    animation-duration: 16s;
+  }
+}
+
+/* =========================================================
+   MOBILE / TABLET
+========================================================= */
+
+@media (max-width: 800px) {
+  .rpms-login-page {
+    height: auto;
+    min-height: 100vh;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .rpms-login-main {
+    height: auto;
+
+    min-height: calc(100vh - 64px);
+
+    padding: 18px;
+
+    overflow: visible;
+
+    align-items: flex-start;
+  }
+
+  .rpms-login-wrapper {
+    width: 100%;
+
+    height: auto;
+    min-height: auto;
+
+    max-width: 600px;
+
+    flex-direction: column;
+
+    border-radius: 24px;
+  }
+
+  .rpms-login-brand {
+    width: 100%;
+    min-height: 340px;
+
+    align-items: center;
+  }
+
+  .rpms-login-brand-content {
+    padding: 42px 35px;
+
+    text-align: center;
+  }
+
+  .rpms-login-brand-icon {
+    width: 66px;
+    height: 66px;
+
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .rpms-login-brand-title h1 {
+    font-size: 31px;
+  }
+
+  .rpms-login-brand-description {
+    margin: 18px auto 0;
+
+    font-size: 14px;
+  }
+
+  .rpms-login-feature-list {
+    display: none;
+  }
+
+  .rpms-login-brand::after {
+    opacity: 0.24;
+
+    animation-duration: 15s;
+  }
+
+  .rpms-login-form-area {
+    width: 100%;
+
+    padding: 42px 30px;
+  }
+
+  .rpms-login-card {
+    max-width: 470px;
+  }
+
+  .rpms-login-footer {
+    margin-top: 20px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+  .rpms-login-main {
+    padding: 0;
+  }
+
+  .rpms-login-wrapper {
+    width: 100%;
+
+    border-radius: 0;
+
+    box-shadow: none;
+  }
+
+  .rpms-login-brand {
+    min-height: 300px;
+  }
+
+  .rpms-login-brand-content {
+    padding: 35px 22px;
+  }
+
+  .rpms-login-brand::after {
+    opacity: 0.22;
+
+    animation-duration: 14s;
+  }
+
+  .rpms-login-form-area {
+    padding: 35px 22px 28px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 500px) {
+  .rpms-login-brand {
+    min-height: 285px;
+  }
+
+  .rpms-login-brand-content {
+    padding: 32px 20px;
+  }
+
+  .rpms-login-brand-icon {
+    width: 58px;
+    height: 58px;
+
+    border-radius: 17px;
+
+    margin-bottom: 18px;
+  }
+
+  .rpms-login-brand-icon span {
+    font-size: 28px;
+  }
+
+  .rpms-login-brand-small {
+    font-size: 10px;
+
+    letter-spacing: 3px;
+  }
+
+  .rpms-login-brand-title h1 {
+    font-size: 25px;
+
+    letter-spacing: -0.6px;
+  }
+
+  .rpms-login-brand-description {
+    font-size: 13px;
+
+    line-height: 1.6;
+  }
+
+  .rpms-login-brand::after {
+    opacity: 0.20;
+
+    animation-duration: 13s;
+  }
+
+  .rpms-login-form-area {
+    padding: 32px 20px 25px;
+  }
+
+  .rpms-login-header {
+    margin-bottom: 27px;
+  }
+
+  .rpms-login-header-icon {
+    width: 58px;
+    height: 58px;
+
+    border-radius: 17px;
+
+    font-size: 24px;
+  }
+
+  .rpms-login-header h2 {
+    font-size: 27px;
+  }
+
+  .rpms-login-header p {
+    font-size: 12px;
+  }
+
+  .rpms-login-form {
+    gap: 18px;
+  }
+
+  .rpms-login-input-box input {
+    height: 51px;
+
+    font-size: 13px;
+  }
+
+  .rpms-login-submit {
+    height: 52px;
+  }
+
+  .rpms-login-footer {
+    margin-top: 20px;
+
+    font-size: 10px;
+  }
+
+  .rpms-login-decoration-one {
+    width: 280px;
+    height: 280px;
+
+    right: -170px;
+    top: -145px;
+  }
+}
+
+/* =========================================================
+   VERY SMALL DEVICES
+========================================================= */
+
+@media (max-width: 360px) {
+  .rpms-login-brand {
+    min-height: 260px;
+  }
+
+  .rpms-login-brand-content {
+    padding: 28px 15px;
+  }
+
+  .rpms-login-brand-title h1 {
+    font-size: 22px;
+  }
+
+  .rpms-login-brand-description {
+    font-size: 12px;
+  }
+
+  .rpms-login-brand::after {
+    opacity: 0.18;
+
+    animation-duration: 12s;
+  }
+
+  .rpms-login-form-area {
+    padding: 27px 15px 20px;
+  }
+
+  .rpms-login-options {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 10px;
+  }
+}
+
+/* =========================================================
+   SHORT DESKTOP SCREENS
+========================================================= */
+
+@media (max-height: 700px) and (min-width: 801px) {
+  .rpms-login-main {
+    height: calc(100vh - 58px);
+
+    padding: 8px 20px;
+  }
+
+  .rpms-login-brand-content {
+    padding: 20px 40px;
+  }
+
+  .rpms-login-brand-icon {
+    width: 48px;
+    height: 48px;
+
+    margin-bottom: 10px;
+  }
+
+  .rpms-login-brand-icon span {
+    font-size: 22px;
+  }
+
+  .rpms-login-brand-small {
+    font-size: 10px;
+  }
+
+  .rpms-login-brand-title h1 {
+    font-size: 27px;
+  }
+
+  .rpms-login-brand-description {
+    margin: 10px 0 14px;
+
+    font-size: 12px;
+  }
+
+  .rpms-login-feature-list {
+    gap: 6px;
+  }
+
+  .rpms-login-feature {
+    font-size: 11px;
+  }
+
+  .rpms-login-form-area {
+    padding: 12px 35px;
+  }
+
+  .rpms-login-header {
+    margin-bottom: 12px;
+  }
+
+  .rpms-login-header-icon {
+    width: 46px;
+    height: 46px;
+
+    margin-bottom: 7px;
+  }
+
+  .rpms-login-header h2 {
+    font-size: 22px;
+  }
+
+  .rpms-login-form {
+    gap: 9px;
+  }
+
+  .rpms-login-input-box input {
+    height: 40px;
+  }
+
+  .rpms-login-submit {
+    height: 42px;
+  }
+
+  .rpms-login-footer {
+    margin-top: 6px;
+  }
+
+  .rpms-login-brand::after {
+    opacity: 0.26;
+
+    animation-duration: 15s;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .rpms-login-page *,
+  .rpms-login-page *::before,
+  .rpms-login-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+
+    transition-duration: 0.01ms !important;
+  }
+}.rpms-login-password-toggle {
+  position: absolute;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+
+  color: #64748b;
+  font-size: 18px;
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.rpms-login-password-toggle:hover {
+  color: #2563eb;
+  background: #eef2ff;
+  transform: scale(1.08);
+}
+
+.rpms-login-password-toggle svg {
+  stroke-width: 2;
+}
+.rpms-login-password-toggle svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
 }

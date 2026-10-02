@@ -1,733 +1,1406 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "./UIDStatusList.css";
 import Swal from "sweetalert2";
 
 export default function UIDStatusList({ facultyId }) {
   const [allRequests, setAllRequests] = useState([]);
   const [rejectedRequests, setRejectedRequests] = useState([]);
+
   const [filter, setFilter] = useState("approved");
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [updating, setUpdating] = useState(false);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [editingRequest, setEditingRequest] = useState(null);
+  const [expandedCards, setExpandedCards] = useState({});
+  const toggleCard = (id) => {
+  setExpandedCards((prev) => ({
+    ...prev,
+    [id]: !prev[id],
+  }));
+};
+
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
+
+  const [expandedAbstracts, setExpandedAbstracts] = useState({});
 
   const itemsPerPage = 5;
 
-  /* ---------- SAFE TEXT HELPER ---------- */
+  /* =====================================================
+     SAFE TEXT
+  ===================================================== */
+
   const safeText = (value) => {
-    if (!value) return "";
-    if (typeof value !== "string") return "";
-    // prevent accidental JS expressions stored as string
-    if (value.includes("=>") || value.includes("map(")) return "";
-    return value;
+    if (value === null || value === undefined) return "";
+
+    if (typeof value !== "string") {
+      return String(value);
+    }
+
+    return value.trim();
   };
 
-  /* ---------- FETCH DATA ---------- */
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `/api/faculty/uid-requests/${facultyId}`
-        );
-        const data = await res.json();
-        setAllRequests(Array.isArray(data) ? data : []);
+  /* =====================================================
+     FETCH DATA
+  ===================================================== */
 
-        const rejRes = await fetch(
-          `/api/faculty/rejected-uids/${facultyId}`
+  const fetchData = useCallback(
+    async (showLoader = true) => {
+      if (!facultyId) {
+        setAllRequests([]);
+        setRejectedRequests([]);
+        setLoading(false);
+        return;
+      }
+
+      if (showLoader) {
+        setLoading(true);
+      } else {
+        setRefreshing(true);
+      }
+
+      try {
+        const [uidResponse, rejectedResponse] =
+          await Promise.all([
+            fetch(`/api/faculty/uid-requests/${facultyId}`),
+            fetch(`/api/faculty/rejected-uids/${facultyId}`),
+          ]);
+
+        if (!uidResponse.ok || !rejectedResponse.ok) {
+          throw new Error("Failed to fetch UID data");
+        }
+
+        const uidData = await uidResponse.json();
+        const rejectedData = await rejectedResponse.json();
+
+        setAllRequests(
+          Array.isArray(uidData) ? uidData : []
         );
-        const rejectedData = await rejRes.json();
-        setRejectedRequests(rejectedData);
-      } catch (err) {
-        Swal.fire("Error", "Failed to load UID status", "error");
+
+        setRejectedRequests(
+          Array.isArray(rejectedData)
+            ? rejectedData
+            : []
+        );
+      } catch (error) {
+        console.error("UID fetch error:", error);
+
+        Swal.fire({
+          icon: "error",
+          title: "Unable to Load",
+          text: "Failed to load UID status.",
+          confirmButtonColor: "#2563eb",
+        });
       } finally {
         setLoading(false);
+        setRefreshing(false);
       }
+    },
+    [facultyId]
+  );
+
+  useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      if (!mounted) return;
+      await fetchData(true);
     };
 
-    fetchData();
-  }, [facultyId]);
+    load();
 
-  useEffect(() => setCurrentPage(1), [filter]);
+    return () => {
+      mounted = false;
+    };
+  }, [fetchData]);
 
-  /* ---------- FILTER ---------- */
-  const filteredRequests = () => {
-    if (filter === "approved")
-      return allRequests.filter(
-        (r) => r.hodAccept && r.principalAccept && r.adminAccept && r.uid
+  /* =====================================================
+     RESET PAGE
+  ===================================================== */
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, searchTerm, sortBy, facultyId]);
+
+  /* =====================================================
+     COUNTS
+  ===================================================== */
+
+  const counts = useMemo(() => {
+    const approved = allRequests.filter(
+      (request) =>
+        request.hodAccept &&
+        request.principalAccept &&
+        request.adminAccept &&
+        safeText(request.uid)
+    ).length;
+
+    const pending = allRequests.filter(
+      (request) =>
+        !(
+          request.hodAccept &&
+          request.principalAccept &&
+          request.adminAccept &&
+          safeText(request.uid)
+        )
+    ).length;
+
+    return {
+      approved,
+      pending,
+      rejected: rejectedRequests.length,
+    };
+  }, [allRequests, rejectedRequests]);
+
+  /* =====================================================
+     FILTER + SEARCH + SORT
+  ===================================================== */
+
+  const filtered = useMemo(() => {
+    let result = [];
+
+    if (filter === "approved") {
+      result = allRequests.filter(
+        (request) =>
+          request.hodAccept &&
+          request.principalAccept &&
+          request.adminAccept &&
+          safeText(request.uid)
       );
+    }
 
-    if (filter === "pending")
-      return allRequests.filter(
-        (r) => !(r.hodAccept && r.principalAccept && r.adminAccept && r.uid)
+    if (filter === "pending") {
+      result = allRequests.filter(
+        (request) =>
+          !(
+            request.hodAccept &&
+            request.principalAccept &&
+            request.adminAccept &&
+            safeText(request.uid)
+          )
       );
+    }
 
-    if (filter === "rejected") return rejectedRequests;
+    if (filter === "rejected") {
+      result = [...rejectedRequests];
+    }
 
-    return [];
-  };
+    /* SEARCH */
 
-  const getStatusLabel = (value) =>
-    value ? (
-      <span style={{ color: "green" }}>✅ Approved</span>
-    ) : (
-      <span style={{ color: "orange" }}>⌛ Pending</span>
-    );
+    const search = searchTerm.trim().toLowerCase();
 
-  const filtered = filteredRequests();
+    if (search) {
+      result = result.filter((request) => {
+        const title = safeText(
+          request.paperTitle
+        ).toLowerCase();
 
-  /* ---------- PAGINATION ---------- */
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
+        const uid = safeText(
+          request.uid
+        ).toLowerCase();
+
+        const target = safeText(
+          request.target
+        ).toLowerCase();
+
+        return (
+          title.includes(search) ||
+          uid.includes(search) ||
+          target.includes(search)
+        );
+      });
+    }
+
+    /* SORT */
+
+    result.sort((a, b) => {
+      if (sortBy === "newest") {
+        return (
+          new Date(b.submittedAt || 0) -
+          new Date(a.submittedAt || 0)
+        );
+      }
+
+      if (sortBy === "oldest") {
+        return (
+          new Date(a.submittedAt || 0) -
+          new Date(b.submittedAt || 0)
+        );
+      }
+
+      if (sortBy === "title-asc") {
+        return safeText(a.paperTitle).localeCompare(
+          safeText(b.paperTitle)
+        );
+      }
+
+      if (sortBy === "title-desc") {
+        return safeText(b.paperTitle).localeCompare(
+          safeText(a.paperTitle)
+        );
+      }
+
+      return 0;
+    });
+
+    return result;
+  }, [
+    filter,
+    allRequests,
+    rejectedRequests,
+    searchTerm,
+    sortBy,
+  ]);
+
+  /* =====================================================
+     PAGINATION
+  ===================================================== */
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filtered.length / itemsPerPage)
+  );
+
+  const startIndex =
+    (currentPage - 1) * itemsPerPage;
+
   const paginatedData = filtered.slice(
     startIndex,
     startIndex + itemsPerPage
   );
 
-  /* ---------- UPDATE ---------- */
+  /* =====================================================
+     STATUS
+  ===================================================== */
+
+  const getStatusLabel = (value) => {
+    return value ? (
+      <span className="status-badge status-approved">
+        <span>✓</span>
+        Approved
+      </span>
+    ) : (
+      <span className="status-badge status-pending">
+        <span>⌛</span>
+        Pending
+      </span>
+    );
+  };
+
+  /* =====================================================
+     APPROVAL PROGRESS
+  ===================================================== */
+
+  const getApprovalProgress = (request) => {
+    let completed = 0;
+
+    if (request.hodAccept) completed++;
+    if (request.principalAccept) completed++;
+    if (request.adminAccept) completed++;
+
+    return completed;
+  };
+
+  /* =====================================================
+     CURRENT APPROVAL STAGE
+  ===================================================== */
+
+  const getCurrentStage = (request) => {
+    if (!request.hodAccept) {
+      return {
+        text: "Waiting for HOD approval",
+        className: "stage-hod",
+      };
+    }
+
+    if (!request.principalAccept) {
+      return {
+        text: "Waiting for Principal approval",
+        className: "stage-principal",
+      };
+    }
+
+    if (!request.adminAccept) {
+      return {
+        text: "Waiting for Admin approval",
+        className: "stage-admin",
+      };
+    }
+
+    if (safeText(request.uid)) {
+      return {
+        text: "UID generated successfully",
+        className: "stage-complete",
+      };
+    }
+
+    return {
+      text: "Processing request",
+      className: "stage-processing",
+    };
+  };
+
+  /* =====================================================
+     ABSTRACT
+  ===================================================== */
+
+  const toggleAbstract = (id) => {
+    setExpandedAbstracts((previous) => ({
+      ...previous,
+      [id]: !previous[id],
+    }));
+  };
+
+  /* =====================================================
+     DATE
+  ===================================================== */
+
+  const formatDate = (dateValue) => {
+    if (!dateValue) return "Not available";
+
+    const date = new Date(dateValue);
+
+    if (Number.isNaN(date.getTime())) {
+      return "Not available";
+    }
+
+    return date.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  /* =====================================================
+     EDIT
+  ===================================================== */
+
+  const openEditModal = (request) => {
+    setEditingRequest({
+      ...request,
+    });
+  };
+
+  const closeEditModal = () => {
+    if (!updating) {
+      setEditingRequest(null);
+    }
+  };
+
+  /* =====================================================
+     UPDATE
+  ===================================================== */
+
   const handleUpdate = async () => {
+    if (!editingRequest) return;
+
+    const paperTitle = safeText(
+      editingRequest.paperTitle
+    );
+
+    const abstract = safeText(
+      editingRequest.abstract
+    );
+
+    const target = safeText(
+      editingRequest.target
+    );
+
+    if (!paperTitle) {
+      Swal.fire(
+        "Paper Title Required",
+        "Please enter the paper title.",
+        "warning"
+      );
+      return;
+    }
+
+    if (!abstract) {
+      Swal.fire(
+        "Abstract Required",
+        "Please enter the abstract.",
+        "warning"
+      );
+      return;
+    }
+
+    if (!target) {
+      Swal.fire(
+        "Target Required",
+        "Please enter the target.",
+        "warning"
+      );
+      return;
+    }
+
+    setUpdating(true);
+
     try {
       const res = await fetch(
         `/api/faculty/uid-request/${editingRequest._id}/edit/${facultyId}`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(editingRequest),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            paperTitle,
+            abstract,
+            target,
+          }),
         }
       );
 
       const data = await res.json();
-      Swal.fire("Success", data.message, "success");
 
-      setAllRequests((prev) =>
-        prev.map((r) =>
-          r._id === editingRequest._id ? editingRequest : r
+      if (!res.ok) {
+        throw new Error(
+          data?.message ||
+            "Failed to update UID request"
+        );
+      }
+
+      const updatedRequest = {
+        ...editingRequest,
+        paperTitle,
+        abstract,
+        target,
+      };
+
+      setAllRequests((previous) =>
+        previous.map((request) =>
+          request._id === editingRequest._id
+            ? updatedRequest
+            : request
         )
       );
 
       setEditingRequest(null);
-    } catch {
-      Swal.fire("Error", "Update failed", "error");
+
+      Swal.fire({
+        icon: "success",
+        title: "Updated Successfully",
+        text:
+          data?.message ||
+          "UID request updated successfully.",
+        confirmButtonColor: "#16a34a",
+      });
+    } catch (error) {
+      console.error("UID update error:", error);
+
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text:
+          error.message ||
+          "Unable to update UID request.",
+        confirmButtonColor: "#dc2626",
+      });
+    } finally {
+      setUpdating(false);
     }
   };
 
+  /* =====================================================
+     EMPTY MESSAGE
+  ===================================================== */
+
+  const getEmptyMessage = () => {
+    if (searchTerm.trim()) {
+      return "No matching requests found.";
+    }
+
+    if (filter === "approved") {
+      return "No approved UID requests found.";
+    }
+
+    if (filter === "pending") {
+      return "No pending UID requests found.";
+    }
+
+    return "No rejected UID requests found.";
+  };
+
+  /* =====================================================
+     RENDER
+  ===================================================== */
+
   return (
-    <div>
-      {/* ---------- FILTER BUTTONS ---------- */}
-      <div className="filter-buttons">
-        <button
-          onClick={() => setFilter("approved")}
-          className={filter === "approved" ? "active" : ""}
-        >
-          ✅ Approved UIDs
-        </button>
+    <div className="uid-status-wrapper">
+
+      {/* =================================================
+          TOOLBAR
+      ================================================= */}
+
+      <div className="uid-toolbar">
+
+        <div className="filter-container">
+
+          <button
+            type="button"
+            onClick={() => setFilter("approved")}
+            className={`filter-btn ${
+              filter === "approved"
+                ? "active approved-filter"
+                : ""
+            }`}
+          >
+            <span>✓</span>
+            <span>Approved</span>
+
+            <span className="filter-count">
+              {counts.approved}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFilter("pending")}
+            className={`filter-btn ${
+              filter === "pending"
+                ? "active pending-filter"
+                : ""
+            }`}
+          >
+            <span>⌛</span>
+            <span>Pending</span>
+
+            <span className="filter-count">
+              {counts.pending}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFilter("rejected")}
+            className={`filter-btn ${
+              filter === "rejected"
+                ? "active rejected-filter"
+                : ""
+            }`}
+          >
+            <span>×</span>
+            <span>Rejected</span>
+
+            <span className="filter-count">
+              {counts.rejected}
+            </span>
+          </button>
+
+        </div>
+
+        {/* REFRESH */}
 
         <button
-          onClick={() => setFilter("pending")}
-          className={filter === "pending" ? "active" : ""}
+          type="button"
+          className={`refresh-btn ${
+            refreshing ? "refreshing" : ""
+          }`}
+          onClick={() => fetchData(false)}
+          disabled={refreshing}
+          title="Refresh UID requests"
         >
-          ⌛ Pending UIDs
+          <span className="refresh-icon">↻</span>
+
+          <span>
+            {refreshing
+              ? "Refreshing..."
+              : "Refresh"}
+          </span>
         </button>
 
-        <button
-          onClick={() => setFilter("rejected")}
-          className={filter === "rejected" ? "active" : ""}
-        >
-          ❌ Rejected UIDs
-        </button>
       </div>
 
-      {/* ---------- LIST ---------- */}
+      {/* =================================================
+          SEARCH + SORT
+      ================================================= */}
+
+      <div className="search-sort-bar">
+
+        <div className="search-box">
+
+          <span className="search-icon">⌕</span>
+
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) =>
+              setSearchTerm(e.target.value)
+            }
+            placeholder="Search paper title, UID or target..."
+          />
+
+          {searchTerm && (
+            <button
+              type="button"
+              className="clear-search"
+              onClick={() => setSearchTerm("")}
+              aria-label="Clear search"
+            >
+              ×
+            </button>
+          )}
+
+        </div>
+
+        <div className="sort-box">
+
+          <label htmlFor="uid-sort">
+            Sort
+          </label>
+
+          <select
+            id="uid-sort"
+            value={sortBy}
+            onChange={(e) =>
+              setSortBy(e.target.value)
+            }
+          >
+            <option value="newest">
+              Newest First
+            </option>
+
+            <option value="oldest">
+              Oldest First
+            </option>
+
+            <option value="title-asc">
+              Title A–Z
+            </option>
+
+            <option value="title-desc">
+              Title Z–A
+            </option>
+          </select>
+
+        </div>
+
+      </div>
+
+      {/* =================================================
+          RESULT SUMMARY
+      ================================================= */}
+
+      {!loading && (
+        <div className="result-summary">
+
+          <span>
+            Showing{" "}
+            <strong>{filtered.length}</strong>{" "}
+            {filtered.length === 1
+              ? "request"
+              : "requests"}
+          </span>
+
+          {searchTerm && (
+            <span className="search-result-label">
+              for "{searchTerm}"
+            </span>
+          )}
+
+        </div>
+      )}
+
+      {/* =================================================
+          LIST
+      ================================================= */}
+
       <div className="uid-status-list">
+
         {loading ? (
-          <p className="loading-text">🌀 Loading...</p>
+          <div className="uid-state-card">
+
+            <div className="loading-spinner"></div>
+
+            <p>
+              Loading UID requests...
+            </p>
+
+          </div>
         ) : filtered.length === 0 ? (
-          <p>No {filter} requests found.</p>
+          <div className="uid-state-card empty-state">
+
+            <div className="empty-icon">
+              {searchTerm
+                ? "⌕"
+                : filter === "approved"
+                ? "✓"
+                : filter === "pending"
+                ? "⌛"
+                : "×"}
+            </div>
+
+            <h3>
+              {getEmptyMessage()}
+            </h3>
+
+            <p>
+              {searchTerm
+                ? "Try a different search term."
+                : `Your ${filter} UID requests will appear here.`}
+            </p>
+
+          </div>
         ) : (
-          paginatedData.map((req) => (
-            <div key={req._id} className="uid-status-card">
-              
-              {/* TITLE */}
-              <p className="paper-title">
-                {safeText(req.paperTitle) || "Untitled Paper"}
-              </p>
+          paginatedData.map((req) => {
 
-              <p>
-                <strong>Type:</strong> {safeText(req.type)}
-              </p>
+            const abstract =
+              safeText(req.abstract);
 
-              <p>
-                <strong>Target:</strong> {safeText(req.target)}
-              </p>
+            const isAbstractExpanded =
+              expandedAbstracts[req._id];
 
-              {/* CO AUTHORS */}
-              {req.coAuthors?.hasCoAuthors &&
-                req.coAuthors.authors?.length > 0 && (
-                  <div>
-                    <strong>Co Authors:</strong>
-                    <ul>
-                      {req.coAuthors.authors.map((a, i) => (
-                        <li key={i}>
-                          {safeText(a.name)} (
-                          {a.affiliation === "Other"
-                            ? safeText(a.otherAffiliation)
-                            : safeText(a.affiliation)}
-                          )
-                        </li>
-                      ))}
-                    </ul>
+            const approvalProgress =
+              getApprovalProgress(req);
+
+            const currentStage =
+              getCurrentStage(req);
+
+            return (
+              <div
+                key={req._id}
+                className="uid-status-card"
+              >
+
+                {/* HEADER */}
+
+                <div className="card-header">
+
+                  <div className="title-section">
+
+                    <h3 className="paper-title">
+                      {safeText(
+                        req.paperTitle
+                      ) || "Untitled Paper"}
+                    </h3>
+
+                    <div className="paper-subtitle">
+                      {safeText(req.type) ||
+                        "Type not specified"}
+                    </div>
+
+                  </div>
+
+                  {req.uid && (
+                    <div className="uid-badge">
+
+                      <span>UID</span>
+
+                      <strong>
+                        {safeText(req.uid)}
+                      </strong>
+
+                    </div>
+                  )}
+
+                </div>
+
+                {/* INFORMATION */}
+
+                <div className="request-info-grid">
+
+                  <div className="info-item">
+                    <span className="info-label">
+                      Type
+                    </span>
+
+                    <span className="info-value">
+                      {safeText(req.type) ||
+                        "Not specified"}
+                    </span>
+                  </div>
+
+                  <div className="info-item">
+                    <span className="info-label">
+                      Target
+                    </span>
+
+                    <span className="info-value">
+                      {safeText(req.target) ||
+                        "Not specified"}
+                    </span>
+                  </div>
+
+                  <div className="info-item">
+                    <span className="info-label">
+                      Submitted
+                    </span>
+
+                    <span className="info-value">
+                      {formatDate(
+                        req.submittedAt
+                      )}
+                    </span>
+                  </div>
+
+                </div>
+
+                {/* CO AUTHORS */}
+{expandedCards[req._id] && (
+  <div className="expanded-card-content">
+                {req.coAuthors?.hasCoAuthors &&
+                  Array.isArray(
+                    req.coAuthors.authors
+                  ) &&
+                  req.coAuthors.authors.length >
+                    0 && (
+
+                    <div className="coauthors-section">
+
+                      <div className="section-label">
+                        <span>👥</span>
+                        Co Authors
+                      </div>
+
+                      <div className="coauthors-list">
+
+                        {req.coAuthors.authors.map(
+                          (author, index) => {
+
+                            const name =
+                              safeText(
+                                author?.name
+                              ) ||
+                              "Unnamed Author";
+
+                            const affiliation =
+                              author?.affiliation ===
+                              "Other"
+                                ? safeText(
+                                    author?.otherAffiliation
+                                  )
+                                : safeText(
+                                    author?.affiliation
+                                  );
+
+                            return (
+                              <div
+                                className="coauthor-item"
+                                key={`${req._id}-${index}`}
+                              >
+
+                                <div className="author-avatar">
+                                  {name
+                                    .charAt(0)
+                                    .toUpperCase()}
+                                </div>
+
+                                <div className="author-details">
+
+                                  <strong>
+                                    {name}
+                                  </strong>
+
+                                  {affiliation && (
+                                    <span>
+                                      {affiliation}
+                                    </span>
+                                  )}
+
+                                </div>
+
+                              </div>
+                            );
+                          }
+                        )}
+
+                      </div>
+
+                    </div>
+                  )}
+
+                {/* ABSTRACT */}
+
+                <div className="abstract-section">
+
+                  <div className="section-label">
+                    <span>📝</span>
+                    Abstract
+                  </div>
+
+                  <p
+                    className={
+                      isAbstractExpanded
+                        ? "abstract-text expanded"
+                        : "abstract-text"
+                    }
+                  >
+                    {abstract ||
+                      "No abstract provided."}
+                  </p>
+
+                  {abstract.length > 180 && (
+                    <button
+                      type="button"
+                      className="abstract-toggle"
+                      onClick={() =>
+                        toggleAbstract(req._id)
+                      }
+                    >
+                      {isAbstractExpanded
+                        ? "Show Less ↑"
+                        : "Show More ↓"}
+                    </button>
+                  )}
+
+                </div>
+
+                {/* =================================================
+                    PENDING
+                ================================================= */}
+
+                {filter === "pending" && (
+                  <div className="approval-section">
+
+                    <div className="approval-header">
+
+                      <div>
+                        <h4>
+                          Approval Progress
+                        </h4>
+
+                        <p>
+                          {approvalProgress} of 3
+                          approvals completed
+                        </p>
+                      </div>
+
+                      <span className="progress-count">
+                        {approvalProgress}/3
+                      </span>
+
+                    </div>
+
+                    <div className="progress-bar">
+
+                      <div
+                        className="progress-fill"
+                        style={{
+                          width: `${
+                            (approvalProgress /
+                              3) *
+                            100
+                          }%`,
+                        }}
+                      />
+
+                    </div>
+
+                    <div className="approval-list">
+
+                      <div className="approval-item">
+                        <span>HOD</span>
+
+                        {getStatusLabel(
+                          req.hodAccept
+                        )}
+                      </div>
+
+                      <div className="approval-item">
+                        <span>
+                          Principal
+                        </span>
+
+                        {getStatusLabel(
+                          req.principalAccept
+                        )}
+                      </div>
+
+                      <div className="approval-item">
+                        <span>Admin</span>
+
+                        {getStatusLabel(
+                          req.adminAccept
+                        )}
+                      </div>
+
+                    </div>
+
+                    {/* CURRENT STAGE */}
+
+                    <div
+                      className={`current-stage ${currentStage.className}`}
+                    >
+                      <span className="stage-dot"></span>
+
+                      <span>
+                        {currentStage.text}
+                      </span>
+                    </div>
+
+                    {/* EDIT */}
+
+                    {!req.hodAccept ? (
+                      <div className="edit-area">
+
+                        <button
+                          type="button"
+                          className="edit-btn"
+                          onClick={() =>
+                            openEditModal(req)
+                          }
+                        >
+                          ✏️ Edit Request
+                        </button>
+
+                        <p className="edit-hint">
+                          You can edit this request
+                          until HOD approval.
+                        </p>
+
+                      </div>
+                    ) : (
+                      <div className="edit-locked">
+                        🔒 Editing is locked after
+                        HOD approval.
+                      </div>
+                    )}
+
                   </div>
                 )}
 
-              <p>
-                <strong>Abstract:</strong>{" "}
-                {safeText(req.abstract)}
-              </p>
+                {/* APPROVED */}
 
-              <p>
-                <strong>Submitted:</strong>{" "}
-                {new Date(req.submittedAt).toLocaleDateString()}
-              </p>
+                {filter === "approved" && (
+                  <div className="approved-message">
 
-              {req.uid && (
-                <p>
-                  <strong>UID:</strong> {req.uid}
-                </p>
-              )}
+                    <span className="approved-check">
+                      ✓
+                    </span>
 
-              {/* STATUS */}
-              {filter === "pending" && (
-                <>
-                  <p>
-                    <strong>HOD:</strong>{" "}
-                    {getStatusLabel(req.hodAccept)}
-                  </p>
-                  <p>
-                    <strong>Principal:</strong>{" "}
-                    {getStatusLabel(req.principalAccept)}
-                  </p>
-                  <p>
-                    <strong>Admin:</strong>{" "}
-                    {getStatusLabel(req.adminAccept)}
-                  </p>
+                    <div>
+                      <strong>
+                        UID Approved
+                      </strong>
 
-                  {!req.hodAccept && (
-                    <button
-                      className="edit-btn1"
-                      onClick={() => setEditingRequest(req)}
-                    >
-                      ✏️ Edit
-                    </button>
-                  )}
-                </>
-              )}
+                      <p>
+                        All required approvals have
+                        been completed.
+                      </p>
+                    </div>
 
-              {/* REJECTED */}
-              {filter === "rejected" && (
-                <>
-                  <p style={{ color: "red" }}>
-                    <strong>Reason:</strong> {req.reason}
-                  </p>
-                  <p>
-                    <strong>Rejected By:</strong>{" "}
-                    {req.rejectedBy?.toUpperCase()}
-                  </p>
-                </>
-              )}
-            </div>
-          ))
+                  </div>
+                )}
+
+                {/* REJECTED */}
+
+                {filter === "rejected" && (
+                  <div className="rejected-section">
+
+                    <div className="rejected-header">
+
+                      <span className="rejected-icon">
+                        ×
+                      </span>
+
+                      <strong>
+                        Request Rejected
+                      </strong>
+
+                    </div>
+
+                    <div className="rejection-reason">
+
+                      <span>
+                        Reason
+                      </span>
+
+                      <p>
+                        {safeText(
+                          req.reason
+                        ) ||
+                          "No reason provided."}
+                      </p>
+
+                    </div>
+
+                    {req.rejectedBy && (
+                      <div className="rejected-by">
+
+                        <span>
+                          Rejected By
+                        </span>
+
+                        <strong>
+                          {safeText(
+                            req.rejectedBy
+                          ).toUpperCase()}
+                        </strong>
+
+                      </div>
+                    )}
+
+                  </div>
+                )}
+
+  </div>
+)}<button
+  type="button"
+  className="card-expand-btn"
+  onClick={() => toggleCard(req._id)}
+>
+  {expandedCards[req._id] ? (
+    <>
+      Show Less <span>↑</span>
+    </>
+  ) : (
+    <>
+      Show More <span>↓</span>
+    </>
+  )}
+</button>
+
+              </div>
+            );
+          })
         )}
+
       </div>
 
-      {/* ---------- PAGINATION ---------- */}
-      {!loading && filtered.length > itemsPerPage && (
-        <div className="pagination">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((p) => p - 1)}
-          >
-            ⬅️ Previous
-          </button>
+      {/* =================================================
+          PAGINATION
+      ================================================= */}
 
-          {Array.from({ length: totalPages }, (_, i) => (
+      {!loading &&
+        filtered.length > itemsPerPage && (
+          <div className="pagination">
+
             <button
-              key={i}
-              className={currentPage === i + 1 ? "active-page" : ""}
-              onClick={() => setCurrentPage(i + 1)}
+              type="button"
+              className="pagination-nav"
+              disabled={currentPage === 1}
+              onClick={() =>
+                setCurrentPage(
+                  (page) => page - 1
+                )
+              }
             >
-              {i + 1}
+              ←
+              <span>Previous</span>
             </button>
-          ))}
 
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((p) => p + 1)}
-          >
-            Next ➡️
-          </button>
-        </div>
-      )}
+            <div className="page-numbers">
 
-      {/* ---------- EDIT MODAL ---------- */}
+              {Array.from(
+                { length: totalPages },
+                (_, index) => {
+
+                  const page =
+                    index + 1;
+
+                  return (
+                    <button
+                      type="button"
+                      key={page}
+                      className={
+                        currentPage === page
+                          ? "page-number active-page"
+                          : "page-number"
+                      }
+                      onClick={() =>
+                        setCurrentPage(page)
+                      }
+                    >
+                      {page}
+                    </button>
+                  );
+                }
+              )}
+
+            </div>
+
+            <button
+              type="button"
+              className="pagination-nav"
+              disabled={
+                currentPage === totalPages
+              }
+              onClick={() =>
+                setCurrentPage(
+                  (page) => page + 1
+                )
+              }
+            >
+              <span>Next</span>
+              →
+            </button>
+
+          </div>
+        )}
+
+      {/* =================================================
+          EDIT MODAL
+      ================================================= */}
+
       {editingRequest && (
-        <div className="modal-overlay">
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-uid-title"
+          onMouseDown={(event) => {
+            if (
+              event.target ===
+                event.currentTarget &&
+              !updating
+            ) {
+              closeEditModal();
+            }
+          }}
+        >
+
           <div className="edit-modal-card">
-            <h3>Edit UID Request</h3>
 
-            <label>Paper Title</label>
-            <input
-              value={editingRequest.paperTitle || ""}
-              onChange={(e) =>
-                setEditingRequest({
-                  ...editingRequest,
-                  paperTitle: e.target.value,
-                })
-              }
-            />
+            <div className="modal-header">
 
-            <label>Abstract</label>
-            <textarea
-              value={editingRequest.abstract || ""}
-              onChange={(e) =>
-                setEditingRequest({
-                  ...editingRequest,
-                  abstract: e.target.value,
-                })
-              }
-            />
+              <div>
 
-            <label>Target</label>
-            <input
-              value={editingRequest.target || ""}
-              onChange={(e) =>
-                setEditingRequest({
-                  ...editingRequest,
-                  target: e.target.value,
-                })
-              }
-            />
+                <span className="modal-eyebrow">
+                  UID REQUEST
+                </span>
+
+                <h3 id="edit-uid-title">
+                  Edit UID Request
+                </h3>
+
+                <p>
+                  Update your request before HOD
+                  approval.
+                </p>
+
+              </div>
+
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={closeEditModal}
+                disabled={updating}
+              >
+                ×
+              </button>
+
+            </div>
+
+            <div className="modal-body">
+
+              <div className="form-group">
+
+                <label htmlFor="paper-title">
+                  Paper Title
+                </label>
+
+                <input
+                  id="paper-title"
+                  type="text"
+                  value={
+                    editingRequest.paperTitle ||
+                    ""
+                  }
+                  onChange={(e) =>
+                    setEditingRequest({
+                      ...editingRequest,
+                      paperTitle:
+                        e.target.value,
+                    })
+                  }
+                  placeholder="Enter paper title"
+                  disabled={updating}
+                />
+
+              </div>
+
+              <div className="form-group">
+
+                <label htmlFor="paper-abstract">
+                  Abstract
+                </label>
+
+                <textarea
+                  id="paper-abstract"
+                  value={
+                    editingRequest.abstract ||
+                    ""
+                  }
+                  onChange={(e) =>
+                    setEditingRequest({
+                      ...editingRequest,
+                      abstract:
+                        e.target.value,
+                    })
+                  }
+                  placeholder="Enter paper abstract"
+                  rows={7}
+                  disabled={updating}
+                />
+
+              </div>
+
+              <div className="form-group">
+
+                <label htmlFor="paper-target">
+                  Target
+                </label>
+
+                <input
+                  id="paper-target"
+                  type="text"
+                  value={
+                    editingRequest.target ||
+                    ""
+                  }
+                  onChange={(e) =>
+                    setEditingRequest({
+                      ...editingRequest,
+                      target:
+                        e.target.value,
+                    })
+                  }
+                  placeholder="Enter target journal / conference"
+                  disabled={updating}
+                />
+
+              </div>
+
+            </div>
 
             <div className="modal-actions">
+
               <button
-                className="update-btn"
-                onClick={handleUpdate}
+                type="button"
+                className="cancel-btn"
+                onClick={closeEditModal}
+                disabled={updating}
               >
-                ✅ Update
+                Cancel
               </button>
 
               <button
-                className="cancel-btn"
-                onClick={() => setEditingRequest(null)}
+                type="button"
+                className="update-btn"
+                onClick={handleUpdate}
+                disabled={updating}
               >
-                ❌ Cancel
+                {updating ? (
+                  <>
+                    <span className="button-spinner"></span>
+                    Updating...
+                  </>
+                ) : (
+                  <>✓ Update Request</>
+                )}
               </button>
+
             </div>
+
           </div>
+
         </div>
       )}
+
     </div>
   );
 }
 
-// import React, { useEffect, useState } from 'react';
-// import './UIDStatusList.css';
-// import Swal from 'sweetalert2';
-
-// export default function UIDStatusList({ facultyId }) {
-//   const [allRequests, setAllRequests] = useState([]);
-//   const [rejectedRequests, setRejectedRequests] = useState([]);
-//   const [filter, setFilter] = useState('approved'); // 'approved' | 'pending' | 'rejected'
-//   const [loading, setLoading] = useState(true);
-//   const [currentPage, setCurrentPage] = useState(1);
-// const itemsPerPage = 5; // change as needed
-//   const [editingRequest, setEditingRequest] = useState(null);
-// const handleEdit = (req) => {
-//   console.log("EDIT CLICKED");
-//   setEditingRequest(req);
-// };
-
-// const handleUpdate = async () => {
-//   try {
-//     const res = await fetch(
-//       `/api/faculty/uid-request/${editingRequest._id}/edit/${facultyId}`,
-//       {
-//         method: 'PUT',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify(editingRequest)
-//       }
-//     );
-
-//     const data = await res.json();
-
-//     Swal.fire('Success', data.message, 'success');
-
-//     setEditingRequest(null);
-
-//     // 🔥 refresh list
-//     setAllRequests(prev =>
-//       prev.map(r => (r._id === editingRequest._id ? editingRequest : r))
-//     );
-
-//   } catch (err) {
-//     Swal.fire('Error', 'Update failed', 'error');
-//   }
-// };
-
-// useEffect(() => {
-//   setCurrentPage(1);
-// }, [filter]);
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       setLoading(true); // Start loading
-//       try {
-//         // const res = await fetch('/api/hod/uid-requests');
-//         // const data = await res.json();
-//         // setAllRequests(data.filter(req => req.facultyId === facultyId));
-//         const res = await fetch(
-//   `/api/faculty/uid-requests/${facultyId}`
-// );
-// const data = await res.json();
-// setAllRequests(Array.isArray(data) ? data : []);
-
-
-
-//         const rejRes = await fetch(`/api/faculty/rejected-uids/${facultyId}`);
-//         const rejectedData = await rejRes.json();
-//         setRejectedRequests(rejectedData);
-//       } catch (err) {
-//   console.error('Error fetching UID status:', err);
-//   Swal.fire({
-//     icon: 'error',
-//     title: 'Error',
-//     text: 'Failed to load UID status. Please try again later.'
-//   });
-// }
-// finally {
-//         setLoading(false); // Done loading
-//       }
-//     };
-
-//     fetchData();
-//   }, [facultyId]);
-
-//   const filteredRequests = () => {
-//     if (filter === 'approved') {
-//       return allRequests.filter(req => req.hodAccept && req.principalAccept && req.adminAccept && req.uid);
-//     }
-//     if (filter === 'pending') {
-//       return allRequests.filter(req =>
-//         !(req.hodAccept && req.principalAccept && req.adminAccept && req.uid)
-//       );
-//     }
-//     if (filter === 'rejected') {
-//       return rejectedRequests;
-//     }
-//     return [];
-//   };
-
-//   const getStatusLabel = (value) => {
-//     return value ? <span style={{ color: 'green' }}>✅ Approved</span> : <span style={{ color: 'orange' }}>⌛ Pending</span>;
-//   };
-
-//   const filtered = filteredRequests();
-
-
-
-// // Pagination calculations
-// const totalPages = Math.ceil(filtered.length / itemsPerPage);
-
-// const startIndex = (currentPage - 1) * itemsPerPage;
-// const paginatedData = filtered.slice(
-//   startIndex,
-//   startIndex + itemsPerPage
-// );
-
-//   return (
-//     <div>
-//       <div className="filter-buttons">
-//         <button onClick={() => setFilter('approved')} className={filter === 'approved' ? 'active' : ''}>✅Approved UIDs</button>
-//         <button onClick={() => setFilter('pending')} className={filter === 'pending' ? 'active' : ''}>⌛Pending UIDs</button>
-//         <button onClick={() => setFilter('rejected')} className={filter === 'rejected' ? 'active' : ''}>❌Rejected UIDs</button>
-//       </div>
-
-//       <div className="uid-status-list">
-//         {loading ? (
-//           <p className="loading-text">🌀 Loading......<span className="dots"></span></p>
-//         ) : filtered.length === 0 ? (
-//           <p>No {filter} requests found.</p>
-//         ) : (
-//           paginatedData.map(req => (
-//             <div key={req._id} className="uid-status-card">
-//               <p style={{ color: 'blue', fontSize: '23px' }}>{req.paperTitle}</p>
-//               <p><strong>Type:</strong> {req.type}</p>
-//               <p><strong>Target:</strong> {req.target}</p>
-//                             {/* Co Authors */}
-//               {req.coAuthors?.hasCoAuthors && req.coAuthors.authors.length > 0 && (
-//                 <div style={{ marginTop: "8px" }}>
-//                   <strong>Co Authors:</strong>
-//                   <ul>
-//                     {req.coAuthors.authors.map((author, index) => (
-//                       // <li key={index}>
-//                       //   {author.name} ({author.affiliation})
-//                       // </li>
-
-//                       <li key={index}>
-//                 {author.name} (
-//                 {author.affiliation === "Other"
-//                   ? author.otherAffiliation
-//                   : author.affiliation}
-//                 )
-//               </li>
-//                     ))}
-//                   </ul>
-//                 </div>
-//               )}
-//               <p><strong>Abstract:</strong> {req.abstract}</p>
-//               <p><strong>Submitted:</strong> {new Date(req.submittedAt).toLocaleDateString()}</p>
-
-//               {/* Approved UID */}
-//               {req.uid && <p><strong>UID:</strong> {req.uid}</p>}
-
-//               {/* Pending Section */}
-//               {filter === 'pending' && (
-//                 <div style={{ marginTop: '10px' }}>
-//                   <p><strong>HOD Status:</strong> {getStatusLabel(req.hodAccept)}</p>
-//                   <p><strong>Principal Status:</strong> {getStatusLabel(req.principalAccept)}</p>
-//                   <p><strong>Admin Status:</strong> {getStatusLabel(req.adminAccept)}</p>
-//                 </div>
-//               )}
-
-//               {/* ✏️ EDIT BUTTON — only before HOD accepts */}
-//               {filter === 'pending' && !req.hodAccept && (
-//                 <button
-//                   className="edit-btn"
-//                   onClick={() => handleEdit(req)}
-//                   style={{ marginTop: '10px' }}
-//                 >
-//                   ✏️ Edit
-//                 </button>
-//               )}
-
-//               {/* Rejected Section */}
-//               {filter === 'rejected' && (
-//                 <>
-//                   <p style={{ color: 'red' }}><strong>Reason:</strong> {req.reason}</p>
-//                   <p><strong>Rejected By:</strong> {req.rejectedBy?.toUpperCase()}</p>
-//                 </>
-//               )}
-//             </div>
-//           ))
-//         )}
-//       </div>{!loading && filtered.length > itemsPerPage && (
-//   <div className="pagination">
-
-//     <button
-//       disabled={currentPage === 1}
-//       onClick={() => setCurrentPage(prev => prev - 1)}
-//     >
-//       ⬅️ Previous
-//     </button>
-
-//     {Array.from({ length: totalPages }, (_, i) => (
-//       <button
-//         key={i}
-//         className={currentPage === i + 1 ? "active-page" : ""}
-//         onClick={() => setCurrentPage(i + 1)}
-//       >
-//         {i + 1}
-//       </button>
-//     ))}
-
-//     <button
-//       disabled={currentPage === totalPages}
-//       onClick={() => setCurrentPage(prev => prev + 1)}
-//     >
-//       Next ➡️
-//     </button>
-
-//   </div>
-// )}
-
-//       {editingRequest && (
-//   <div className="modal-overlay">
-//     <div className="edit-modal-card">
-//       <h3>Edit UID Request</h3>
-
-//       <label>Paper Title</label>
-//       <input
-//         value={editingRequest.paperTitle}
-//         onChange={(e) =>
-//           setEditingRequest({
-//             ...editingRequest,
-//             paperTitle: e.target.value
-//           })
-//         }
-//       />
-
-//       <label>Abstract</label>
-//       <textarea
-//         value={editingRequest.abstract}
-//         onChange={(e) =>
-//           setEditingRequest({
-//             ...editingRequest,
-//             abstract: e.target.value
-//           })
-//         }
-//       />
-
-//      <label>Type of Publication</label><br/>
-// <select
-//   value={editingRequest.type || ""}
-//   onChange={(e) =>
-//     setEditingRequest({
-//       ...editingRequest,
-//       type: e.target.value
-//     })
-//   }
-// >
-//   <option value="">Type of Publication</option>
-//   <option value="Journal">Journal</option>
-//   <option value="Conference">Conference</option>
-//   <option value="Book Chapter">Book Chapter</option>
-//   <option value="Book">Book</option>
-//   <option value="Patent">Patent</option>
-// </select> <br></br>
-      
-
-//       <label>Target</label>
-//       <input
-//         value={editingRequest.target || ""}
-//         onChange={(e) =>
-//           setEditingRequest({
-//             ...editingRequest,
-//             target: e.target.value
-//           })
-//         }
-//       />
-
-//       {/* Co Authors */}
-// <label>Co Authors</label>
-
-// {editingRequest.coAuthors?.authors?.map((author, index) => (
-//   <div key={index} style={{ marginBottom: "8px" }}>
-    
-//     <input
-//       placeholder="Name"
-//       value={author.name}
-//       onChange={(e) => {
-//         const updatedAuthors = [...editingRequest.coAuthors.authors];
-//         updatedAuthors[index].name = e.target.value;
-
-//         setEditingRequest({
-//           ...editingRequest,
-//           coAuthors: {
-//             ...editingRequest.coAuthors,
-//             authors: updatedAuthors
-//           }
-//         });
-//       }}
-//     />
-
-//     <select
-//   value={author.affiliation || ""}
-//   onChange={(e) => {
-//     const updatedAuthors = [...editingRequest.coAuthors.authors];
-//     updatedAuthors[index].affiliation = e.target.value;
-
-//     setEditingRequest({
-//       ...editingRequest,
-//       coAuthors: {
-//         ...editingRequest.coAuthors,
-//         authors: updatedAuthors
-//       }
-//     });
-//   }}
-// >
-
-//   <option value="">Select Affiliation</option>
-//   <option value="SVECW">SVECW</option>
-//   <option value="VIT">VIT</option>
-//   <option value="BVRITH">BVRITH</option>
-//   <option value="BVRITN">BVRITN</option>
-//   <option value="Other">Other</option>
-
-// </select>
-// {author.affiliation === "Other" && (
-//   <input
-//     placeholder="Enter College Name"
-//     value={author.otherAffiliation || ""}
-//     onChange={(e) => {
-//       const updatedAuthors = [...editingRequest.coAuthors.authors];
-//       updatedAuthors[index].otherAffiliation = e.target.value;
-
-//       setEditingRequest({
-//         ...editingRequest,
-//         coAuthors: {
-//           ...editingRequest.coAuthors,
-//           authors: updatedAuthors
-//         }
-//       });
-//     }}
-//   />
-// )}
-
-
-//     <button
-//       onClick={() => {
-//         const updatedAuthors = editingRequest.coAuthors.authors.filter(
-//           (_, i) => i !== index
-//         );
-
-//         setEditingRequest({
-//           ...editingRequest,
-//           coAuthors: {
-//             ...editingRequest.coAuthors,
-//             authors: updatedAuthors
-//           }
-//         });
-//       }}
-//     >
-//       ❌
-//     </button>
-
-//   </div>
-// ))}
-
-
-
-//       <div className="modal-actions">
-//         <button
-//   onClick={() => {
-//     const updatedAuthors = [
-//       ...(editingRequest.coAuthors?.authors || []),
-//       { name: "", affiliation: "" }
-//     ];
-
-//     setEditingRequest({
-//       ...editingRequest,
-//       coAuthors: {
-//         hasCoAuthors: true,
-//         authors: updatedAuthors
-//       }
-//     });
-//   }}
-// >
-// ➕ Add Co Author
-// </button>
-//         <button className="update-btn" onClick={handleUpdate}>
-//           ✅ Update
-//         </button>
-
-//         <button
-//           className="cancel-btn"
-//           onClick={() => setEditingRequest(null)}
-//         >
-//           ❌ Cancel
-//         </button>
-//       </div>
-//     </div>
-//   </div>
-// )}
-//     </div>
-//   );
-// }

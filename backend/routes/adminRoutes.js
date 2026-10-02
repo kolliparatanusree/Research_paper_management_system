@@ -76,291 +76,157 @@ const generateUID = () => {
 };
 
 
-router.put('/uid-request/:id/:status', async (req, res) => {
-  const { id, status } = req.params;
-  const { reason } = req.body;
-
+// =========================================================
+// R&D DEAN - GET UID REQUESTS
+// =========================================================
+router.get('/rddean/uid-requests', async (req, res) => {
   try {
-    const request = await HodUidRequest.findById(id);
-    const faculty = await user.findOne({ userId: request.facultyId });
+    const requests = await HodUidRequest.find({
+      hodAccept: true,
+      RDCordinatorAccept: true,
+      principalAccept: true,
+      adminAccept: false
+    }).sort({ submittedAt: -1 });
 
-  if (!faculty) {
-    return res.status(404).json({ message: "Faculty not found" });
-  }
-
-  const facultyEmail = faculty.email;
-    if (!request) {
-      return res.status(404).json({ message: 'Request not found' });
-    }
-
-    // ✅ ACCEPT
-    if (status === 'accept') {
-
-      if (!request.uid) {
-        request.uid = generateUID();
-      }
-
-      request.adminAccept = true;
-      await request.save();
-
-      const mailOptions = {
-    from: "rpmssvecw@gmail.com",
-    to: facultyEmail,
-    subject: "UID Generated - RPMS SVECW",
-    text: `
-UID Generated Successfully
-
-Paper Title: ${request.paperTitle}
-Faculty: ${request.facultyName}
-Department: ${request.department}
-
-Generated UID: ${request.uid}
-
-Regards,
-RPMS SVECW
-`
-  };
-
-  await transporter.sendMail(mailOptions);
-
-      // ✅ Send notification to Faculty
-      await Notification.create({
-        receiverId: request.facultyId,
-        receiverRole: "faculty",
-        message: `Your UID request for "${request.paperTitle}" has been approved. UID: ${request.uid}`,
-        isRead: false
-      });
-
-      return res.status(200).json({
-        message: 'UID accepted and generated',
-        uid: request.uid
-      });
-    }
-
-    // ❌ REJECT
-    else if (status === 'reject') {
-
-      if (!reason || reason.trim() === '') {
-        return res.status(400).json({ message: 'Rejection reason is required' });
-      }
-      
-
-      const rejectedDoc = new RejectedUid({
-        facultyId: request.facultyId,
-        facultyName: request.facultyName,
-        department: request.department,
-        paperTitle: request.paperTitle,
-        type: request.type,
-        abstract: request.abstract,
-        target: request.target,
-        submittedAt: request.submittedAt,
-        rejectedAt: new Date(),
-        rejectedBy: 'admin',
-        reason
-      });
-
-      await rejectedDoc.save();
-    
-
-const mailOptions = {
-    from: "rpmssvecw@gmail.com",
-    to: facultyEmail,
-    subject: "UID Rejected  RPMS SVECW",
-    text: `UID Request Rejected
-
-Paper Title: ${request.paperTitle}
-Faculty: ${request.facultyName}
-Department: ${request.department}
-Your UID request has been rejected by the R&D Dean for the following reason:${reason}
-
-Regards,
-RPMS SVECW
-`
-  };
-
-  await transporter.sendMail(mailOptions);
-  await request.deleteOne();
-
-      // ✅ Send rejection notification
-      await Notification.create({
-        receiverId: request.facultyId,
-        receiverRole: "faculty",
-        message: `Your UID request for "${request.paperTitle}" was rejected. Reason: ${reason}`,
-        isRead: false
-      });
-
-      return res.status(200).json({
-        message: 'UID request rejected and moved to RejectedUids'
-      });
-    }
-
-    else {
-      return res.status(400).json({ message: 'Invalid status' });
-    }
-
+    res.json(requests);
   } catch (err) {
-    console.error('Admin UID decision error:', err);
-    return res.status(500).json({ message: 'Server error', error: err.message });
+    console.error('R&D Dean UID fetch error:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-// ✅ UID Accept/Reject Route
+
+
 // router.put('/uid-request/:id/:status', async (req, res) => {
 //   const { id, status } = req.params;
 //   const { reason } = req.body;
 
 //   try {
 //     const request = await HodUidRequest.findById(id);
-//     if (!request) return res.status(404).json({ message: 'Request not found' });
+//     const faculty = await user.findOne({ userId: request.facultyId });
 
+//   if (!faculty) {
+//     return res.status(404).json({ message: "Faculty not found" });
+//   }
+
+//   const facultyEmail = faculty.email;
+//     if (!request) {
+//       return res.status(404).json({ message: 'Request not found' });
+//     }
+
+//     // ✅ ACCEPT
 //     if (status === 'accept') {
+
 //       if (!request.uid) {
 //         request.uid = generateUID();
 //       }
+
 //       request.adminAccept = true;
 //       await request.save();
 
-//       // ✅ Get faculty email from Faculty collection
-//       const user = await User.findOne({ userId: request.userId });
-//       // if (!faculty || !faculty.email) {
-//         // console.error("Faculty email not found for:", request.facultyId);
-//         // return res.status(400).json({ message: 'Faculty email not found' });
-//       // }
-//        if (status === "approved") {
+//       const mailOptions = {
+//     from: "rpmssvecw@gmail.com",
+//     to: facultyEmail,
+//     subject: "UID Generated - RPMS SVECW",
+//     text: `
+// UID Generated Successfully
+
+// Paper Title: ${request.paperTitle}
+// Faculty: ${request.facultyName}
+// Department: ${request.department}
+
+// Generated UID: ${request.uid}
+
+// Regards,
+// RPMS SVECW
+// `
+//   };
+
+//   await transporter.sendMail(mailOptions);
+
+//       // ✅ Send notification to Faculty
 //       await Notification.create({
-//         recipient: request.facultyId,
-//         message: `Your UID request ${request.uid} has been approved by RD Dean`,
+//         receiverId: request.facultyId,
+//         receiverRole: "faculty",
+//         message: `Your UID request for "${request.paperTitle}" has been approved. UID: ${request.uid}`,
 //         isRead: false
 //       });
+
+//       return res.status(200).json({
+//         message: 'UID accepted and generated',
+//         uid: request.uid
+//       });
 //     }
 
-//       const mailOptions = {
-//         from: 'tanusreekollipara@gmail.com',
-//         to: emailToSend,
-//         subject: 'UID Generated Successfully',
-//         text: `Dear ${request.fullName},
+//     // ❌ REJECT
+//     else if (status === 'reject') {
 
-// Your UID request has been accepted. Your generated UID is: ${request.uid}
+//       if (!reason || reason.trim() === '') {
+//         return res.status(400).json({ message: 'Rejection reason is required' });
+//       }
+      
 
-// Thank you,
-// SVECW`
-//       };
-
-//       transporter.sendMail(mailOptions, (error, info) => {
-//         if (error) {
-//           console.error('Error sending email:', error);
-//         } else {
-//           console.log('Email sent: ' + info.response);
-//         }
+//       const rejectedDoc = new RejectedUid({
+//         facultyId: request.facultyId,
+//         facultyName: request.facultyName,
+//         department: request.department,
+//         paperTitle: request.paperTitle,
+//         type: request.type,
+//         abstract: request.abstract,
+//         target: request.target,
+//         submittedAt: request.submittedAt,
+//         rejectedAt: new Date(),
+//         rejectedBy: 'admin',
+//         reason
 //       });
 
-//       return res.status(200).json({ message: 'UID accepted and UID generated', uid: request.uid });
+//       await rejectedDoc.save();
+    
 
-//     } else if (status === 'reject') {
-//   if (!reason || reason.trim() === '') {
-//     return res.status(400).json({ message: 'Rejection reason is required' });
-//   }
+// const mailOptions = {
+//     from: "rpmssvecw@gmail.com",
+//     to: facultyEmail,
+//     subject: "UID Rejected  RPMS SVECW",
+//     text: `UID Request Rejected
 
-//   const rejectedDoc = new RejectedUid({
-//     facultyId: request.facultyId,
-//     facultyName: request.facultyName,
-//     department: request.department,
-//     paperTitle: request.paperTitle,
-//     type: request.type,
-//     abstract: request.abstract,
-//     target: request.target,
-//     submittedAt: request.submittedAt,
-//     rejectedAt: new Date(),
-//     rejectedBy: 'admin',
-//     reason
-//   });
+// Paper Title: ${request.paperTitle}
+// Faculty: ${request.facultyName}
+// Department: ${request.department}
+// Your UID request has been rejected by the R&D Dean for the following reason:${reason}
 
-//   await rejectedDoc.save();
+// Regards,
+// RPMS SVECW
+// `
+//   };
+
+//   await transporter.sendMail(mailOptions);
 //   await request.deleteOne();
 
-//   // ✅ Fetch faculty email
-//   const faculty = await Faculty.findOne({ facultyId: request.facultyId });
-//   // if (faculty && faculty.email) {
-//   if (emailToSend){
-//     const mailOptions = {
-//       from: 'tanusreekollipara@gmail.com',
-//       to: emailToSend,
-//       subject: 'UID Request Rejected',
-//       text: `Dear ${request.facultyName},
+//       // ✅ Send rejection notification
+//       await Notification.create({
+//         receiverId: request.facultyId,
+//         receiverRole: "faculty",
+//         message: `Your UID request for "${request.paperTitle}" was rejected. Reason: ${reason}`,
+//         isRead: false
+//       });
 
-// We regret to inform you that your UID request has been rejected by the Admin for the following reason:
+//       return res.status(200).json({
+//         message: 'UID request rejected and moved to RejectedUids'
+//       });
+//     }
 
-// "${reason}"
-
-// Please make the necessary corrections and resubmit your request if applicable.
-
-// Regards,  
-// SVECW Admin`
-//     };
-
-//     transporter.sendMail(mailOptions, (error, info) => {
-//       if (error) {
-//         console.error('UID Rejection Email Error:', error);
-//       } else {
-//         console.log('UID Rejection email sent:', info.response);
-//       }
-//     });
-//   }
-
-//   return res.status(200).json({ message: 'UID request rejected and moved to RejectedUids' });
-// } else {
+//     else {
 //       return res.status(400).json({ message: 'Invalid status' });
 //     }
+
 //   } catch (err) {
 //     console.error('Admin UID decision error:', err);
 //     return res.status(500).json({ message: 'Server error', error: err.message });
 //   }
 // });
 
-router.get('/all-submitted-documents', async (req, res) => {
-  try {
-    const docs = await DocumentUpload.find({
-      adminAccept: false,
-      isRejected: false
-    });
-
-    const formatted = docs.map(doc => ({
-      _id: doc._id,
-      facultyId: doc.facultyId,
-      uid: doc.uid,
-      paperTitle: doc.paperTitle,
-      type: doc.type,
-      target: doc.target,
-      abstract: doc.abstract,
-      uploadedAt: doc.uploadedAt,
-      adminAccept: doc.adminAccept,
-      issn: doc.issn,
-      scopusLink: doc.scopusLink, // ✅ Add scopus link
-      acceptanceLetter: doc.acceptanceLetter?.data ? {
-        filename: doc.acceptanceLetter.filename,
-        contentType: doc.acceptanceLetter.contentType,
-        base64: doc.acceptanceLetter.data.toString('base64')
-      } : null,
-      indexingProof: doc.indexingProof?.data ? {
-        filename: doc.indexingProof.filename,
-        contentType: doc.indexingProof.contentType,
-        base64: doc.indexingProof.data.toString('base64')
-      } : null,
-      paymentReceipt: doc.paymentReceipt?.data ? { // ✅ Fixed typo from "paymentReciept"
-        filename: doc.paymentReceipt.filename,
-        contentType: doc.paymentReceipt.contentType,
-        base64: doc.paymentReceipt.data.toString('base64')
-      } : null
-    }));
-
-    res.status(200).json(formatted);
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch documents', error: err.message });
-  }
-});
 
 
-// ✅ Get All Submitted Documents
 // router.get('/all-submitted-documents', async (req, res) => {
 //   try {
 //     const docs = await DocumentUpload.find({
@@ -379,22 +245,22 @@ router.get('/all-submitted-documents', async (req, res) => {
 //       uploadedAt: doc.uploadedAt,
 //       adminAccept: doc.adminAccept,
 //       issn: doc.issn,
-//       doc1: doc.doc1,
-//       acceptanceLetter: {
+//       scopusLink: doc.scopusLink, // ✅ Add scopus link
+//       acceptanceLetter: doc.acceptanceLetter?.data ? {
 //         filename: doc.acceptanceLetter.filename,
 //         contentType: doc.acceptanceLetter.contentType,
 //         base64: doc.acceptanceLetter.data.toString('base64')
-//       },
-//       indexingProof: {
+//       } : null,
+//       indexingProof: doc.indexingProof?.data ? {
 //         filename: doc.indexingProof.filename,
 //         contentType: doc.indexingProof.contentType,
 //         base64: doc.indexingProof.data.toString('base64')
-//       },
-//       paymentReciept: {
-//       filename: doc.paymentReciept?.filename,
-//       contentType: doc.paymentReciept?.contentType,
-//       base64: doc.paymentReciept?.data?.toString('base64')
-//     }
+//       } : null,
+//       paymentReceipt: doc.paymentReceipt?.data ? { // ✅ Fixed typo from "paymentReciept"
+//         filename: doc.paymentReceipt.filename,
+//         contentType: doc.paymentReceipt.contentType,
+//         base64: doc.paymentReceipt.data.toString('base64')
+//       } : null
 //     }));
 
 //     res.status(200).json(formatted);
@@ -402,12 +268,292 @@ router.get('/all-submitted-documents', async (req, res) => {
 //     res.status(500).json({ message: 'Failed to fetch documents', error: err.message });
 //   }
 // });
+router.put('/uid-request/:id/:status', async (req, res) => {
+  const { id, status } = req.params;
+  const { reason } = req.body || {};
+
+  try {
+    // 1. Find UID request
+    const request = await HodUidRequest.findById(id);
+
+    if (!request) {
+      return res.status(404).json({
+        message: 'Request not found'
+      });
+    }
+
+    // 2. Find faculty using facultyId
+    const faculty = await user.findOne({
+      userId: request.facultyId
+    });
+
+    if (!faculty) {
+      return res.status(404).json({
+        message: `Faculty/User not found for facultyId: ${request.facultyId}`
+      });
+    }
+
+    const facultyEmail = faculty.email;
+
+    // =========================================================
+    // ACCEPT
+    // =========================================================
+    if (status === 'accept') {
+
+      // Generate UID if it doesn't already exist
+      if (!request.uid) {
+        request.uid = generateUID();
+      }
+
+      request.adminAccept = true;
+
+      await request.save();
+
+      console.log(
+        `UID approved successfully: ${request.uid} for ${request.facultyId}`
+      );
+
+      // =====================================================
+      // SEND EMAIL
+      // Email failure should NOT cancel UID approval
+      // =====================================================
+      try {
+
+        const mailOptions = {
+          from: "rpmssvecw@gmail.com",
+          to: facultyEmail,
+          subject: "UID Generated - RPMS SVECW",
+          text: `
+UID Generated Successfully
+
+Paper Title: ${request.paperTitle}
+Faculty: ${request.facultyName}
+Department: ${request.department}
+
+Generated UID: ${request.uid}
+
+Regards,
+RPMS SVECW
+`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        console.log(
+          `UID email sent successfully to ${facultyEmail}`
+        );
+
+      } catch (emailError) {
+
+        console.error(
+          "UID email sending failed:",
+          emailError.message
+        );
+
+        // Continue because UID approval itself succeeded
+      }
+
+      // =====================================================
+      // SEND NOTIFICATION TO FACULTY
+      // =====================================================
+      try {
+
+        await Notification.create({
+          receiverId: request.facultyId,
+          receiverRole: "faculty",
+          message: `Your UID request for "${request.paperTitle}" has been approved. UID: ${request.uid}`,
+          isRead: false,
+          createdAt: new Date()
+        });
+
+        console.log(
+          `UID approval notification sent to ${request.facultyId}`
+        );
+
+      } catch (notificationError) {
+
+        console.error(
+          "Notification creation failed:",
+          notificationError.message
+        );
+
+        // UID is already approved, so don't undo approval
+      }
+
+      return res.status(200).json({
+        message: 'UID accepted and generated successfully',
+        uid: request.uid
+      });
+    }
+
+    // =========================================================
+    // REJECT
+    // =========================================================
+    else if (status === 'reject') {
+
+      if (!reason || reason.trim() === '') {
+        return res.status(400).json({
+          message: 'Rejection reason is required'
+        });
+      }
+
+      const rejectedDoc = new RejectedUid({
+        facultyId: request.facultyId,
+        facultyName: request.facultyName,
+        department: request.department,
+        paperTitle: request.paperTitle,
+        type: request.type,
+        abstract: request.abstract,
+        target: request.target,
+        submittedAt: request.submittedAt,
+        rejectedAt: new Date(),
+        rejectedBy: 'admin',
+        reason
+      });
+
+      await rejectedDoc.save();
+
+      // Delete original request
+      
+
+      // Send rejection notification
+      try {
+
+        await Notification.create({
+          receiverId: request.facultyId,
+          receiverRole: "faculty",
+          message: `Your UID request for "${request.paperTitle}" was rejected. Reason: ${reason}`,
+          isRead: false,
+          createdAt: new Date()
+        });
+
+      } catch (notificationError) {
+
+        console.error(
+          "Rejection notification failed:",
+          notificationError.message
+        );
+      }
+await request.deleteOne();
+      // Email is optional
+      try {
+
+        const mailOptions = {
+          from: "rpmssvecw@gmail.com",
+          to: facultyEmail,
+          subject: "UID Rejected - RPMS SVECW",
+          text: `UID Request Rejected
+
+Paper Title: ${request.paperTitle}
+Faculty: ${request.facultyName}
+Department: ${request.department}
+
+Your UID request has been rejected by the R&D Dean.
+
+Reason:
+${reason}
+
+Regards,
+RPMS SVECW
+`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+      } catch (emailError) {
+
+        console.error(
+          "UID rejection email failed:",
+          emailError.message
+        );
+      }
+
+      return res.status(200).json({
+        message: 'UID request rejected and moved to RejectedUids'
+      });
+    }
+
+    // =========================================================
+    // INVALID STATUS
+    // =========================================================
+    else {
+
+      return res.status(400).json({
+        message: 'Invalid status'
+      });
+    }
+
+  } catch (err) {
+
+    console.error(
+      'Admin UID decision error:',
+      err
+    );
+
+    return res.status(500).json({
+      message: 'Server error',
+      error: err.message
+    });
+  }
+});
 
 
-// console.log('Fetched Documents:', docs);
+router.get('/all-submitted-documents', async (req, res) => {
+  try {
+    const docs = await DocumentUpload.find({
+      adminAccept: false,
+      isRejected: false
+    });
 
+    const formatted = docs.map(doc => ({
+      _id: doc._id,
+      facultyId: doc.userId,
+      uid: doc.uid,
+      paperTitle: doc.paperTitle,
+      type: doc.type,
+      target: doc.target,
+      abstract: doc.abstract,
+      uploadedAt: doc.uploadedAt,
+      adminAccept: doc.adminAccept,
+      issn: doc.issn,
+      scopusLink: doc.scopusLink,
 
-// const Notification = require('../models/Notification');
+      // ✅ Published Paper
+     publishedPaper: doc.publishedPaper?.pdf?.data
+  ? {
+      filename: doc.publishedPaper.pdf.filename,
+      contentType: doc.publishedPaper.pdf.contentType,
+      base64: doc.publishedPaper.pdf.data.toString('base64'),
+      doi: doc.publishedPaper.doi || ""
+    }
+  : null,
+
+      indexingProof: doc.indexingProof?.data
+        ? {
+            filename: doc.indexingProof.filename,
+            contentType: doc.indexingProof.contentType,
+            base64: doc.indexingProof.data.toString('base64')
+          }
+        : null,
+
+      paymentReceipt: doc.paymentReceipt?.data
+        ? {
+            filename: doc.paymentReceipt.filename,
+            contentType: doc.paymentReceipt.contentType,
+            base64: doc.paymentReceipt.data.toString('base64')
+          }
+        : null
+    }));
+
+    res.status(200).json(formatted);
+
+  } catch (err) {
+    res.status(500).json({
+      message: 'Failed to fetch documents',
+      error: err.message
+    });
+  }
+});
 
 router.put('/document-submission/:id/accept', async (req, res) => {
   const { id } = req.params;
@@ -428,14 +574,23 @@ router.put('/document-submission/:id/accept', async (req, res) => {
     if (!updated) return res.status(404).json({ message: 'Document not found' });
 
     // 3️⃣ Send notification to faculty
+    // await Notification.create({
+    //   receiverId: updated.facultyId,       // Faculty ID who gets the notification
+    //   receiverRole: "faculty",             // Role of receiver
+    //   message: `Your paper "${updated.paperTitle}" has been approved. PID generated: ${pid}`,
+    //   relatedUserId: "admin",              // Optional: who triggered it
+    //   isRead: false,
+    //   createdAt: new Date()
+    // });
+
     await Notification.create({
-      receiverId: updated.facultyId,       // Faculty ID who gets the notification
-      receiverRole: "faculty",             // Role of receiver
-      message: `Your paper "${updated.paperTitle}" has been approved. PID generated: ${pid}`,
-      relatedUserId: "admin",              // Optional: who triggered it
-      isRead: false,
-      createdAt: new Date()
-    });
+  receiverId: updated.userId,
+  receiverRole: "faculty",
+  message: `Your paper "${updated.paperTitle}" has been approved. PID generated: ${pid}`,
+  relatedUserId: "admin",
+  isRead: false,
+  createdAt: new Date()
+});
 
     // 4️⃣ Respond with PID
     res.status(200).json({ message: 'Submission accepted and PID generated.', pid });
@@ -517,13 +672,21 @@ router.put('/document-submission/:id/reject', async (req, res) => {
     await submission.save();
 
     // ✅ Create notification for faculty
+    // await Notification.create({
+    //   userId: submission.facultyId,  // Faculty login ID
+    //   message: `Your document "${submission.paperTitle}" was rejected by Admin. Reason: "${reason}"`,
+    //   type: "document_rejected",
+    //   isRead: false,
+    //   createdAt: new Date()
+    // });
     await Notification.create({
-      userId: submission.facultyId,  // Faculty login ID
-      message: `Your document "${submission.paperTitle}" was rejected by Admin. Reason: "${reason}"`,
-      type: "document_rejected",
-      isRead: false,
-      createdAt: new Date()
-    });
+  receiverId: submission.userId,
+  receiverRole: "faculty",
+  message: `Your document "${submission.paperTitle}" was rejected by Admin. Reason: "${reason}"`,
+  relatedUserId: "admin",
+  isRead: false,
+  createdAt: new Date()
+});
 
     res.status(200).json({ message: 'Document rejected and notification created.' });
 

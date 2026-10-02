@@ -19,12 +19,9 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-
 // 3️⃣ Get all published papers (all depts)
 router.get("/approved-papers", async (req, res) => {
-// router.get("/principal-publications", async (req, res) => {
   try {
-
     const uidRequests = await HodUidRequest.find({
       adminAccept: true
     });
@@ -39,17 +36,31 @@ router.get("/approved-papers", async (req, res) => {
         if (!uploadData) return null;
 
         return {
+          // =========================
+          // UID REQUEST DATA
+          // =========================
           paperTitle: reqData.paperTitle,
           facultyName: reqData.facultyName,
           department: reqData.department,
           uid: reqData.uid,
+
+          // =========================
+          // PUBLICATION DATA
+          // =========================
           type: uploadData.type,
           target: uploadData.target,
-          facultyId: uploadData.userId, // ✅ ADD THIS
+          facultyId: uploadData.userId,
 
           pid: uploadData.pid,
           issn: uploadData.issn,
-          scopusLink: uploadData.scopusLink
+          scopusLink: uploadData.scopusLink,
+
+          // =========================
+          // ADD THESE
+          // =========================
+          year: uploadData.year,
+          abstract: uploadData.abstract,
+          uploadedAt: uploadData.uploadedAt
         };
       })
     );
@@ -57,9 +68,53 @@ router.get("/approved-papers", async (req, res) => {
     res.json(publications.filter(Boolean));
 
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error fetching approved papers:", error);
+
+    res.status(500).json({
+      error: error.message
+    });
   }
 });
+// 3️⃣ Get all published papers (all depts)
+// router.get("/approved-papers", async (req, res) => {
+// // router.get("/principal-publications", async (req, res) => {
+//   try {
+
+//     const uidRequests = await HodUidRequest.find({
+//       adminAccept: true
+//     });
+
+//     const publications = await Promise.all(
+//       uidRequests.map(async (reqData) => {
+
+//         const uploadData = await DocumentUpload.findOne({
+//           uid: reqData.uid
+//         });
+
+//         if (!uploadData) return null;
+
+//         return {
+//           paperTitle: reqData.paperTitle,
+//           facultyName: reqData.facultyName,
+//           department: reqData.department,
+//           uid: reqData.uid,
+//           type: uploadData.type,
+//           target: uploadData.target,
+//           facultyId: uploadData.userId, // ✅ ADD THIS
+
+//           pid: uploadData.pid,
+//           issn: uploadData.issn,
+//           scopusLink: uploadData.scopusLink
+//         };
+//       })
+//     );
+
+//     res.json(publications.filter(Boolean));
+
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 
 router.get("/paper/:pid", async (req, res) => {
@@ -104,7 +159,7 @@ router.get("/faculty-details/:userId", async (req, res) => {
 router.get("/hod", async (req, res) => {
   try {
     const hodList = await User.find({ role: "hod" }).select(
-      "userId fullName email department profilePic"
+      "userId fullName email department profilePic gender createdAt educationDetails"
     );
     res.json(hodList);
   } catch (err) {

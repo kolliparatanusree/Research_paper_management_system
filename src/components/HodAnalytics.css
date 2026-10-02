@@ -1,0 +1,1371 @@
+/* =========================================================
+   HOD ANALYTICS PAGE
+========================================================= */
+
+.hod-analytics-page {
+  width: 100%;
+  min-height: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  background: #f5f7fb;
+  color: #1f2937;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.analytics-page-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+
+  padding: 24px 28px;
+  margin-bottom: 22px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+
+  box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+
+  box-sizing: border-box;
+}
+
+.analytics-breadcrumb {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6366f1;
+  margin-bottom: 7px;
+}
+
+.analytics-page-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.analytics-page-header p {
+  margin: 7px 0 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+
+/* =========================================================
+   HEADER RIGHT
+========================================================= */
+
+.analytics-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.analytics-department {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.analytics-department span {
+  font-size: 11px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  font-weight: 700;
+}
+
+.analytics-department strong {
+  font-size: 16px;
+  color: #374151;
+}
+
+.analytics-header-icon {
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+
+  font-size: 25px;
+
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+}
+
+
+/* =========================================================
+   SUMMARY CARDS
+========================================================= */
+
+.analytics-summary-grid {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.analytics-stat-card {
+  min-height: 115px;
+
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  padding: 20px;
+
+  border-radius: 17px;
+
+  box-sizing: border-box;
+
+  position: relative;
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.05);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.analytics-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.10);
+}
+
+.analytics-stat-card::after {
+  content: "";
+
+  position: absolute;
+  right: -25px;
+  bottom: -35px;
+
+  width: 90px;
+  height: 90px;
+
+  border-radius: 50%;
+
+  opacity: 0.08;
+}
+
+
+/* CARD COLORS */
+
+.analytics-stat-card.blue::after {
+  background: #2563eb;
+}
+
+.analytics-stat-card.green::after {
+  background: #10b981;
+}
+
+.analytics-stat-card.orange::after {
+  background: #f97316;
+}
+
+.analytics-stat-card.purple::after {
+  background: #8b5cf6;
+}
+
+.analytics-stat-card.teal::after {
+  background: #14b8a6;
+}
+
+
+/* =========================================================
+   STAT ICON
+========================================================= */
+
+.analytics-stat-icon {
+  flex-shrink: 0;
+
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.analytics-stat-card.blue .analytics-stat-icon {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.analytics-stat-card.green .analytics-stat-icon {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.analytics-stat-card.orange .analytics-stat-icon {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.analytics-stat-card.purple .analytics-stat-icon {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+.analytics-stat-card.teal .analytics-stat-icon {
+  background: #f0fdfa;
+  color: #0f766e;
+}
+
+.analytics-stat-card span {
+  display: block;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  color: #6b7280;
+
+  margin-bottom: 5px;
+}
+
+.analytics-stat-card strong {
+  display: block;
+
+  font-size: 25px;
+  line-height: 1;
+
+  color: #111827;
+}
+
+
+/* =========================================================
+   INFORMATION ROW
+========================================================= */
+
+.analytics-info-row {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.analytics-mini-card {
+  min-height: 78px;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 15px 18px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 15px;
+
+  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+
+  box-sizing: border-box;
+}
+
+.mini-icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  background: #f3f4f6;
+
+  font-size: 19px;
+}
+
+.analytics-mini-card small {
+  display: block;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  color: #6b7280;
+
+  margin-bottom: 3px;
+}
+
+.analytics-mini-card strong {
+  display: block;
+
+  font-size: 21px;
+
+  color: #111827;
+}
+
+
+/* =========================================================
+   CHART GRID
+========================================================= */
+
+.analytics-chart-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 20px;
+}
+
+
+/* =========================================================
+   CHART PANEL
+========================================================= */
+
+.analytics-panel {
+  width: 100%;
+  min-width: 0;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 18px;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 5px 20px rgba(15, 23, 42, 0.05);
+
+  overflow: hidden;
+}
+
+.analytics-panel.wide-panel {
+  grid-column: span 2;
+}
+
+
+/* =========================================================
+   PANEL HEADER
+========================================================= */
+
+.analytics-panel-header {
+  min-height: 48px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 10px;
+}
+
+.analytics-panel-header h2 {
+  margin: 0;
+
+  font-size: 17px;
+  font-weight: 750;
+
+  color: #111827;
+}
+
+.analytics-panel-header p {
+  margin: 5px 0 0;
+
+  font-size: 12px;
+
+  color: #6b7280;
+}
+
+.analytics-panel-header > span {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #f5f3ff;
+
+  font-size: 18px;
+}
+
+
+/* =========================================================
+   IMPORTANT CHART CONTAINER
+========================================================= */
+
+.analytics-chart-box {
+  width: 100%;
+
+  height: 330px;
+
+  min-height: 330px;
+
+  position: relative;
+
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* =========================================================
+   DOUGHNUT
+========================================================= */
+
+.doughnut-box {
+  height: 320px;
+  min-height: 320px;
+}
+
+
+/* Make Recharts occupy actual space */
+
+.analytics-chart-box
+.recharts-responsive-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+
+/* =========================================================
+   RECHARTS
+========================================================= */
+
+.analytics-chart-box
+.recharts-wrapper {
+  max-width: 100%;
+}
+
+.analytics-chart-box
+.recharts-surface {
+  overflow: visible;
+}
+
+.analytics-chart-box
+.recharts-legend-item-text {
+  font-size: 12px !important;
+  color: #4b5563 !important;
+}
+
+.analytics-chart-box
+.recharts-cartesian-axis-tick-value {
+  font-size: 11px;
+  fill: #6b7280;
+}
+
+.analytics-chart-box
+.recharts-cartesian-grid line {
+  stroke: #e5e7eb;
+}
+
+
+/* =========================================================
+   NO DATA
+========================================================= */
+
+.no-chart-data {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  color: #9ca3af;
+
+  font-size: 13px;
+
+  text-align: center;
+}
+
+.no-chart-data span {
+  font-size: 30px;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.analytics-loading {
+  min-height: 420px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+
+  border-radius: 18px;
+
+  border: 1px solid #e5e7eb;
+
+  box-shadow: 0 5px 20px rgba(15, 23, 42, 0.05);
+}
+
+.analytics-loading-icon {
+  width: 65px;
+  height: 65px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 18px;
+
+  background: #eef2ff;
+
+  font-size: 30px;
+
+  margin-bottom: 14px;
+
+  animation: analyticsPulse 1.4s infinite;
+}
+
+.analytics-loading p {
+  margin: 0;
+
+  color: #6b7280;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@keyframes analyticsPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+
+/* =========================================================
+   DATA NOTE
+========================================================= */
+
+.analytics-data-note {
+  margin-top: 20px;
+
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 13px;
+
+  padding: 17px 20px;
+
+  background: #eff6ff;
+
+  border: 1px solid #bfdbfe;
+
+  border-radius: 14px;
+
+  color: #1e40af;
+}
+
+.analytics-data-note > span {
+  font-size: 20px;
+}
+
+.analytics-data-note strong {
+  display: block;
+
+  font-size: 14px;
+
+  margin-bottom: 4px;
+}
+
+.analytics-data-note p {
+  margin: 0;
+
+  font-size: 12px;
+
+  line-height: 1.6;
+
+  color: #475569;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1200px) {
+
+  .analytics-summary-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+}
+
+
+/* =========================================================
+   TABLET / SMALL LAPTOP
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .hod-analytics-page {
+    padding: 16px;
+  }
+
+  .analytics-page-header {
+    padding: 20px;
+  }
+
+  .analytics-summary-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .analytics-info-row {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .analytics-chart-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .analytics-panel.wide-panel {
+    grid-column: span 1;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+  .hod-analytics-page {
+    padding: 10px;
+  }
+
+  .analytics-page-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    padding: 17px;
+
+    border-radius: 15px;
+  }
+
+  .analytics-page-header h1 {
+    font-size: 22px;
+  }
+
+  .analytics-page-header p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .analytics-header-right {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+
+  .analytics-department {
+    align-items: flex-start;
+  }
+
+  .analytics-summary-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+  }
+
+  .analytics-stat-card {
+    min-height: 95px;
+
+    padding: 13px;
+
+    gap: 9px;
+
+    border-radius: 13px;
+  }
+
+  .analytics-stat-icon {
+    width: 38px;
+    height: 38px;
+
+    font-size: 17px;
+
+    border-radius: 10px;
+  }
+
+  .analytics-stat-card span {
+    font-size: 10px;
+  }
+
+  .analytics-stat-card strong {
+    font-size: 20px;
+  }
+
+  .analytics-info-row {
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+  }
+
+  .analytics-mini-card {
+    min-height: 70px;
+  }
+
+  .analytics-panel {
+    padding: 14px;
+
+    border-radius: 14px;
+  }
+
+  .analytics-panel-header h2 {
+    font-size: 15px;
+  }
+
+  .analytics-panel-header p {
+    font-size: 11px;
+  }
+
+  .analytics-chart-box {
+    height: 280px;
+    min-height: 280px;
+  }
+
+  .doughnut-box {
+    height: 280px;
+    min-height: 280px;
+  }
+
+  .analytics-chart-box
+  .recharts-cartesian-axis-tick-value {
+    font-size: 9px;
+  }
+
+  .analytics-chart-box
+  .recharts-legend-item-text {
+    font-size: 10px !important;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+
+  .analytics-summary-grid {
+    gap: 8px;
+  }
+
+  .analytics-stat-card {
+    padding: 10px;
+  }
+
+  .analytics-stat-icon {
+    width: 34px;
+    height: 34px;
+
+    font-size: 15px;
+  }
+
+  .analytics-stat-card span {
+    font-size: 9px;
+  }
+
+  .analytics-stat-card strong {
+    font-size: 18px;
+  }
+
+}
+/* =========================================================
+   FIXED RECHARTS CONTAINER
+   Same approach used by the working HOD Dashboard chart
+========================================================= */
+
+.analytics-fixed-chart {
+  width: 100%;
+  min-height: 330px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  box-sizing: border-box;
+}
+
+
+/* Recharts itself */
+
+.analytics-fixed-chart
+.recharts-wrapper {
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   CHART SUMMARY
+========================================================= */
+
+.chart-summary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 45px;
+
+  margin-top: 8px;
+  padding: 12px 0 2px;
+}
+
+.chart-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-summary-item strong {
+  display: block;
+
+  font-size: 20px;
+  line-height: 1;
+
+  color: #111827;
+}
+
+.chart-summary-item small {
+  display: block;
+
+  margin-top: 4px;
+
+  font-size: 11px;
+
+  color: #6b7280;
+}
+
+.chart-dot {
+  width: 11px;
+  height: 11px;
+
+  border-radius: 50%;
+
+  display: inline-block;
+}
+
+.approved-dot {
+  background: #10b981;
+}
+
+.pending-dot {
+  background: #f97316;
+}
+
+
+/* =========================================================
+   NO DATA
+========================================================= */
+
+.no-chart-data {
+  width: 100%;
+  min-height: 280px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  text-align: center;
+
+  color: #9ca3af;
+
+  font-size: 13px;
+}
+
+.no-chart-data span {
+  font-size: 30px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+  .analytics-fixed-chart {
+    justify-content: flex-start;
+
+    overflow-x: auto;
+
+    padding-bottom: 5px;
+  }
+
+  .analytics-fixed-chart
+  .recharts-wrapper {
+    flex-shrink: 0;
+  }
+
+  .chart-summary {
+    gap: 25px;
+  }
+
+}
+
+/* =========================================================
+   RESEARCH TARGET CHART
+========================================================= */
+
+.analytics-target-chart {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px 10px 15px;
+}
+
+
+/* Chart wrapper */
+
+.target-chart-wrapper {
+  min-width: 850px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+
+/* Improve SVG text rendering */
+
+.target-chart-wrapper svg {
+  overflow: visible;
+}
+
+
+/* =========================================================
+   TARGET SUMMARY
+========================================================= */
+
+.target-summary {
+  margin-top: 10px;
+  padding: 18px 20px 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+
+.target-summary-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 15px;
+  color: #111827;
+  font-size: 15px;
+}
+
+
+.target-summary-title span {
+  font-size: 18px;
+}
+
+
+.target-summary-title strong {
+  font-size: 15px;
+}
+
+
+/* =========================================================
+   TARGET SUMMARY GRID
+========================================================= */
+
+.target-summary-list {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(220px, 1fr)
+  );
+  gap: 10px;
+}
+
+
+.target-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 13px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+
+.target-summary-item:hover {
+  background: #f1f5f9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+
+/* Number */
+
+.target-summary-number {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background: #eef2ff;
+  color: #4f46e5;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* Text */
+
+.target-summary-content {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+
+.target-summary-content strong {
+  color: #111827;
+  font-size: 13px;
+  font-weight: 700;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.target-summary-content span {
+  color: #64748b;
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .analytics-target-chart {
+    padding: 5px;
+  }
+
+  .target-chart-wrapper {
+    min-width: 700px;
+    justify-content: flex-start;
+  }
+
+  .target-summary {
+    padding: 15px 12px;
+  }
+
+  .target-summary-list {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+@media (max-width: 480px) {
+
+  .target-chart-wrapper {
+    min-width: 650px;
+  }
+
+  .target-summary-item {
+    padding: 10px;
+  }
+
+}
+
+/* =========================================================
+   APPROVAL PROGRESS OVERVIEW
+========================================================= */
+
+.approval-overview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.approval-overview-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 15px 18px;
+
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  transition: all 0.2s ease;
+}
+
+.approval-overview-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+}
+
+
+/* DOT */
+
+.approval-overview-dot {
+  width: 11px;
+  height: 11px;
+
+  border-radius: 50%;
+
+  flex-shrink: 0;
+}
+
+
+/* TEXT */
+
+.approval-overview-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.approval-overview-item strong {
+  font-size: 20px;
+  line-height: 1;
+  color: #111827;
+}
+
+.approval-overview-item small {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+
+/* =========================================================
+   STAGE COLORS
+========================================================= */
+
+.approval-overview-item.coordinator
+.approval-overview-dot {
+  background: #8b5cf6;
+}
+
+.approval-overview-item.hod
+.approval-overview-dot {
+  background: #6366f1;
+}
+
+.approval-overview-item.principal
+.approval-overview-dot {
+  background: #10b981;
+}
+
+.approval-overview-item.admin
+.approval-overview-dot {
+  background: #f97316;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .approval-overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .approval-overview {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .approval-overview-item {
+    padding: 12px;
+    gap: 9px;
+  }
+
+  .approval-overview-item strong {
+    font-size: 17px;
+  }
+
+  .approval-overview-item small {
+    font-size: 10px;
+  }
+
+  .approval-overview-dot {
+    width: 9px;
+    height: 9px;
+  }
+
+}
+
+.target-summary-item {
+  border-left: 4px solid var(--target-color);
+  transition: 0.2s ease;
+}
+
+.target-summary-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
+}
+
+.target-summary-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  min-width: 32px;
+
+  border-radius: 8px;
+
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.download-analytics-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 11px 17px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: linear-gradient(
+    135deg,
+    #4f46e5,
+    #6366f1
+  );
+
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 5px 14px rgba(79, 70, 229, 0.22);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.download-analytics-btn span {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.download-analytics-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(79, 70, 229, 0.30);
+}
+
+.download-analytics-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+
+  .analytics-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .download-analytics-btn {
+    width: 100%;
+  }
+
+}

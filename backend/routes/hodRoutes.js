@@ -29,7 +29,7 @@ router.get("/uid/approved/:department", async (req, res) => {
   try {
     const count = await HodUidRequest.countDocuments({
       department: req.params.department,
-      hodAccept: "true"
+      hodAccept: true
     });
 
     res.json({ count });
@@ -43,7 +43,7 @@ router.get("/uid/pending/:department", async (req, res) => {
   try {
     const count = await HodUidRequest.countDocuments({
       department: req.params.department,
-      hodAccept: "false"
+      hodAccept: false
     });
 
     res.json({ count });
@@ -264,6 +264,14 @@ RPMS SVECW`
     });
 
     await request.deleteOne();
+    await Notification.create({
+  receiverId: request.facultyId,
+  receiverRole: "faculty",
+  message: `Your UID request "${request.paperTitle}" was rejected by HOD. Reason: ${reason}`,
+  relatedUserId: request.facultyId,
+  isRead: false,
+  createdAt: new Date()
+});
 
     res.status(200).json({
       message: "UID request rejected and mail sent to faculty"
@@ -278,103 +286,103 @@ RPMS SVECW`
   }
 });
 
-router.put('/uid-request/:id/reject/:userId', async (req, res) => {
-  try {
-    const { reason } = req.body;
-    const { id, userId } = req.params;
+// router.put('/uid-request/:id/reject/:userId', async (req, res) => {
+//   try {
+//     const { reason } = req.body;
+//     const { id, userId } = req.params;
 
-    // 🔍 find HOD
-    const hod = await User.findOne({ role: 'hod', userId });
-    if (!hod) {
-      return res.status(404).json({ message: 'HoD not found' });
-    }
+//     // 🔍 find HOD
+//     const hod = await User.findOne({ role: 'hod', userId });
+//     if (!hod) {
+//       return res.status(404).json({ message: 'HoD not found' });
+//     }
 
-    // 🔍 find request
-    const request = await HodUidRequest.findById(id);
-    const faculty = await User.findOne({
-  userId: request.facultyId,
-  role: "faculty"
-});
+//     // 🔍 find request
+//     const request = await HodUidRequest.findById(id);
+//     const faculty = await User.findOne({
+//   userId: request.facultyId,
+//   role: "faculty"
+// });
     
-      if (!faculty) {
-        return res.status(404).json({ message: "Faculty not found" });
-      }
+//       if (!faculty) {
+//         return res.status(404).json({ message: "Faculty not found" });
+//       }
     
-      const facultyEmail = faculty.email;
-    if (!request) {
-      return res.status(404).json({ message: 'Request not found' });
-    }
+//       const facultyEmail = faculty.email;
+//     if (!request) {
+//       return res.status(404).json({ message: 'Request not found' });
+//     }
 
-    // 🚨 CRITICAL SECURITY CHECK
-    if (hod.department !== request.department) {
-      return res.status(403).json({
-        message: 'You can reject only your department papers'
-      });
-    }
+//     // 🚨 CRITICAL SECURITY CHECK
+//     if (hod.department !== request.department) {
+//       return res.status(403).json({
+//         message: 'You can reject only your department papers'
+//       });
+//     }
 
-    // ✅ move to rejected collection
-    const rejectedEntry = new RejectedUid({
-      ...request.toObject(),
-      rejectedAt: new Date(),
-      rejectedBy: 'hod',
-      reason
-    });
+//     // ✅ move to rejected collection
+//     const rejectedEntry = new RejectedUid({
+//       ...request.toObject(),
+//       rejectedAt: new Date(),
+//       rejectedBy: 'hod',
+//       reason
+//     });
 
-    await rejectedEntry.save();
+//     await rejectedEntry.save();
 
 
-    const mailOptions = {
-    from: "rpmssvecw@gmail.com",
-    to: facultyEmail,
-    subject: "UID Rejected  RPMS SVECW",
-    text: `UID Request Rejected
+//     const mailOptions = {
+//     from: "rpmssvecw@gmail.com",
+//     to: facultyEmail,
+//     subject: "UID Rejected  RPMS SVECW",
+//     text: `UID Request Rejected
 
-Paper Title: ${request.paperTitle}
-Faculty: ${request.facultyName}
-Department: ${request.department}
-Your UID request has been rejected by the  ${request.department} HOD for the following reason:${reason}
+// Paper Title: ${request.paperTitle}
+// Faculty: ${request.facultyName}
+// Department: ${request.department}
+// Your UID request has been rejected by the  ${request.department} HOD for the following reason:${reason}
 
-Regards,
-RPMS SVECW
-`
-  };
+// Regards,
+// RPMS SVECW
+// `
+//   };
 
-  await transporter.sendMail(mailOptions);
+//   await transporter.sendMail(mailOptions);
     
-    await request.deleteOne();
+//     await request.deleteOne();
 
-    // // 📧 Send rejection email
-    // const faculty = await User.findOne({
-    //   role: 'faculty',
-    //   userId: request.facultyId
-    // });
+//     // // 📧 Send rejection email
+//     // const faculty = await User.findOne({
+//     //   role: 'faculty',
+//     //   userId: request.facultyId
+//     // });
 
-    // if (faculty?.email) {
-    //   await transporter.sendMail({
-    //     from: 'tanusreekollipara@gmail.com',
-    //     to: faculty.email,
-    //     subject: 'UID Request Rejected by HoD',
-    //     text: `Dear ${request.facultyName},\n\nYour UID request for "${request.paperTitle}" has been rejected.\nReason: ${reason}`
-    //   });
-    // }
-    await Notification.create({
-  receiverId: request.facultyId,
-  receiverRole: "faculty",
-  message: `Your UID request "${request.paperTitle}" was rejected by HOD. Reason: ${reason}`,
-  relatedUserId: request.facultyId
-});
+//     // if (faculty?.email) {
+//     //   await transporter.sendMail({
+//     //     from: 'tanusreekollipara@gmail.com',
+//     //     to: faculty.email,
+//     //     subject: 'UID Request Rejected by HoD',
+//     //     text: `Dear ${request.facultyName},\n\nYour UID request for "${request.paperTitle}" has been rejected.\nReason: ${reason}`
+//     //   });
+//     // }
+//     await Notification.create({
+//   receiverId: request.facultyId,
+//   receiverRole: "faculty",
+//   message: `Your UID request "${request.paperTitle}" was rejected by HOD. Reason: ${reason}`,
+//   relatedUserId: request.facultyId
+// });
 
-    res.status(200).json({
-      message: 'UID request rejected, logged, and email sent'
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      message: 'Server error',
-      error: err.message
-    });
-  }
-});
+//     res.status(200).json({
+//       message: 'UID request rejected, logged, and email sent'
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({
+//       message: 'Server error',
+//       error: err.message
+//     });
+//   }
+// });
 // ====== UID Requests (accept/reject) ======
 // router.put('/uid-request/:id/reject', async (req, res) => {
 //   try {
@@ -433,18 +441,21 @@ router.put('/uid-request/:id/accept/:userId', async (req, res) => {
     await request.save();
 
     // 🔔 FIND PRINCIPAL
-    const principal = await User.findOne({ role: "principal" });
+   // 🔔 FIND RD COORDINATOR
+const rdCoordinator = await User.findOne({
+  role: "rdCoordinator",
+  department: request.department
+});
 
-    if (principal) {
-      await Notification.create({
-        receiverId: principal.userId,
-        receiverRole: "principal",
-        message: `HOD approved UID request for "${request.paperTitle}"`,
-        relatedUserId: request.facultyId
-      });
-    }
-
-    res.json({ message: 'UID request accepted' });
+if (rdCoordinator) {
+  await Notification.create({
+    receiverId: rdCoordinator.userId,
+    receiverRole: "rdCoordinator",
+    message: `HOD approved UID request for "${request.paperTitle}"`,
+    relatedUserId: request.facultyId,
+    isRead: false
+  });
+}
 
     res.json({ message: 'UID request accepted' });
   } catch (err) {
@@ -478,6 +489,128 @@ router.get('/profile/:id', async (req, res) => {
   } catch (error) {
     console.error("Error fetching HOD:", error);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// ============================================================
+// HOD UID STATUS - ALL UIDS OF HOD DEPARTMENT
+// ============================================================
+
+router.get("/uid-status/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // --------------------------------------------------------
+    // FIND HOD
+    // --------------------------------------------------------
+
+    // const hod = await User.findOne({
+    //   role: "hod",
+    //   userId: userId
+    // }).select("userId department fullName name email");
+
+    // if (!hod) {
+    //   return res.status(404).json({
+    //     message: "HOD not found"
+    //   });
+    // }
+const hod = await User.findOne({
+  userId: userId,
+  role: {
+    $in: ["hod", "rdCoordinator"]
+  }
+}).select("userId department fullName name email role");
+
+if (!hod) {
+  return res.status(404).json({
+    message: "HOD or RD Coordinator not found"
+  });
+}
+
+
+    // --------------------------------------------------------
+    // FIND ALL CURRENT UID REQUESTS
+    // FROM HOD DEPARTMENT
+    // --------------------------------------------------------
+
+    const requests = await HodUidRequest.find({
+      department: {
+        $regex: `^${hod.department}$`,
+        $options: "i"
+      }
+    }).sort({
+      submittedAt: -1
+    });
+
+    // --------------------------------------------------------
+    // FIND ALL REJECTED UID REQUESTS
+    // FROM HOD DEPARTMENT
+    // --------------------------------------------------------
+
+    const rejectedRequests = await RejectedUid.find({
+      department: {
+        $regex: `^${hod.department}$`,
+        $options: "i"
+      }
+    }).sort({
+      rejectedAt: -1
+    });
+
+    // --------------------------------------------------------
+    // APPROVED
+    //
+    // Same logic as Faculty UIDStatusList
+    // --------------------------------------------------------
+
+    const approved = requests.filter(
+      (request) =>
+        request.hodAccept === true &&
+        request.principalAccept === true &&
+        request.adminAccept === true &&
+        String(request.uid || "").trim() !== ""
+    );
+
+    // --------------------------------------------------------
+    // PENDING
+    //
+    // Everything that is not completely approved
+    // --------------------------------------------------------
+
+    const pending = requests.filter(
+      (request) =>
+        !(
+          request.hodAccept === true &&
+          request.principalAccept === true &&
+          request.adminAccept === true &&
+          String(request.uid || "").trim() !== ""
+        )
+    );
+
+    // --------------------------------------------------------
+    // RESPONSE
+    // --------------------------------------------------------
+
+    res.status(200).json({
+      department: hod.department,
+
+      counts: {
+        approved: approved.length,
+        pending: pending.length,
+        rejected: rejectedRequests.length
+      },
+
+      approved,
+      pending,
+      rejected: rejectedRequests
+    });
+
+  } catch (error) {
+    console.error("HOD UID status error:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch UID status",
+      error: error.message
+    });
   }
 });
 // router.put('/uid-request/:id/accept', async (req, res) => {

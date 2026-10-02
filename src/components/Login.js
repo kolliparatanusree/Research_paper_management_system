@@ -1,418 +1,552 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import CustomNavbar from './CustomNavbar';
 import Swal from 'sweetalert2';
 import './Login.css';
-
+import { LuEye, LuEyeOff } from "react-icons/lu";
 export default function Login() {
   const [userId, setUserId] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
-  const [showChangePwd, setShowChangePwd] = useState(false);
-const [currentPassword, setCurrentPassword] = useState('');
-const [newPassword, setNewPassword] = useState('');
-const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
   const navigate = useNavigate();
-  // const { role, userId: id } = res.data.user;
+
+  /* =========================================================
+     ROLE BASED ROUTING
+  ========================================================= */
 
   const getDashboardRoute = (role) => {
-  switch (role) {
-    case 'faculty': return '/faculty-dashboard';
-    case 'hod': return '/hod-dashboard';
-    case 'principal': return '/principal-dashboard';
-    case 'rdCoordinator': return '/rd-dashboard';
-    case 'rdDean': return '/rd-dean-dashboard';
-    case 'admin': return '/mainAdmin-dashboard';
-    default: return '/';
-  }
-};
+    switch (role) {
+      case 'faculty':
+        return '/faculty-dashboard';
 
-  const handleChangePassword = async (e) => {
-  e.preventDefault();
+      case 'hod':
+        return '/hod-dashboard';
 
-  if (newPassword !== confirmNewPassword) {
-    return Swal.fire('Error', 'Passwords do not match', 'error');
-  }
+      case 'principal':
+        return '/principal-dashboard';
 
-  try {
-    const userId = localStorage.getItem('userId');
-if (!userId) {
-  return Swal.fire('Error', 'User not logged in', 'error');
-}
-  console.log({ userId, currentPassword, newPassword });
-    await axios.post('/api/auth/change-password', {
-      userId,
-      currentPassword,
-      newPassword
-    });
+      case 'rdCoordinator':
+        return '/rd-dashboard';
 
-    Swal.fire('Success', 'Password updated successfully', 'success');
-    setShowChangePwd(false);
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmNewPassword('');
-  } catch (err) {
-    Swal.fire(
-      'Error',
-      err.response?.data?.message || 'Password update failed',
-      'error'
-    );
-  }
-};
+      case 'rdDean':
+        return '/rd-dean-dashboard';
+
+      case 'admin':
+        return '/mainAdmin-dashboard';
+
+      default:
+        return '/';
+    }
+  };
+
+  /* =========================================================
+     FORGOT PASSWORD
+  ========================================================= */
+
   const handleForgotPassword = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    await axios.post('/api/auth/forgot-password', { email });
+    try {
+      await axios.post('/api/auth/forgot-password', {
+        email
+      });
 
-Swal.fire('Success', 'OTP sent to email', 'success')
-  .then(() => {
-    navigate('/reset-password', { state: { email } });
-  });
-    // await axios.post('/api/auth/forgot-password', {
-    //   email
-    // });
+      Swal.fire({
+        title: 'OTP Sent',
+        text: 'OTP has been sent to your registered email.',
+        icon: 'success',
+        timer: 1600,
+        showConfirmButton: false,
+        allowOutsideClick: false
+      }).then(() => {
+        navigate('/reset-password', {
+          state: { email }
+        });
+      });
 
-    // Swal.fire('Success', 'OTP sent to your email', 'success');
+    } catch (err) {
+      Swal.fire({
+        title: 'Error',
+        text:
+          err.response?.data?.message ||
+          'Failed to send OTP',
+        icon: 'error'
+      });
+    }
+  };
 
-    // // ✅ move to reset page
-    // navigate('/reset-password', { state: { email } });
-
-  } catch (err) {
-    Swal.fire(
-      'Error',
-      err.response?.data?.message || 'Failed to send OTP',
-      'error'
-    );
-  }
-};
+  /* =========================================================
+     LOGIN
+  ========================================================= */
 
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const res = await axios.post(
-      '/api/auth/login',
-      { userId, password }
-    );
+    try {
+      const res = await axios.post(
+        '/api/auth/login',
+        {
+          userId,
+          password
+        }
+      );
 
-    const { user, isProfileCompleted } = res.data;
-    const { role, userId: id } = user;
+      const {
+        user,
+        isProfileCompleted
+      } = res.data;
 
-    // ✅ store session
-    localStorage.setItem('user', JSON.stringify(user));
-    localStorage.setItem('userId', id);
-    localStorage.setItem('role', role);
+      const {
+        role,
+        userId: id
+      } = user;
 
-  //   Swal.fire({
-  //     title: 'Login Successful',
-  //     text: `Welcome, ${role}!`,
-  //     icon: 'success',
-  //     confirmButtonText: 'Continue'
-  //   }).then(() => {
+      /* Store session */
 
-  //     // 🚨 FIRST LOGIN CHECK (FOR EVERYONE)
-  //     if (role !== 'admin' && !isProfileCompleted) {
-  //   navigate('/complete-profile');
-  //   return;
-  // }
-  Swal.fire({
-  title: 'Login Successful',
-  text: `Welcome, ${role}!`,
-  icon: 'success',
-  timer: 1500,              // ⏱ auto close after 1.5 sec
-  showConfirmButton: false, // ❌ removes button
-  allowOutsideClick: false
-}).then(() => {
+      localStorage.setItem(
+        'user',
+        JSON.stringify(user)
+      );
 
-  if (role !== 'admin' && !isProfileCompleted) {
-    navigate('/complete-profile');
-    return;
-  }
+      localStorage.setItem(
+        'userId',
+        id
+      );
 
-      // ✅ role-based dashboard routing
-      navigate(getDashboardRoute(role));
-    });
+      localStorage.setItem(
+        'role',
+        role
+      );
 
-  } catch (err) {
-    Swal.fire({
-      title: 'Login Failed',
-      text: err.response?.data?.message || 'Invalid credentials',
-      icon: 'error'
-    });
-  }
-};
+      /* Success message */
 
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-  //   if (userId === 'admin' && password === 'admin123') {
-  //   localStorage.setItem('userId', 'admin');
-  //   localStorage.setItem('role', 'admin');
-  //   // alert('Login successful');
-  //   Swal.fire({
-  //       title: 'Login Successful',
-  //       text: 'Welcome, Admin!',
-  //       icon: 'success',
-  //       confirmButtonText: 'Continue'
-  //     }).then(() => {
-  //       navigate('/mainAdmin-dashboard');
-  //     });
-  //   // navigate('/mainAdmin-dashboard');
-  //   return;
-  // }
+      Swal.fire({
+        title: 'Login Successful',
+        text: `Welcome, ${role}!`,
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false,
+        allowOutsideClick: false
+      }).then(() => {
 
-  // if (userId === 'principal' && password === 'principal123') {
-  //   localStorage.setItem('userId', 'principal');
-  //   localStorage.setItem('role', 'principal');
-  //   // alert('Login successful');
-  //   Swal.fire({
-  //       title: 'Login Successful',
-  //       text: 'Welcome, Principal!',
-  //       icon: 'success',
-  //       confirmButtonText: 'Continue'
-  //     }).then(() => {
-  //       navigate('/principal-dashboard');
-  //     });
-  //   // navigate('/principal-dashboard');
-  //   return;
-  // }
+        /* First login profile completion */
 
-  // if (userId === 'rddean' && password === 'rddean123') {
-  //   localStorage.setItem('userId', 'rddean');
-  //   localStorage.setItem('role', 'rddean');
-  //   // alert('Login successful');
-  //   // navigate('/rd-dean-dashboard');
-  //   Swal.fire({
-  //       title: 'Login Successful',
-  //       text: 'Welcome, RD Dean!',
-  //       icon: 'success',
-  //       confirmButtonText: 'Continue'
-  //     }).then(() => {
-  //       navigate('/rd-dean-dashboard');
-  //     });
-  //   return;
-  // }
+        if (
+          role !== 'admin' &&
+          !isProfileCompleted
+        ) {
+          navigate('/complete-profile');
+          return;
+        }
 
-  //   try {
-  //     const res = await axios.post('/api/auth/login', {
-  //       userId,
-  //       password
-  //     });
+        /* Dashboard routing */
 
-  //     const { role, userId: id } = res.data.user;
+        navigate(
+          getDashboardRoute(role)
+        );
+      });
 
-  //     localStorage.setItem('user', JSON.stringify(res.data.user));
-  //     localStorage.setItem('userId', id);
-  //     localStorage.setItem('role', role);
+    } catch (err) {
 
-  //     Swal.fire({
-  //       title: 'Login Successful',
-  //       text: `Welcome, ${role}!`,
-  //       icon: 'success'
-  //     }).then(() => {
-  //       switch (role) {
-  //         case 'faculty':
-  //           navigate('/faculty-dashboard');
-  //           break;
-  //         case 'hod':
-  //           navigate('/hod-dashboard');
-  //           break;
-  //         case 'principal':
-  //           navigate('/principal-dashboard');
-  //           break;
-  //         case 'rdDean':
-  //           navigate('/rd-dean-dashboard');
-  //           break;
-  //         default:
-  //           navigate('/');
-  //       }
-  //     });
-  //   } catch (err) {
-  //     Swal.fire({
-  //       title: 'Login Failed',
-  //       text: err.response?.data?.message || 'Invalid credentials',
-  //       icon: 'error'
-  //     });
-  //   }
-  // };
+      Swal.fire({
+        title: 'Login Failed',
+        text:
+          err.response?.data?.message ||
+          'Invalid credentials',
+        icon: 'error'
+      });
+    }
+  };
+
+  /* =========================================================
+     JSX
+  ========================================================= */
 
   return (
-    <div className="login-page-wrapper">
+    <div className="rpms-login-page">
+
+      {/* =====================================================
+          NAVBAR
+      ===================================================== */}
+
       <CustomNavbar />
-      <div className="login-card">
-        <h2>Login</h2>
 
-        <form onSubmit={handleLogin} style={styles.form}>
-          <input
-            type="text"
-            placeholder="User ID"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            required
-            style={styles.input}
-          />
+      {/* =====================================================
+          MAIN LOGIN AREA
+      ===================================================== */}
 
-          <input
-            type={showPassword ? 'text' : 'password'}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={styles.input}
-          />
+      <main className="rpms-login-main">
 
-          <label style={styles.checkboxLabel}>
-            <input
-              type="checkbox"
-              checked={showPassword}
-              onChange={() => setShowPassword(!showPassword)}
-            />
-            Show Password
-          </label>
+        <div className="rpms-login-wrapper">
 
-          <p
-            style={{ color: '#007BFF', cursor: 'pointer', fontSize: '14px' }}
-            onClick={() => setShowForgot(true)}
-          >
-            Forgot Password?
-          </p>
+          {/* =================================================
+              LEFT BRANDING PANEL
+          ================================================= */}
 
-          <button type="submit" style={styles.button}>Login</button>
-        </form>
+          <section className="rpms-login-brand">
 
-        {showForgot && (
-          <form onSubmit={handleForgotPassword} style={styles.form}>
-  <h4>Forgot Password</h4>
+            <div className="rpms-login-brand-overlay"></div>
 
-  <input
-    type="email"
-    placeholder="Enter Email ID"
-    value={email}
-    onChange={(e) => setEmail(e.target.value)}
-    required
-    style={styles.input}
-  />
+            <div className="rpms-login-brand-content">
 
-  <button type="submit" style={styles.button}>
-    Send OTP
-  </button>
+              {/* Logo / Icon */}
 
-  <button
-    type="button"
-    style={{ ...styles.button, backgroundColor: '#6c757d' }}
-    onClick={() => setShowForgot(false)}
-  >
-    Cancel
-  </button>
-</form>
-//           <form onSubmit={handleForgotPassword} style={styles.form}>
-//             <h4>Forgot Password</h4>
+              <div className="rpms-login-brand-icon">
+                <span>📚</span>
+              </div>
 
-//             <input
-//   type="email"
-//   placeholder="Enter Email ID"
-//   value={email}
-//   onChange={(e) => setEmail(e.target.value)}
-//   required
-//   style={styles.input}
-// />
+              {/* Brand */}
 
-//             <button type="submit" style={styles.button}>
-//               Send Reset Link
-//             </button>
+              <div className="rpms-login-brand-title">
 
-//             <button
-//               type="button"
-//               style={{ ...styles.button, backgroundColor: '#6c757d' }}
-//               onClick={() => setShowForgot(false)}
-//             >
-//               Cancel
-//             </button>
-//           </form>
-        )}
+                <span className="rpms-login-brand-small">
+                  SMART
+                </span>
 
-        {/* {showChangePwd && (
-  <form onSubmit={handleChangePassword} style={styles.form}>
-    <h4>Change Password</h4>
+                <h1>
+                  Research Paper
+                  <br />
+                  Management System
+                </h1>
 
-    <input
-      type="password"
-      placeholder="Current Password"
-      value={currentPassword}
-      onChange={(e) => setCurrentPassword(e.target.value)}
-      required
-      style={styles.input}
-    />
+              </div>
 
-    <input
-      type="password"
-      placeholder="New Password"
-      value={newPassword}
-      onChange={(e) => setNewPassword(e.target.value)}
-      required
-      style={styles.input}
-    />
+              <p className="rpms-login-brand-description">
+                A centralized platform for managing
+                research papers, approvals, publications,
+                and academic research activities.
+              </p>
 
-    <input
-      type="password"
-      placeholder="Confirm New Password"
-      value={confirmNewPassword}
-      onChange={(e) => setConfirmNewPassword(e.target.value)}
-      required
-      style={styles.input}
-    />
+              {/* Features */}
 
-    <button type="submit" style={styles.button}>
-      Update Password
-    </button>
+              <div className="rpms-login-feature-list">
 
-    <button
-      type="button"
-      style={{ ...styles.button, backgroundColor: '#6c757d' }}
-      onClick={() => setShowChangePwd(false)}
-    >
-      Cancel
-    </button>
-  </form>
-)} */}
-      </div>
+                <div className="rpms-login-feature">
+                  <span className="rpms-login-feature-icon">
+                    ✓
+                  </span>
+
+                  <span>
+                    Research Paper Management
+                  </span>
+                </div>
+
+                <div className="rpms-login-feature">
+                  <span className="rpms-login-feature-icon">
+                    ✓
+                  </span>
+
+                  <span>
+                    UID &amp; PID Tracking
+                  </span>
+                </div>
+
+                <div className="rpms-login-feature">
+                  <span className="rpms-login-feature-icon">
+                    ✓
+                  </span>
+
+                  <span>
+                    Multi-Level Approval Workflow
+                  </span>
+                </div>
+
+                <div className="rpms-login-feature">
+                  <span className="rpms-login-feature-icon">
+                    ✓
+                  </span>
+
+                  <span>
+                    Research Publication Analytics
+                  </span>
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* Decorative Circles */}
+
+            <div className="rpms-login-decoration rpms-login-decoration-one"></div>
+            <div className="rpms-login-decoration rpms-login-decoration-two"></div>
+            <div className="rpms-login-decoration rpms-login-decoration-three"></div>
+
+          </section>
+
+          {/* =================================================
+              RIGHT LOGIN PANEL
+          ================================================= */}
+
+          <section className="rpms-login-form-area">
+
+            <div className="rpms-login-card">
+
+              {/* =================================================
+                  LOGIN HEADER
+              ================================================= */}
+
+              <div className="rpms-login-header">
+
+                <div className="rpms-login-header-icon">
+                  🔐
+                </div>
+
+                <h2>
+                  Welcome Back
+                </h2>
+
+                <p>
+                  Sign in to access your research dashboard
+                </p>
+
+              </div>
+
+              {/* =================================================
+                  LOGIN FORM
+              ================================================= */}
+
+              <form
+                onSubmit={handleLogin}
+                className="rpms-login-form"
+              >
+
+                {/* USER ID */}
+
+                <div className="rpms-login-field">
+
+                  <label htmlFor="rpms-user-id">
+                    User ID
+                  </label>
+
+                  <div className="rpms-login-input-box">
+
+                    <span className="rpms-login-input-icon">
+                      👤
+                    </span>
+
+                    <input
+                      id="rpms-user-id"
+                      type="text"
+                      placeholder="Enter your User ID"
+                      value={userId}
+                      onChange={(e) =>
+                        setUserId(e.target.value)
+                      }
+                      autoComplete="username"
+                      required
+                    />
+
+                  </div>
+
+                </div>
+
+                {/* PASSWORD */}
+
+                <div className="rpms-login-field">
+
+                  <label htmlFor="rpms-password">
+                    Password
+                  </label>
+
+                  <div className="rpms-login-input-box">
+
+                    <span className="rpms-login-input-icon">
+                      🔒
+                    </span>
+
+                    <input
+                      id="rpms-password"
+                      type={
+                        showPassword
+                          ? 'text'
+                          : 'password'
+                      }
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) =>
+                        setPassword(e.target.value)
+                      }
+                      autoComplete="current-password"
+                      required
+                    />
+
+                    <button
+                      type="button"
+                      className="rpms-login-password-toggle"
+                      onClick={() =>
+                        setShowPassword(
+                          !showPassword
+                        )
+                      }
+                      aria-label={
+                        showPassword
+                          ? 'Hide password'
+                          : 'Show password'
+                      }
+                    >
+                      {/* {showPassword
+                        ? '🙈'
+                        : '👁️'} */}
+                         {showPassword ? <LuEyeOff /> : <LuEye />}
+                    </button>
+
+                  </div>
+
+                </div>
+
+                {/* OPTIONS */}
+
+                <div className="rpms-login-options">
+
+                  
+
+                  <button
+                    type="button"
+                    className="rpms-login-forgot-link"
+                    onClick={() =>
+                      setShowForgot(true)
+                    }
+                  >
+                    Forgot Password?
+                  </button>
+
+                </div>
+
+                {/* LOGIN BUTTON */}
+
+                <button
+                  type="submit"
+                  className="rpms-login-submit"
+                >
+
+                  <span>
+                    Login
+                  </span>
+
+                  <span className="rpms-login-submit-arrow">
+                    →
+                  </span>
+
+                </button>
+
+              </form>
+
+              {/* =================================================
+                  FORGOT PASSWORD SECTION
+              ================================================= */}
+
+              {showForgot && (
+
+                <div className="rpms-login-forgot-panel">
+
+                  <div className="rpms-login-forgot-heading">
+
+                    <div className="rpms-login-forgot-icon">
+                      🔑
+                    </div>
+
+                    <div>
+
+                      <h3>
+                        Reset Password
+                      </h3>
+
+                      <p>
+                        Enter your registered email
+                        to receive an OTP
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                  <form
+                    onSubmit={handleForgotPassword}
+                    className="rpms-login-forgot-form"
+                  >
+
+                    <div className="rpms-login-field">
+
+                      <label htmlFor="rpms-email">
+                        Email Address
+                      </label>
+
+                      <div className="rpms-login-input-box">
+
+                        <span className="rpms-login-input-icon">
+                          ✉️
+                        </span>
+
+                        <input
+                          id="rpms-email"
+                          type="email"
+                          placeholder="Enter your registered email"
+                          value={email}
+                          onChange={(e) =>
+                            setEmail(
+                              e.target.value
+                            )
+                          }
+                          autoComplete="email"
+                          required
+                        />
+
+                      </div>
+
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="rpms-login-otp-button"
+                    >
+                      Send OTP
+                    </button>
+
+                    <button
+                      type="button"
+                      className="rpms-login-cancel-button"
+                      onClick={() =>
+                        setShowForgot(false)
+                      }
+                    >
+                      Cancel
+                    </button>
+
+                  </form>
+
+                </div>
+
+              )}
+
+            </div>
+
+            {/* =================================================
+                FOOTER
+            ================================================= */}
+
+            <div className="rpms-login-footer">
+
+              <span className="rpms-login-footer-dot"></span>
+
+              <span>
+                Secure Research Management System
+              </span>
+
+              <span className="rpms-login-footer-dot"></span>
+
+            </div>
+
+          </section>
+
+        </div>
+
+      </main>
+
     </div>
   );
 }
-
-
-const styles = {
-  container: {
-    maxWidth: '400px',
-    margin: '50px auto',
-    padding: '20px',
-    textAlign: 'center',
-    border: '1px solid #ccc',
-    borderRadius: '10px'
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px'
-  },
-  input: {
-    padding: '10px',
-    fontSize: '16px'
-  },
-  button: {
-    padding: '10px',
-    backgroundColor: '#007BFF',
-    color: '#fff',
-    border: 'none',
-    cursor: 'pointer'
-  },
-  checkboxLabel: {
-    fontSize: '14px',
-    textAlign: 'left'
-  }
-};
-

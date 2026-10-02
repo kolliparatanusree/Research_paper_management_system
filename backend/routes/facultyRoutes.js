@@ -64,17 +64,43 @@ router.get("/publications/:userId", async (req, res) => {
 router.get("/coauthors/:userId", async (req, res) => {
   try {
     const data = await HodUidRequest.find({
-      userId: req.params.userId
-    });
+      facultyId: req.params.userId
+    }).lean();
 
-    // extract co-authors only
-    const coAuthors = data.flatMap(d => d.coAuthors || []);
+    const coAuthors = data.flatMap((d) => {
+      if (
+        d.coAuthors?.hasCoAuthors &&
+        Array.isArray(d.coAuthors.authors)
+      ) {
+        return d.coAuthors.authors;
+      }
+
+      return [];
+    });
 
     res.json(coAuthors);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Co-author fetch error:", err);
+
+    res.status(500).json({
+      error: err.message
+    });
   }
 });
+// router.get("/coauthors/:userId", async (req, res) => {
+//   try {
+//     const data = await HodUidRequest.find({
+//       userId: req.params.userId
+//     });
+
+//     // extract co-authors only
+//     const coAuthors = data.flatMap(d => d.coAuthors || []);
+
+//     res.json(coAuthors);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
 
 
 
@@ -1182,84 +1208,6 @@ router.post('/upload-documents', uploadFields, async (req, res) => {
 // });
 
 
-router.post('/uid-request', async (req, res) => {
-  try {
-    let {
-      userId,
-      facultyId,
-      facultyName,
-      department,
-      paperTitle,
-      type,
-      abstract,
-      target,
-      coAuthors
-    } = req.body;
-
-    if (userId && !facultyId) facultyId = userId;
-    else if (!userId && facultyId) userId = facultyId;
-
-    // Fix coAuthors structure
-    if (!coAuthors || typeof coAuthors !== "object") {
-      coAuthors = {
-        hasCoAuthors: false,
-        authors: []
-      };
-    }
-
-    if (!Array.isArray(coAuthors.authors)) {
-      coAuthors.authors = [];
-    }
-
-    const uidRequest = new HodUidRequest({
-      facultyId,
-      facultyName,
-      department,
-      paperTitle,
-      type,
-      abstract,
-      target,
-      coAuthors,
-      RDCordinatorAccept: false,
-      hodAccept: false,
-      principalAccept: false,
-      adminAccept: false,
-      uid: null,
-      documentsUpload: false,
-      submittedAt: new Date()
-    });
-
-    await uidRequest.save();
-
-    // find faculty
-   await uidRequest.save();
-
-const faculty = await User.findOne({ userId: uidRequest.facultyId });
-
-const hod = await User.findOne({
-  role: "hod",
-  department: faculty.department
-});
-
-if (hod) {
-  await Notification.create({
-    receiverId: hod.userId,
-    receiverRole: "hod",
-    message: `New UID request submitted by ${uidRequest.facultyName}`,
-    relatedUserId: uidRequest.facultyId,
-    isRead: false
-  });
-}
-
-res.status(201).json({
-  message: "UID request submitted successfully"
-});
-
-  } catch (error) {
-    console.error("UID REQUEST ERROR:", error);
-    res.status(500).json({ error: error.message });
-  }
-});
 // router.post('/uid-request', async (req, res) => {
 //   try {
 //     let {
@@ -1277,7 +1225,7 @@ res.status(201).json({
 //     if (userId && !facultyId) facultyId = userId;
 //     else if (!userId && facultyId) userId = facultyId;
 
-//     // ✅ FORCE correct coAuthors structure
+//     // Fix coAuthors structure
 //     if (!coAuthors || typeof coAuthors !== "object") {
 //       coAuthors = {
 //         hasCoAuthors: false,
@@ -1298,7 +1246,6 @@ res.status(201).json({
 //       abstract,
 //       target,
 //       coAuthors,
-
 //       RDCordinatorAccept: false,
 //       hodAccept: false,
 //       principalAccept: false,
@@ -1310,36 +1257,155 @@ res.status(201).json({
 
 //     await uidRequest.save();
 
-//     res.status(201).json({
-//       message: "UID request submitted successfully"
-//     });
+//     // find faculty
+//    await uidRequest.save();
 
-//     const faculty = await User.findOne({ userId: uidRequest.facultyId });
+// const faculty = await User.findOne({ userId: uidRequest.facultyId });
 
+// const hod = await User.findOne({
+//   role: "hod",
+//   department: faculty.department
+// });
 
-//      // find HOD of same department
-//  const hod = await User.findOne({
-//    role: "hod",
-//    department: faculty.department
-//  });
-
-//  // create notification
 // if (hod) {
-//       await Notification.create({
-//         recipient: hod.userId,
-//         message: `New UID request submitted by ${newRequest.facultyId}`,
-//         isRead: false
-//       });
-//     }
+//   await Notification.create({
+//     receiverId: hod.userId,
+//     receiverRole: "hod",
+//     message: `New UID request submitted by ${uidRequest.facultyName}`,
+//     relatedUserId: uidRequest.facultyId,
+//     isRead: false
+//   });
+// }
+
+// res.status(201).json({
+//   message: "UID request submitted successfully"
+// });
+
 //   } catch (error) {
 //     console.error("UID REQUEST ERROR:", error);
 //     res.status(500).json({ error: error.message });
 //   }
 // });
 
+router.post('/uid-request', async (req, res) => {
+  try {
+    let {
+      userId,
+      facultyId,
+      facultyName,
+      department,
+      paperTitle,
+      type,
+      abstract,
+      target,
+      coAuthors
+    } = req.body;
 
+    // ---------------------------------------
+    // Keep userId / facultyId compatibility
+    // ---------------------------------------
+    if (userId && !facultyId) {
+      facultyId = userId;
+    } else if (!userId && facultyId) {
+      userId = facultyId;
+    }
 
+    // ---------------------------------------
+    // Fix coAuthors structure
+    // ---------------------------------------
+    if (!coAuthors || typeof coAuthors !== "object") {
+      coAuthors = {
+        hasCoAuthors: false,
+        authors: []
+      };
+    }
 
+    if (!Array.isArray(coAuthors.authors)) {
+      coAuthors.authors = [];
+    }
+
+    // ---------------------------------------
+    // Create UID request
+    // ---------------------------------------
+    const uidRequest = new HodUidRequest({
+      facultyId,
+      facultyName,
+      department,
+      paperTitle,
+      type,
+      abstract,
+      target,
+      coAuthors,
+      RDCordinatorAccept: false,
+      hodAccept: false,
+      principalAccept: false,
+      adminAccept: false,
+      uid: null,
+      documentsUpload: false,
+      submittedAt: new Date()
+    });
+
+    await uidRequest.save();
+
+    console.log(
+      `UID request created: ${uidRequest._id} by ${uidRequest.facultyId}`
+    );
+
+    // ---------------------------------------
+    // FIND HOD FOR THIS DEPARTMENT
+    // ---------------------------------------
+    const hod = await User.findOne({
+      role: "hod",
+      department: uidRequest.department
+    });
+
+    if (hod) {
+
+      await Notification.create({
+        receiverId: hod.userId,
+        receiverRole: "hod",
+
+        message:
+          `New UID request submitted by ${uidRequest.facultyName} ` +
+          `for "${uidRequest.paperTitle}"`,
+
+        relatedUserId: uidRequest.facultyId,
+
+        isRead: false,
+
+        createdAt: new Date()
+      });
+
+      console.log(
+        `UID notification sent to HOD: ${hod.userId}`
+      );
+
+    } else {
+
+      console.log(
+        `No HOD found for department: ${uidRequest.department}`
+      );
+    }
+
+    // ---------------------------------------
+    // RESPONSE
+    // ---------------------------------------
+    res.status(201).json({
+      message: "UID request submitted successfully"
+    });
+
+  } catch (error) {
+
+    console.error(
+      "UID REQUEST ERROR:",
+      error
+    );
+
+    res.status(500).json({
+      error: error.message
+    });
+  }
+});
 // 7️⃣ Approved UID Requests (Documents Upload Pending)
 router.get('/approved-uid-requests/:facultyId', async (req, res) => {
   try {

@@ -54,6 +54,21 @@ router.put('/uid-request/:id/accept/:userId', async (req, res) => {
     request.RDCordinatorAccept = true;
     await request.save();
 
+    const principal = await User.findOne({
+  role: "principal"
+});
+
+if (principal) {
+  await Notification.create({
+    receiverId: principal.userId,
+    receiverRole: "principal",
+    message: `RD Coordinator approved UID request for "${request.paperTitle}"`,
+    relatedUserId: request.facultyId,
+    isRead: false,
+    createdAt: new Date()
+  });
+}
+
     res.json({ message: 'UID request accepted successfully' });
   } catch (err) {
     console.error(err);
