@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import "./NotificationsSection.css";
-
+import { API_BASE_URL } from "../config.js";
 export default function NotificationsSection({ userId }) {
   const [notifications, setNotifications] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
@@ -17,7 +17,7 @@ const notificationsPerPage = 5;
     try {
       setLoading(true);
 
-      const res = await fetch(`/api/notifications/${userId}`);
+      const res = await fetch(`${API_BASE_URL}/api/notifications/${userId}`);
 
       if (!res.ok) {
         throw new Error("Failed to fetch notifications");
@@ -233,7 +233,7 @@ const notificationsPerPage = 5;
 
     try {
       const res = await fetch(
-        `/api/auth/notifications/mark-read/${userId}`,
+        `${API_BASE_URL}/api/auth/notifications/mark-read/${userId}`,
         {
           method: "PUT",
         }
@@ -889,7 +889,7 @@ useEffect(() => {
 
 //   const fetchNotifications = async () => {
 //     try {
-//       const res = await fetch(`/api/notifications/${userId}`);
+//       const res = await fetch(`${API_BASE_URL}/api/notifications/${userId}`);
 //       const data = await res.json();
 //       setNotifications(data);
 //     } catch (err) {
@@ -903,7 +903,7 @@ useEffect(() => {
 
 //  const markAsRead = async () => {
 //   try {
-//     await fetch(`/api/auth/notifications/mark-read/${userId}`, {
+//     await fetch(`${API_BASE_URL}/api/auth/notifications/mark-read/${userId}`, {
 //       method: "PUT"
 //     });
 
@@ -1065,7 +1065,7 @@ useEffect(() => {
 
 // //   const fetchNotifications = async () => {
 // //     try {
-// //       const res = await fetch(`/api/notifications/${userId}`);
+// //       const res = await fetch(`${API_BASE_URL}/api/notifications/${userId}`);
 // //       const data = await res.json();
 // //       setNotifications(data);
 // //     } catch (err) {
@@ -1079,7 +1079,7 @@ useEffect(() => {
 
 // //  const markAsRead = async () => {
 // //   try {
-// //     await fetch(`/api/auth/notifications/mark-read/${userId}`, {
+// //     await fetch(`${API_BASE_URL}/api/auth/notifications/mark-read/${userId}`, {
 // //       method: "PUT"
 // //     });
 

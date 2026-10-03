@@ -22,7 +22,7 @@ import {
   FiDownload,
   FiFile,
 } from "react-icons/fi";
-
+import { API_BASE_URL } from "../config.js";
 import "./HodUidApproval.css";
 
 const REJECTION_REASONS = [
@@ -68,7 +68,7 @@ export default function RDDeanUidApproval() {
        * UI is completely independent from the API.
        */
       const response = await axios.get(
-        "/api/admin/rddean/uid-requests"
+        `${API_BASE_URL}/api/admin/rddean/uid-requests`
       );
 
       let data = [];
@@ -359,7 +359,7 @@ export default function RDDeanUidApproval() {
        * Replace with your actual endpoint.
        */
       await axios.put(
-        `/api/admin/uid-request/${requestId}/accept`
+        `${API_BASE_URL}/api/admin/uid-request/${requestId}/accept`
       );
 
       Swal.fire({
@@ -479,7 +479,7 @@ export default function RDDeanUidApproval() {
        * Replace with your actual endpoint.
        */
       await axios.put(
-        `/api/admin/uid-request/${requestId}/reject`,
+        `${API_BASE_URL}/api/admin/uid-request/${requestId}/reject`,
         {
           reason: finalReason,
           rejectionReason: finalReason,

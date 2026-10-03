@@ -48,7 +48,7 @@ import {
   Cell,
   Legend,
 } from "recharts";
-
+import { API_BASE_URL } from "../config";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -121,11 +121,9 @@ const femaleHodCount = useMemo(() => {
      API ENDPOINTS
   ========================================================= */
 
-  const listEndpoint = isFaculty
-    ? "/api/principal/faculty"
-    : "/api/principal/hod";
-
-
+const listEndpoint = isFaculty
+  ? `${API_BASE_URL}/api/principal/faculty`
+  : `${API_BASE_URL}/api/principal/hod`;
   /* =========================================================
      CHART COLORS
   ========================================================= */
@@ -219,23 +217,33 @@ const femaleHodCount = useMemo(() => {
   };
 
 
+  // const getProfileImage = (person) => {
+
+  //   if (!person?.profilePic) {
+  //     return "/default-profile.png";
+  //   }
+
+  //   if (
+  //     person.profilePic.startsWith("http://") ||
+  //     person.profilePic.startsWith("https://") ||
+  //     person.profilePic.startsWith("/")
+  //   ) {
+  //     return person.profilePic;
+  //   }
+
+  //   return `/${person.profilePic}`;
+  // };
   const getProfileImage = (person) => {
+  if (!person?.profilePic) {
+    return "/default-profile.png";
+  }
 
-    if (!person?.profilePic) {
-      return "/default-profile.png";
-    }
+  if (person.profilePic.startsWith("http")) {
+    return person.profilePic;
+  }
 
-    if (
-      person.profilePic.startsWith("http://") ||
-      person.profilePic.startsWith("https://") ||
-      person.profilePic.startsWith("/")
-    ) {
-      return person.profilePic;
-    }
-
-    return `/${person.profilePic}`;
-  };
-
+  return `${API_BASE_URL}/${person.profilePic.replace(/^\/+/, "")}`;
+};
 
   const getPublicationYear = (publication) => {
 
@@ -271,8 +279,9 @@ const femaleHodCount = useMemo(() => {
 
   const fetchTopPublicationDepartment = async () => {
   try {
-    const response = await axios.get("/api/principal/approved-papers");
-
+    const response = await axios.get(
+  `${API_BASE_URL}/api/principal/approved-papers`
+);
     const papers = Array.isArray(response.data)
       ? response.data
       : [];
@@ -368,7 +377,7 @@ const femaleHodCount = useMemo(() => {
     if (isFaculty && userId) {
       try {
         const publicationRes = await axios.get(
-          `/api/faculty/publications/${encodeURIComponent(userId)}`
+          `${API_BASE_URL}/api/faculty/publications/${encodeURIComponent(userId)}`
         );
 
         const publications = Array.isArray(publicationRes.data)
@@ -387,7 +396,7 @@ const femaleHodCount = useMemo(() => {
 
       try {
         const coAuthorRes = await axios.get(
-          `/api/faculty/coauthors/${encodeURIComponent(userId)}`
+          `${API_BASE_URL}/api/faculty/coauthors/${encodeURIComponent(userId)}`
         );
 
         collaboratorCount = Array.isArray(coAuthorRes.data)
@@ -427,7 +436,7 @@ const femaleHodCount = useMemo(() => {
 
       //         const publicationRes =
       //           await axios.get(
-      //             `/api/faculty/publications/${encodeURIComponent(
+      //             `${API_BASE_URL}/api/faculty/publications/${encodeURIComponent(
       //               userId
       //             )}`
       //           );
@@ -463,7 +472,7 @@ const femaleHodCount = useMemo(() => {
 
       //         const coAuthorRes =
       //           await axios.get(
-      //             `/api/faculty/coauthors/${encodeURIComponent(
+      //             `${API_BASE_URL}/api/faculty/coauthors/${encodeURIComponent(
       //               userId
       //             )}`
       //           );
@@ -835,8 +844,8 @@ const femaleHodCount = useMemo(() => {
     setActiveTab("overview");
 
     const detailsEndpoint = isFaculty
-      ? `/api/principal/faculty-details/${encodeURIComponent(userId)}`
-      : `/api/principal/hod-details/${encodeURIComponent(userId)}`;
+      ? `${API_BASE_URL}/api/principal/faculty-details/${encodeURIComponent(userId)}`
+      : `${API_BASE_URL}/api/principal/hod-details/${encodeURIComponent(userId)}`;
 
     // HOD → only basic profile details
     if (!isFaculty) {
@@ -857,11 +866,11 @@ const femaleHodCount = useMemo(() => {
         axios.get(detailsEndpoint),
 
         axios.get(
-          `/api/faculty/publications/${encodeURIComponent(userId)}`
+          `${API_BASE_URL}/api/faculty/publications/${encodeURIComponent(userId)}`
         ),
 
         axios.get(
-          `/api/faculty/coauthors/${encodeURIComponent(userId)}`
+          `${API_BASE_URL}/api/faculty/coauthors/${encodeURIComponent(userId)}`
         ),
       ]);
 
@@ -901,10 +910,10 @@ const femaleHodCount = useMemo(() => {
 
   //     const detailsEndpoint =
   //       isFaculty
-  //         ? `/api/principal/faculty-details/${encodeURIComponent(
+  //         ? `${API_BASE_URL}/api/principal/faculty-details/${encodeURIComponent(
   //             userId
   //           )}`
-  //         : `/api/principal/hod-details/${encodeURIComponent(
+  //         : `${API_BASE_URL}/api/principal/hod-details/${encodeURIComponent(
   //             userId
   //           )}`;
 
@@ -918,13 +927,13 @@ const femaleHodCount = useMemo(() => {
   //       axios.get(detailsEndpoint),
 
   //       axios.get(
-  //         `/api/faculty/publications/${encodeURIComponent(
+  //         `${API_BASE_URL}/api/faculty/publications/${encodeURIComponent(
   //           userId
   //         )}`
   //       ),
 
   //       axios.get(
-  //         `/api/faculty/coauthors/${encodeURIComponent(
+  //         `${API_BASE_URL}/api/faculty/coauthors/${encodeURIComponent(
   //           userId
   //         )}`
   //       ),
@@ -3029,8 +3038,8 @@ const femaleHodCount = useMemo(() => {
 //       try {
 //         const url =
 //           type === "faculty"
-//             ? "/api/principal/faculty"
-//             : "/api/principal/hod";
+//             ? `${API_BASE_URL}/api/principal/faculty"
+//             : `${API_BASE_URL}/api/principal/hod";
 //         const res = await axios.get(url);
 //         setList(res.data);
 //         setFilteredList(res.data);
@@ -3048,8 +3057,8 @@ const femaleHodCount = useMemo(() => {
 //     try {
 //       const url =
 //         type === "faculty"
-//           ? "/api/principal/faculty"
-//           : "/api/principal/hod";
+//           ? `${API_BASE_URL}/api/principal/faculty"
+//           : `${API_BASE_URL}/api/principal/hod";
 
 //       const res = await axios.get(url);
 
@@ -3100,8 +3109,8 @@ const femaleHodCount = useMemo(() => {
 //     try {
 //       const url =
 //         type === "faculty"
-//           ? `/api/principal/faculty-details/${userId}`
-//           : `/api/principal/hod-details/${userId}`;
+//           ? `${API_BASE_URL}/api/principal/faculty-details/${userId}`
+//           : `${API_BASE_URL}/api/principal/hod-details/${userId}`;
 //       const res = await axios.get(url);
 //       setSelectedPerson(res.data);
 //     } catch (err) {

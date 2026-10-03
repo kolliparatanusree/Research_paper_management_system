@@ -154,138 +154,153 @@ router.put(
   }
 );
 
-// router.put(
-//   '/update-profile/:userId',
-//   upload.single('profilePic'),
-//   async (req, res) => {
-//     try {
-//       const { userId } = req.params;
-
-//       const updateData = {
-//         phoneNumber: req.body.phoneNumber,
-//         educationDetails: req.body.educationDetails,
-//         experienceDetails: req.body.experienceDetails,
-//       };
-
-//       if (req.file) {
-//         updateData.profilePic = req.file.path;
-//       }
-
-//       await User.findOneAndUpdate({ userId }, updateData);
-
-//       res.json({ message: 'Profile updated successfully' });
-//     } catch (err) {
-//       res.status(500).json({ message: 'Server error' });
-//     }
-//   }
-// );
-// router.put(
-//   '/complete-profile/:userId',
-//   upload.single('profilePic'), // ⭐ IMPORTANT
-//   async (req, res) => {
-//     try {
-//       const { userId } = req.params;
-
-//       const updateData = {
-//         educationDetails: req.body.educationDetails,
-//         experienceDetails: req.body.experienceDetails,
-//         publications: JSON.parse(req.body.publications || '[]'),
-//         isProfileCompleted: true
-//       };
-
-//       if (req.file) {
-//         updateData.profilePic = req.file.path;
-//       }
-
-//       await User.findOneAndUpdate({ userId }, updateData);
-
-//       res.json({ message: 'Profile updated successfully' });
-//     } catch (err) {
-//       res.status(500).json({ message: 'Server error' });
-//     }
-//   }
-// );
-// PUT /api/users/complete-profile/:userId
-// router.put('/complete-profile/:userId', async (req, res) => {
+// router.post('/change-password', async (req, res) => {
 //   try {
-//     const { userId } = req.params;
-//     const { educationDetails, experienceDetails, publications, isProfileCompleted } = req.body;
+//     const { userId, currentPassword, newPassword } = req.body;
 
-//     const user = await User.findOneAndUpdate(
-//       { userId },
-//       { educationDetails, experienceDetails, publications, isProfileCompleted },
-//       { new: true }
-//     );
+//     if (!userId || !currentPassword || !newPassword) {
+//       return res.status(400).json({ message: 'All fields are required' });
+//     }
 
+//     // Find user
+//     const user = await User.findOne({ userId });
 //     if (!user) return res.status(404).json({ message: 'User not found' });
 
-//     res.status(200).json({ message: 'Profile updated successfully', user });
+//     // Check current password (plain text for simplicity; hash if using bcrypt)
+//     if (user.password !== currentPassword) {
+//       return res.status(400).json({ message: 'Current password is incorrect' });
+//     }
+
+//     // Update password
+//    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+// user.password = hashedPassword;
+
+// await user.save();
+
+//     res.json({ message: 'Password updated successfully' });
 //   } catch (err) {
-//     console.error(err); // ✅ This will show the exact Mongo error
-//     res.status(500).json({ message: 'Server error', error: err.message });
+//     console.error(err);
+//     res.status(500).json({ message: 'Server error' });
 //   }
 // });
+// =========================================================
+// CHANGE PASSWORD
+// =========================================================
 
-// Change Password
 router.post('/change-password', async (req, res) => {
   try {
-    const { userId, currentPassword, newPassword } = req.body;
+
+    const {
+      userId,
+      currentPassword,
+      newPassword
+    } = req.body;
 
     if (!userId || !currentPassword || !newPassword) {
-      return res.status(400).json({ message: 'All fields are required' });
+      return res.status(400).json({
+        message: 'All fields are required'
+      });
     }
 
-    // Find user
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        message: 'Password must be at least 6 characters'
+      });
+    }
+
     const user = await User.findOne({ userId });
-    if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // Check current password (plain text for simplicity; hash if using bcrypt)
-    if (user.password !== currentPassword) {
-      return res.status(400).json({ message: 'Current password is incorrect' });
+    if (!user) {
+      return res.status(404).json({
+        message: 'User not found'
+      });
     }
 
-    // Update password
-    user.password = newPassword;
+    let currentPasswordValid = false;
+
+    const isBcryptHash =
+      typeof user.password === 'string' &&
+      (
+        user.password.startsWith('$2a$') ||
+        user.password.startsWith('$2b$') ||
+        user.password.startsWith('$2y$')
+      );
+
+    if (isBcryptHash) {
+
+      currentPasswordValid = await bcrypt.compare(
+        currentPassword,
+        user.password
+      );
+
+    } else {
+
+      // Support existing plaintext accounts
+      currentPasswordValid =
+        user.password === currentPassword;
+    }
+
+    if (!currentPasswordValid) {
+      return res.status(400).json({
+        message: 'Current password is incorrect'
+      });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(
+      newPassword,
+      12
+    );
+
+    user.password = hashedPassword;
+
     await user.save();
 
-    res.json({ message: 'Password updated successfully' });
+    res.json({
+      message: 'Password updated successfully'
+    });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
+
+    console.error('Change password error:', err);
+
+    res.status(500).json({
+      message: 'Server error'
+    });
   }
 });
-
 /* FORGOT PASSWORD – SEND EMAIL */
-router.post('/forgot-password', async (req, res) => {
-  try {
-    const { email } = req.body;
-    console.log("BODY:", req.body);
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: 'Email not registered' });
-    }
+// router.post('/forgot-password', async (req, res) => {
+//   try {
+//     const { email } = req.body;
+//     console.log("BODY:", req.body);
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//       return res.status(404).json({ message: 'Email not registered' });
+//     }
 
-    // generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log("OTP for testing:", otp);
-    // store in memory
-    otpStore[email] = {
-      otp,
-      expiry: Date.now() + 10 * 60 * 1000 // 10 min
-    };
+//     // generate OTP
+//     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+//     console.log("OTP for testing:", otp);
+//     // store in memory
+//     otpStore[email] = {
+//       otp,
+//       expiry: Date.now() + 10 * 60 * 1000 // 10 min
+//     };
 
-    await sendMail(
-  email,
-  'Your OTP for Password Reset',
-  `<h2>Your OTP is: ${otp}</h2>`
-);
+//     await sendMail(
+//   email,
+//   'Your OTP for Password Reset',
+//   `<h2>Your OTP is: ${otp}</h2>`
+// );
 
-    res.json({ message: 'OTP sent to email' });
-  } catch (err) {
-  console.error("Forgot password error:", err); // 👈 ADD THIS
-  res.status(500).json({ message: 'Server error' });
-}
-});
+//     res.json({ message: 'OTP sent to email' });
+//   } catch (err) {
+//   console.error("Forgot password error:", err); // 👈 ADD THIS
+//   res.status(500).json({ message: 'Server error' });
+// }
+// });
 
 // router.post('/forgot-password', async (req, res) => {
 //   try {
@@ -320,7 +335,61 @@ router.post('/forgot-password', async (req, res) => {
 //   }
 // });
 
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
 
+    console.log('Forgot password request:', email);
+
+    if (!email) {
+      return res.status(400).json({
+        message: 'Email is required'
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const user = await User.findOne({
+      email: normalizedEmail
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: 'Email not registered'
+      });
+    }
+
+    const otp = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+
+    console.log('OTP generated for:', normalizedEmail);
+
+    otpStore[normalizedEmail] = {
+      otp,
+      expiry: Date.now() + 10 * 60 * 1000
+    };
+
+    await sendMail(
+      normalizedEmail,
+      'Your OTP for Password Reset',
+      `<h2>Your OTP is: ${otp}</h2>`
+    );
+
+    console.log('OTP email sent successfully');
+
+    res.json({
+      message: 'OTP sent to email'
+    });
+
+  } catch (err) {
+    console.error('Forgot password error:', err);
+
+    res.status(500).json({
+      message: 'Failed to send OTP email'
+    });
+  }
+});
 
 router.post('/reset-password', async (req, res) => {
   try {
@@ -365,9 +434,14 @@ router.post('/reset-password', async (req, res) => {
     }
 
     // ✅ update password (NO HASHING — as per your request)
-    user.password = newPassword;
-    await user.save();
+   const hashedPassword = await bcrypt.hash(
+  newPassword,
+  12
+);
 
+user.password = hashedPassword;
+
+await user.save();
     // ✅ clear OTP after success
     delete otpStore[email];
 

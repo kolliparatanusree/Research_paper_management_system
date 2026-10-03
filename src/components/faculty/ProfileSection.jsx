@@ -1,7 +1,7 @@
 // src/components/faculty/ProfileSection.jsx
 
 import React, { useEffect, useMemo, useState } from "react";
-
+import { API_BASE_URL } from "../../config.js";
 import {
   LineChart,
   Line,
@@ -144,7 +144,7 @@ const publicationData = useMemo(() => {
     const fetchPublications = async () => {
       try {
         const response = await fetch(
-          `/api/faculty/all-publications/${facultyDetails.userId}`
+          `${API_BASE_URL}/api/faculty/all-publications/${facultyDetails.userId}`
         );
 
         const data = await response.json();
@@ -434,12 +434,19 @@ console.log("ROLE:", facultyDetails?.role);
      PROFILE IMAGE
   ============================================================ */
 
-  const profileImageSrc =
-    previewImage ||
-    (safeProfile.profilePic
-      ? `/${safeProfile.profilePic}`
-      : "/default-profile.png");
+  // const profileImageSrc =
+  //   previewImage ||
+  //   (safeProfile.profilePic
+  //     ? `/${safeProfile.profilePic}`
+  //     : "/default-profile.png");
 
+  const profileImageSrc =
+  previewImage ||
+  (safeProfile.profilePic
+    ? safeProfile.profilePic.startsWith("http")
+      ? safeProfile.profilePic
+      : `${API_BASE_URL}/${safeProfile.profilePic.replace(/^\/+/, "")}`
+    : "/default-profile.png");
   /* ============================================================
      IMAGE CHANGE
   ============================================================ */
@@ -508,7 +515,7 @@ console.log("ROLE:", facultyDetails?.role);
       }
 
       const response = await fetch(
-        `/api/auth/update-profile/${safeProfile.userId}`,
+        `${API_BASE_URL}/api/auth/update-profile/${safeProfile.userId}`,
         {
           method: "PUT",
           body: formData
@@ -523,9 +530,16 @@ console.log("ROLE:", facultyDetails?.role);
         );
       }
 
+      // if (data.profilePic) {
+      //   setPreviewImage(`/${data.profilePic}`);
+      // }
       if (data.profilePic) {
-        setPreviewImage(`/${data.profilePic}`);
-      }
+  setPreviewImage(
+    data.profilePic.startsWith("http")
+      ? data.profilePic
+      : `${API_BASE_URL}/${data.profilePic.replace(/^\/+/, "")}`
+  );
+}
 
       setProfileImage(null);
       setIsEditing(false);

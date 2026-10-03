@@ -21,14 +21,14 @@ app.get("/", (req, res) => {
 });
 const dashboardRoutes = require('./routes/dashboard');
 app.use('/api/dashboard', dashboardRoutes);
-app.use("/api/notifications", notificationRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.use('/api/rdcoordinator', rdcoordinatorRoutes);
 // MongoDB Connection (NO deprecated options)
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
-app.use("/api/analytics", analyticsRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));

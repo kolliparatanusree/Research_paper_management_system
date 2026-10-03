@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import "./DocumentUploadSection.css";
-
+import { API_BASE_URL } from "../../config.js";
 export default function DocumentUploadSection({ userId }) {
   const [approvedUIDs, setApprovedUIDs] = useState([]);
   const [uploadedUIDs, setUploadedUIDs] = useState([]);
@@ -30,7 +30,7 @@ export default function DocumentUploadSection({ userId }) {
     const fetchApprovedUIDs = async () => {
       try {
         const res = await fetch(
-          `/api/faculty/approved-uid-requests/${userId}`
+          `${API_BASE_URL}/api/faculty/approved-uid-requests/${userId}`
         );
 
         const data = await res.json();
@@ -42,7 +42,7 @@ export default function DocumentUploadSection({ userId }) {
 
     const fetchUploadedUIDs = async () => {
       try {
-        const res = await fetch(`/api/faculty/uploaded-uids/${userId}`);
+        const res = await fetch(`${API_BASE_URL}/api/faculty/uploaded-uids/${userId}`);
 
         const data = await res.json();
         setUploadedUIDs(data || []);
@@ -123,7 +123,7 @@ export default function DocumentUploadSection({ userId }) {
 
   const handleSave = async (uid) => {
     try {
-      const res = await fetch(`/api/faculty/update-uid/${uid}`, {
+      const res = await fetch(`${API_BASE_URL}/api/faculty/update-uid/${uid}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -369,7 +369,7 @@ export default function DocumentUploadSection({ userId }) {
 
     try {
       const res = await fetch(
-        "/api/faculty/upload-documents",
+        `${API_BASE_URL}/api/faculty/upload-documents`,
         {
           method: "POST",
           body: formData,
@@ -1749,7 +1749,7 @@ export default function DocumentUploadSection({ userId }) {
 //     const fetchApprovedUIDs = async () => {
 //       try {
 //         const res = await fetch(
-//           `/api/faculty/approved-uid-requests/${userId}`
+//           `${API_BASE_URL}/api/faculty/approved-uid-requests/${userId}`
 //         );
 //         const data = await res.json();
 //         setApprovedUIDs(data);
@@ -1761,7 +1761,7 @@ export default function DocumentUploadSection({ userId }) {
 //     const fetchUploadedUIDs = async () => {
 //       try {
 //         const res = await fetch(
-//           `/api/faculty/uploaded-uids/${userId}`
+//           `${API_BASE_URL}/api/faculty/uploaded-uids/${userId}`
 //         );
 //         const data = await res.json();
 //         setUploadedUIDs(data || []);
@@ -1801,7 +1801,7 @@ export default function DocumentUploadSection({ userId }) {
 //   const handleSave = async (uid) => {
 //     try {
 //       const res = await fetch(
-//         `/api/faculty/update-uid/${uid}`,
+//         `${API_BASE_URL}/api/faculty/update-uid/${uid}`,
 //         {
 //           method: "PUT",
 //           headers: { "Content-Type": "application/json" },
@@ -1843,7 +1843,7 @@ export default function DocumentUploadSection({ userId }) {
 //     formData.append("patentOffice", docData?.patentOffice || "");
 
 //     try {
-//       const res = await fetch("/api/faculty/upload-documents", {
+//       const res = await fetch(`${API_BASE_URL}/api/faculty/upload-documents", {
 //         method: "POST",
 //         body: formData,
 //       });
@@ -2298,7 +2298,7 @@ export default function DocumentUploadSection({ userId }) {
 //     useEffect(() => {
 //         const fetchApprovedUIDs = async () => {
 //             try {
-//                 const res = await fetch(`/api/faculty/approved-uid-requests/${userId}`);
+//                 const res = await fetch(`${API_BASE_URL}/api/faculty/approved-uid-requests/${userId}`);
 //                 const data = await res.json();
 //                 setApprovedUIDs(data);
 //             } catch (err) {
@@ -2309,7 +2309,7 @@ export default function DocumentUploadSection({ userId }) {
 //         const fetchUploadedUIDs = async () => {
 //   try {
 //     const response = await fetch(
-//       `/api/faculty/uploaded-uids/${userId}`
+//       `${API_BASE_URL}/api/faculty/uploaded-uids/${userId}`
 //     );
 //     const data = await response.json();
 
@@ -2350,7 +2350,7 @@ export default function DocumentUploadSection({ userId }) {
 
 // const handleSave = async (uid) => {
 //     try {
-//         const res = await fetch(`/api/faculty/update-uid/${uid}`, {
+//         const res = await fetch(`${API_BASE_URL}/api/faculty/update-uid/${uid}`, {
 //             method: "PUT",
 //             headers: {
 //                 "Content-Type": "application/json"
@@ -2908,7 +2908,7 @@ export default function DocumentUploadSection({ userId }) {
 // //     useEffect(() => {
 // //         const fetchApprovedUIDs = async () => {
 // //             try {
-// //                 const res = await fetch(`/api/faculty/approved-uid-requests/${facultyId}`);
+// //                 const res = await fetch(`${API_BASE_URL}/api/faculty/approved-uid-requests/${facultyId}`);
 // //                 const data = await res.json();
 // //                 setApprovedUIDs(data);
 // //             } catch (err) {
@@ -2918,7 +2918,7 @@ export default function DocumentUploadSection({ userId }) {
 
 // //         const fetchUploadedUIDs = async () => {
 // //             try {
-// //                 const response = await fetch(`/api/faculty/fetch-uploads/${facultyId}`);
+// //                 const response = await fetch(`${API_BASE_URL}/api/faculty/fetch-uploads/${facultyId}`);
 // //                 const data = await response.json();
 // //                 setUploadedUIDs(data.uploadedUIDs || []);
 // //             } catch (error) {

@@ -14,7 +14,7 @@ export default function DashboardCounts() {
 
   useEffect(() => {
   const facultyId = localStorage.getItem('userId');
-  fetch(`/api/dashboard/counts/${facultyId}`)
+  fetch(`${API_BASE_URL}/api/dashboard/counts/${facultyId}`)
     .then(res => res.json())
     .then(data => setCounts(data));
 }, []);
@@ -22,7 +22,7 @@ export default function DashboardCounts() {
 //   useEffect(() => {
 //     const facultyId = localStorage.getItem('facultyId') || 'faculty123';
 
-//     axios.get(`/api/dashboard/counts/${facultyId}`)
+//     axios.get(`${API_BASE_URL}/api/dashboard/counts/${facultyId}`)
 //       .then(res => setCounts(res.data))
 //       .catch(err => console.error(err));
 //   }, []);

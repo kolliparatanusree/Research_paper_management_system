@@ -12,6 +12,7 @@ import HodFacultySection from "./HodFacultySection";
 import NotificationsSection from "./NotificationsSection";
 import HodAnalytics from "./HodAnalytics";
 import HODUIDStatusList from "./HODUIDStatusList";
+import { API_BASE_URL } from '../config';
 // import {
 //   ResponsiveContainer,
 //   BarChart,
@@ -48,7 +49,7 @@ export default function HodDashboard() {
   useEffect(() => {
     if (!userId) return;
 
-    fetch(`/api/notifications/${userId}`)
+    fetch(`${API_BASE_URL}/api/notifications/${userId}`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -66,7 +67,7 @@ export default function HodDashboard() {
 
     try {
       const res = await fetch(
-        `/api/auth/notifications/unread-count/${userId}`
+        `${API_BASE_URL}/api/auth/notifications/unread-count/${userId}`
       );
 
       const data = await res.json();
@@ -95,7 +96,7 @@ export default function HodDashboard() {
       try {
         setLoadingProfile(true);
 
-        const res = await axios.get(`/api/faculty/${userId}`);
+        const res = await axios.get(`${API_BASE_URL}/api/faculty/${userId}`);
         const data = res.data;
 
         setHodProfile({
@@ -136,9 +137,9 @@ export default function HodDashboard() {
     const fetchCounts = async () => {
       try {
         const [facultyRes, pendingRes, approvedRes] = await Promise.all([
-          axios.get(`/api/faculty/count/${department}`),
-          axios.get(`/api/hod/uid/pending/${department}`),
-          axios.get(`/api/hod/uid/approved/${department}`),
+          axios.get(`${API_BASE_URL}/api/faculty/count/${department}`),
+          axios.get(`${API_BASE_URL}/api/hod/uid/pending/${department}`),
+          axios.get(`${API_BASE_URL}/api/hod/uid/approved/${department}`),
         ]);
 
         setFacultyCount(facultyRes.data.count || 0);
@@ -232,7 +233,7 @@ export default function HodDashboard() {
     setSidebarOpen(false);
 
     try {
-      await axios.put(`/api/auth/notifications/mark-read/${userId}`);
+      await axios.put(`${API_BASE_URL}/api/auth/notifications/mark-read/${userId}`);
       setNotifCount(0);
     } catch (err) {
       console.error("Unable to mark notifications as read:", err);
@@ -1084,12 +1085,14 @@ const approvalRate =
           <div className="sidebar-user">
 
             <img
-              src={
-                hodProfile?.profilePic
-                  ? `/${hodProfile.profilePic}`
-                  : "/default-profile.png"
-              }
-              alt="HOD"
+  src={
+    hodProfile?.profilePic
+      ? hodProfile.profilePic.startsWith("http")
+        ? hodProfile.profilePic
+        : `${API_BASE_URL}/${hodProfile.profilePic.replace(/^\/+/, "")}`
+      : "/default-profile.png"
+  }
+  alt="HOD"
               onError={(e) => {
                 e.target.src =
                   "/default-profile.png";
@@ -1197,12 +1200,14 @@ const approvalRate =
               }
             >
               <img
-                src={
-                  hodProfile?.profilePic
-                    ? `/${hodProfile.profilePic}`
-                    : "/default-profile.png"
-                }
-                alt="Profile"
+  src={
+    hodProfile?.profilePic
+      ? hodProfile.profilePic.startsWith("http")
+        ? hodProfile.profilePic
+        : `${API_BASE_URL}/${hodProfile.profilePic.replace(/^\/+/, "")}`
+      : "/default-profile.png"
+  }
+  alt="Profile"
                 onError={(e) => {
                   e.target.src =
                     "/default-profile.png";

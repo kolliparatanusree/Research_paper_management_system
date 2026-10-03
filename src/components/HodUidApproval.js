@@ -7,6 +7,7 @@ import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { API_BASE_URL } from "../config.js";
 
 import {
   FiActivity,
@@ -67,7 +68,7 @@ export default function HodUidApproval({ hodId: propHodId }) {
       if (showLoader) setLoading(true);
       else setRefreshing(true);
 
-      const hodRes = await fetch(`/api/hod/profile/${hodId}`);
+      const hodRes = await fetch(`${API_BASE_URL}/api/hod/profile/${hodId}`);
 
       if (!hodRes.ok) {
         throw new Error("Unable to fetch HOD profile");
@@ -77,7 +78,7 @@ export default function HodUidApproval({ hodId: propHodId }) {
 
       setDepartment(hodData.department || "HOD");
 
-      const requestRes = await fetch(`/api/hod/uid-requests/${hodId}`);
+      const requestRes = await fetch(`${API_BASE_URL}/api/hod/uid-requests/${hodId}`);
 
       if (!requestRes.ok) {
         throw new Error("Unable to fetch UID requests");
@@ -110,7 +111,7 @@ export default function HodUidApproval({ hodId: propHodId }) {
 
   const handleAction = async (id, status) => {
     try {
-      let url = `/api/hod/uid-request/${id}/accept/${hodId}`;
+      let url = `${API_BASE_URL}/api/hod/uid-request/${id}/accept/${hodId}`;
       let body = null;
 
       if (status === "reject") {
@@ -126,7 +127,7 @@ export default function HodUidApproval({ hodId: propHodId }) {
           return;
         }
 
-        url = `/api/hod/uid-request/${id}/reject/${hodId}`;
+        url = `${API_BASE_URL}/api/hod/uid-request/${id}/reject/${hodId}`;
 
         body = JSON.stringify({
           reason: finalReason,
@@ -509,7 +510,7 @@ export default function HodUidApproval({ hodId: propHodId }) {
 
       const userId = user?.userId;
 
-      const res = await fetch("/api/hod/send-report", {
+      const res = await fetch(`${API_BASE_URL}/api/hod/send-report`, {
         method: "POST",
 
         headers: {
@@ -1698,13 +1699,13 @@ export default function HodUidApproval({ hodId: propHodId }) {
 //       setLoading(true);
 
 //       // 🔹 Fetch HOD details
-//       const hodRes = await fetch(`/api/hod/profile/${hodId}`);
+//       const hodRes = await fetch(`${API_BASE_URL}/api/hod/profile/${hodId}`);
 //       const hodData = await hodRes.json();
 //       setDepartment(hodData.department);
 
 //       // 🔹 Fetch UID Requests
 //       const requestRes = await fetch(
-//         `/api/hod/uid-requests/${hodId}`
+//         `${API_BASE_URL}/api/hod/uid-requests/${hodId}`
 //       );
 
 //       if (!requestRes.ok) {
@@ -1733,15 +1734,15 @@ export default function HodUidApproval({ hodId: propHodId }) {
 
 //   const handleAction = async (id, status) => {
 //   try {
-//     let url = `/api/hod/uid-request/${id}/accept/${hodId}`;
-//     // let url = `/api/hod/uid-request/${id}/${status}`;
+//     let url = `${API_BASE_URL}/api/hod/uid-request/${id}/accept/${hodId}`;
+//     // let url = `${API_BASE_URL}/api/hod/uid-request/${id}/${status}`;
 //     let body = null;
 
 //     if (status === 'reject') {
 //       const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
 //       if (!finalReason) return Swal.fire('Error', 'Please provide a reason', 'error');
-//         url = `/api/hod/uid-request/${id}/reject/${hodId}`;
-//       // url = `/api/hod/uid-request/${id}/reject`;
+//         url = `${API_BASE_URL}/api/hod/uid-request/${id}/reject/${hodId}`;
+//       // url = `${API_BASE_URL}/api/hod/uid-request/${id}/reject`;
 //       body = JSON.stringify({ reason: finalReason });
 //     }
 
@@ -1864,7 +1865,7 @@ export default function HodUidApproval({ hodId: propHodId }) {
 //     const user = JSON.parse(localStorage.getItem("user"));
 //     const email = user?.email || "hod@gmail.com"; // fallback if needed
 //      const userId = user?.userId;
-//     const res = await fetch("/api/hod/send-report", {
+//     const res = await fetch(`${API_BASE_URL}/api/hod/send-report", {
 //       method: "POST",
 //       headers: {
 //         "Content-Type": "application/json",
@@ -2113,12 +2114,12 @@ export default function HodUidApproval({ hodId: propHodId }) {
 // //     }
 
 // //     try {
-// //       const hodRes = await fetch(`/api/hod/${hodId}`);
+// //       const hodRes = await fetch(`${API_BASE_URL}/api/hod/${hodId}`);
 // //       const hodData = await hodRes.json();
 // //       setDepartment(hodData.department);
 
 // //       const requestRes = await fetch(
-// //   `/api/hod/uid-requests/${hodId}`
+// //   `${API_BASE_URL}/api/hod/uid-requests/${hodId}`
 // // );
 
 // // if (!requestRes.ok) throw new Error('Failed to fetch UID requests');
@@ -2156,15 +2157,15 @@ export default function HodUidApproval({ hodId: propHodId }) {
 
 // //   const handleAction = async (id, status) => {
 // //   try {
-// //     let url = `/api/hod/uid-request/${id}/accept/${hodId}`;
-// //     // let url = `/api/hod/uid-request/${id}/${status}`;
+// //     let url = `${API_BASE_URL}/api/hod/uid-request/${id}/accept/${hodId}`;
+// //     // let url = `${API_BASE_URL}/api/hod/uid-request/${id}/${status}`;
 // //     let body = null;
 
 // //     if (status === 'reject') {
 // //       const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
 // //       if (!finalReason) return Swal.fire('Error', 'Please provide a reason', 'error');
-// //         url = `/api/hod/uid-request/${id}/reject/${hodId}`;
-// //       // url = `/api/hod/uid-request/${id}/reject`;
+// //         url = `${API_BASE_URL}/api/hod/uid-request/${id}/reject/${hodId}`;
+// //       // url = `${API_BASE_URL}/api/hod/uid-request/${id}/reject`;
 // //       body = JSON.stringify({ reason: finalReason });
 // //     }
 
@@ -2185,13 +2186,13 @@ export default function HodUidApproval({ hodId: propHodId }) {
 
 // //   // const handleAction = async (id, status) => {
 // //   //   try {
-// //   //     let url = `/api/hod/uid-request/${id}/${status}`;
+// //   //     let url = `${API_BASE_URL}/api/hod/uid-request/${id}/${status}`;
 // //   //     let body = null;
 
 // //   //     if (status === 'reject') {
 // //   //       const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
 // //   //       if (!finalReason) return alert('Please provide a reason for rejection.');
-// //   //       url = `/api/hod/uid-request/${id}/reject`;
+// //   //       url = `${API_BASE_URL}/api/hod/uid-request/${id}/reject`;
 // //   //       body = JSON.stringify({ reason: finalReason });
 // //   //     }
 

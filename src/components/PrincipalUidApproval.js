@@ -22,7 +22,7 @@ import {
   FiDownload,
   FiFile,
 } from "react-icons/fi";
-
+import { API_BASE_URL } from "../config";
 import "./HodUidApproval.css";
 
 const REJECTION_REASONS = [
@@ -57,7 +57,7 @@ export default function PrincipalUidApproval() {
       }
 
       const response = await axios.get(
-        "/api/principal/uid-requests"
+        `${API_BASE_URL}/api/principal/uid-requests`
       );
 
       let data = [];
@@ -371,7 +371,7 @@ export default function PrincipalUidApproval() {
 
     try {
       await axios.put(
-        `/api/principal/uid-request/${requestId}/accept`
+        `${API_BASE_URL}/api/principal/uid-request/${requestId}/accept`
       );
 
       Swal.fire({
@@ -486,7 +486,7 @@ export default function PrincipalUidApproval() {
 
     try {
       await axios.put(
-        `/api/principal/uid-request/${requestId}/reject`,
+        `${API_BASE_URL}/api/principal/uid-request/${requestId}/reject`,
         {
           reason: finalReason,
           rejectionReason: finalReason,

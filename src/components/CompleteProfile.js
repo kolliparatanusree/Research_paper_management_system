@@ -4,26 +4,28 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import './CompleteProfile.css';
 import CustomNavbar from './CustomNavbar';
+import { API_BASE_URL } from '../config';
+
 export default function CompleteProfile() {
   const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem('user'));
   const userId = storedUser?.userId;
 
   const degreeOptions = [
-  'Ph.D',
-  'M.Phil',
-  'Post Doctoral',
-  'M.Tech / M.E',
-  'M.Sc',
-  'MCA',
-  'MBA',
-  'B.Tech / B.E',
-  'B.Sc',
-  'BCA',
-  'Diploma',
-  'Intermediate / 12th',
-  'SSC / 10th'
-];
+    'Ph.D',
+    'M.Phil',
+    'Post Doctoral',
+    'M.Tech / M.E',
+    'M.Sc',
+    'MCA',
+    'MBA',
+    'B.Tech / B.E',
+    'B.Sc',
+    'BCA',
+    'Diploma',
+    'Intermediate / 12th',
+    'SSC / 10th'
+  ];
 
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -46,7 +48,11 @@ export default function CompleteProfile() {
   const validateEducation = () => {
     for (let edu of educationList) {
       if (!edu.degree || !edu.institution || !edu.year) {
-        Swal.fire('Required', 'Please fill all education fields', 'warning');
+        Swal.fire(
+          'Required',
+          'Please fill all education fields',
+          'warning'
+        );
         return false;
       }
     }
@@ -55,7 +61,11 @@ export default function CompleteProfile() {
 
   const validateProfilePic = () => {
     if (!profilePic) {
-      Swal.fire('Required', 'Profile picture is mandatory', 'warning');
+      Swal.fire(
+        'Required',
+        'Profile picture is mandatory',
+        'warning'
+      );
       return false;
     }
     return true;
@@ -64,26 +74,41 @@ export default function CompleteProfile() {
   // ================= ADD FUNCTIONS =================
 
   const handleAddEducation = () =>
-    setEducationList([...educationList, { degree: '', institution: '', year: '' }]);
+    setEducationList([
+      ...educationList,
+      { degree: '', institution: '', year: '' }
+    ]);
 
   const handleAddExperience = () =>
-    setExperienceList([...experienceList, { title: '', organization: '', years: '' }]);
+    setExperienceList([
+      ...experienceList,
+      { title: '', organization: '', years: '' }
+    ]);
 
   const handleAddPublication = () =>
-    setPublications([...publications, { title: '', journal: '', year: '' }]);
+    setPublications([
+      ...publications,
+      { title: '', journal: '', year: '' }
+    ]);
+
+  // ================= REMOVE FUNCTIONS =================
 
   const handleRemoveEducation = (idx) => {
-  const list = educationList.filter((_, i) => i !== idx);
-  setEducationList(list);
-};
+    setEducationList(
+      educationList.filter((_, i) => i !== idx)
+    );
+  };
 
-const handleRemovePublication = (idx) => {
-  const list = publications.filter((_, i) => i !== idx);
-  setPublications(list);
-};
+  const handleRemovePublication = (idx) => {
+    setPublications(
+      publications.filter((_, i) => i !== idx)
+    );
+  };
+
   const handleRemoveExperience = (idx) => {
-    const list = experienceList.filter((_, i) => i !== idx);
-    setExperienceList(list);
+    setExperienceList(
+      experienceList.filter((_, i) => i !== idx)
+    );
   };
 
   // ================= CHANGE HANDLERS =================
@@ -110,13 +135,20 @@ const handleRemovePublication = (idx) => {
 
   const getDashboardRoute = (role) => {
     switch (role) {
-      case 'faculty': return '/faculty-dashboard';
-      case 'hod': return '/hod-dashboard';
-      case 'principal': return '/principal-dashboard';
-      case 'rdCoordinator': return '/rd-dashboard';
-      case 'rdDean': return '/rd-dean-dashboard';
-      case 'admin': return '/mainAdmin-dashboard';
-      default: return '/';
+      case 'faculty':
+        return '/faculty-dashboard';
+      case 'hod':
+        return '/hod-dashboard';
+      case 'principal':
+        return '/principal-dashboard';
+      case 'rdCoordinator':
+        return '/rd-dashboard';
+      case 'rdDean':
+        return '/rd-dean-dashboard';
+      case 'admin':
+        return '/mainAdmin-dashboard';
+      default:
+        return '/';
     }
   };
 
@@ -133,312 +165,800 @@ const handleRemovePublication = (idx) => {
       );
 
       const eduStr = educationList
-        .map((e) => `${e.degree} - ${e.institution} (${e.year})`)
+        .map(
+          (e) =>
+            `${e.degree} - ${e.institution} (${e.year})`
+        )
         .join('; ');
 
       const expStr = experienceList
-        .map((e) => `${e.title} - ${e.organization} (${e.years} years)`)
+        .map(
+          (e) =>
+            `${e.title} - ${e.organization} (${e.years} years)`
+        )
         .join('; ');
 
       const formData = new FormData();
+
       formData.append('educationDetails', eduStr);
       formData.append('experienceDetails', expStr);
-      formData.append('publications', JSON.stringify(filteredPublications));
+      formData.append(
+        'publications',
+        JSON.stringify(filteredPublications)
+      );
       formData.append('isProfileCompleted', true);
       formData.append('profilePic', profilePic);
 
       await axios.put(
-        `/api/auth/complete-profile/${userId}`,
+        `${API_BASE_URL}/api/auth/complete-profile/${userId}`,
         formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
       );
 
-      Swal.fire('Success', 'Profile saved successfully', 'success').then(() => {
+      Swal.fire(
+        'Success',
+        'Profile saved successfully',
+        'success'
+      ).then(() => {
         const role = localStorage.getItem('role');
         navigate(getDashboardRoute(role));
       });
 
     } catch (err) {
       console.error(err);
-      Swal.fire('Error', err.response?.data?.message || 'Profile update failed', 'error');
+
+      Swal.fire(
+        'Error',
+        err.response?.data?.message ||
+          'Profile update failed',
+        'error'
+      );
     }
   };
 
-  // ================= UI =================
+  const steps = [
+    {
+      number: 1,
+      icon: '🎓',
+      title: 'Education',
+      subtitle: 'Academic details'
+    },
+    {
+      number: 2,
+      icon: '💼',
+      title: 'Experience',
+      subtitle: 'Work experience'
+    },
+    {
+      number: 3,
+      icon: '📚',
+      title: 'Publications',
+      subtitle: 'Research work'
+    },
+    {
+      number: 4,
+      icon: '👤',
+      title: 'Profile',
+      subtitle: 'Profile photo'
+    }
+  ];
 
   return (
     <>
       <CustomNavbar />
-    <div className="complete-profile-wrapper">
-      <h2>Complete Your Profile</h2>
 
-      {/* ===== STEPPER ===== */}
-      <div className="stepper">
-        {[1, 2, 3, 4].map((step) => (
-          <div key={step} className="stepper-item">
-            <div className={`circle ${currentStep >= step ? 'active' : ''}`}>
-              {step}
-            </div>
-            {step < 4 && (
-              <div className={`line ${currentStep > step ? 'active' : ''}`} />
-            )}
+      <div className="complete-profile-wrapper">
+
+        {/* ================= HEADER ================= */}
+
+        <div className="complete-profile-header">
+
+          <div className="complete-profile-header-icon">
+            👤
           </div>
-        ))}
-      </div>
 
-      <div className="step-labels">
-        <span>Education</span>
-        <span>Experience</span>
-        <span>Publications</span>
-        <span>Profile</span>
-      </div>
+          <div className="complete-profile-header-content">
 
-      <form onSubmit={handleSubmit}>
+            <span className="complete-profile-eyebrow">
+              PROFILE SETUP
+            </span>
 
-        {/* ========= EDUCATION ========= */}
-        {currentStep === 1 && (
-          <div className="step-section">
-            <h3>Education</h3>
+            <h2>
+              Complete Your Profile
+            </h2>
 
-            {educationList.map((edu, idx) => (
-  <div key={idx} className="entry-block">
+            <p>
+              Add your professional information to personalize
+              your RPMS experience.
+            </p>
 
-    {/* <label>Degree *</label>
-    <input
-      type="text"
-      value={edu.degree}
-      onChange={(e) =>
-        handleEducationChange(idx, 'degree', e.target.value)
-      }
-    /> */}
-
-    <label>Degree *</label>
-<select
-  value={edu.degree}
-  onChange={(e) =>
-    handleEducationChange(idx, 'degree', e.target.value)
-  }
->
-  <option value="">-- Select Degree --</option>
-  {degreeOptions.map((deg, i) => (
-    <option key={i} value={deg}>
-      {deg}
-    </option>
-  ))}
-</select>
-
-    <label>Institution *</label>
-    <input
-      type="text"
-      value={edu.institution}
-      onChange={(e) =>
-        handleEducationChange(idx, 'institution', e.target.value)
-      }
-    />
-
-    <label>Year *</label>
-    <input
-  type="number"
-  value={edu.year}
-  onChange={(e) =>
-    handleEducationChange(idx, 'year', e.target.value)
-  }
-/>
-
-    {/* 🗑️ REMOVE BUTTON */}
-    {educationList.length > 1 && (
-      <button
-        type="button"
-        className="remove-btn"
-        onClick={() => handleRemoveEducation(idx)}
-      >
-        🗑️ Remove
-      </button>
-    )}
-
-  </div>
-))}
-
-            <button type="button" onClick={handleAddEducation}>
-              + Add Education
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                if (validateEducation()) setCurrentStep(2);
-              }}
-            >
-              Next →
-            </button>
           </div>
-        )}
 
-        {/* ========= EXPERIENCE ========= */}
-        {currentStep === 2 && (
-          <div className="step-section">
-            <h3>Experience</h3>
+        </div>
 
-            {experienceList.map((exp, idx) => (
-              <div key={idx} className="entry-block">
-                <label>Title</label>
-                <input
-                  type="text"
-                  value={exp.title}
-                  onChange={(e) =>
-                    handleExperienceChange(idx, 'title', e.target.value)
-                  }
-                />
+        {/* ================= STEPPER ================= */}
 
-                <label>Organization</label>
-                <input
-                  type="text"
-                  value={exp.organization}
-                  onChange={(e) =>
-                    handleExperienceChange(idx, 'organization', e.target.value)
-                  }
-                />
+        <div className="profile-stepper-card">
 
-                <label>Years</label>
-                <input
-                  type="text"
-                  value={exp.years}
-                  onChange={(e) =>
-                    handleExperienceChange(idx, 'years', e.target.value)
-                  }
-                />
+          <div className="profile-stepper">
 
-                {experienceList.length > 1 && (
-                  <button
-                    type="button"
-                    className="remove-btn"
-                    onClick={() => handleRemoveExperience(idx)}
+            {steps.map((step, index) => (
+              <div
+                key={step.number}
+                className={`profile-stepper-item ${
+                  currentStep >= step.number
+                    ? 'completed'
+                    : ''
+                }`}
+              >
+
+                <div className="profile-step-main">
+
+                  <div
+                    className={`profile-step-circle ${
+                      currentStep >= step.number
+                        ? 'active'
+                        : ''
+                    }`}
                   >
-                    ❌ Remove
-                  </button>
+                    {currentStep > step.number ? (
+                      '✓'
+                    ) : (
+                      step.icon
+                    )}
+                  </div>
+
+                  <div className="profile-step-info">
+                    <span>
+                      Step {step.number}
+                    </span>
+
+                    <strong>
+                      {step.title}
+                    </strong>
+
+                    <small>
+                      {step.subtitle}
+                    </small>
+                  </div>
+
+                </div>
+
+                {index < steps.length - 1 && (
+                  <div
+                    className={`profile-step-line ${
+                      currentStep > step.number
+                        ? 'active'
+                        : ''
+                    }`}
+                  />
                 )}
+
               </div>
             ))}
 
-            <button type="button" onClick={handleAddExperience}>
-              + Add Experience
-            </button>
-
-            <div className="nav-buttons">
-              <button type="button" onClick={() => setCurrentStep(1)}>
-                ← Back
-              </button>
-              <button type="button" onClick={() => setCurrentStep(3)}>
-                Next →
-              </button>
-            </div>
           </div>
-        )}
 
-        {/* ========= PUBLICATIONS (OPTIONAL) ========= */}
-        {currentStep === 3 && (
-          <div className="step-section">
-            <h3>Publications (Optional)</h3>
+        </div>
 
-            {publications.map((pub, idx) => (
-  <div key={idx} className="entry-block">
+        {/* ================= FORM CARD ================= */}
 
-    <label>Title</label>
-    <input
-      type="text"
-      value={pub.title}
-      onChange={(e) =>
-        handlePublicationChange(idx, 'title', e.target.value)
-      }
-    />
+        <div className="complete-profile-card">
 
-    <label>Journal</label>
-    <input
-      type="text"
-      value={pub.journal}
-      onChange={(e) =>
-        handlePublicationChange(idx, 'journal', e.target.value)
-      }
-    />
+          <form onSubmit={handleSubmit}>
 
-    <label>Year</label>
-    <input
-      type="text"
-      value={pub.year}
-      onChange={(e) =>
-        handlePublicationChange(idx, 'year', e.target.value)
-      }
-    />
+            {/* ================= EDUCATION ================= */}
 
-    {/* 🗑️ REMOVE BUTTON */}
-    {publications.length > 1 && (
-      <button
-        type="button"
-        className="remove-btn"
-        onClick={() => handleRemovePublication(idx)}
-      >
-        🗑️ Remove
-      </button>
-    )}
+            {currentStep === 1 && (
+              <div className="profile-step-section">
 
-  </div>
-))}
+                <div className="section-heading">
 
-            <button type="button" onClick={handleAddPublication}>
-              + Add Publication
-            </button>
+                  <div className="section-heading-icon">
+                    🎓
+                  </div>
 
-            <div className="nav-buttons">
-              <button type="button" onClick={() => setCurrentStep(2)}>
-                ← Back
-              </button>
-              <button type="button" onClick={() => setCurrentStep(4)}>
-                Next →
-              </button>
-            </div>
-          </div>
-        )}
+                  <div>
+                    <h3>Educational Background</h3>
+                    <p>
+                      Add your academic qualifications and
+                      institutions.
+                    </p>
+                  </div>
 
-        {/* ========= PROFILE PIC ========= */}
-        {currentStep === 4 && (
-          <div className="step-section">
-            <h3>Profile Picture *</h3>
+                </div>
 
-            <label>Upload Profile Photo</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setProfilePic(e.target.files[0])}
-            />
+                {educationList.map((edu, idx) => (
+                  <div
+                    key={idx}
+                    className="profile-entry-block"
+                  >
 
-            <div className="nav-buttons">
-              <button type="button" onClick={() => setCurrentStep(3)}>
-                ← Back
-              </button>
-              <button type="submit">Submit Profile</button>
-            </div>
-          </div>
-        )}
-      </form>
-    </div>
-    </ >
+                    <div className="entry-header">
+
+                      <div>
+                        <span className="entry-number">
+                          {String(idx + 1).padStart(2, '0')}
+                        </span>
+
+                        <strong>
+                          Education {idx + 1}
+                        </strong>
+                      </div>
+
+                      {educationList.length > 1 && (
+                        <button
+                          type="button"
+                          className="remove-btn"
+                          onClick={() =>
+                            handleRemoveEducation(idx)
+                          }
+                        >
+                          🗑 Remove
+                        </button>
+                      )}
+
+                    </div>
+
+                    <div className="profile-form-grid">
+
+                      <div className="profile-field">
+
+                        <label>
+                          Degree <span>*</span>
+                        </label>
+
+                        <select
+                          value={edu.degree}
+                          onChange={(e) =>
+                            handleEducationChange(
+                              idx,
+                              'degree',
+                              e.target.value
+                            )
+                          }
+                        >
+                          <option value="">
+                            Select your degree
+                          </option>
+
+                          {degreeOptions.map((deg, i) => (
+                            <option
+                              key={i}
+                              value={deg}
+                            >
+                              {deg}
+                            </option>
+                          ))}
+                        </select>
+
+                      </div>
+
+                      <div className="profile-field">
+
+                        <label>
+                          Institution <span>*</span>
+                        </label>
+
+                        <input
+                          type="text"
+                          placeholder="Enter institution name"
+                          value={edu.institution}
+                          onChange={(e) =>
+                            handleEducationChange(
+                              idx,
+                              'institution',
+                              e.target.value
+                            )
+                          }
+                        />
+
+                      </div>
+
+                      <div className="profile-field">
+
+                        <label>
+                          Year <span>*</span>
+                        </label>
+
+                        <input
+                          type="number"
+                          placeholder="e.g. 2024"
+                          value={edu.year}
+                          onChange={(e) =>
+                            handleEducationChange(
+                              idx,
+                              'year',
+                              e.target.value
+                            )
+                          }
+                        />
+
+                      </div>
+
+                    </div>
+
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  className="add-entry-btn"
+                  onClick={handleAddEducation}
+                >
+                  <span>+</span>
+                  Add Education
+                </button>
+
+                <div className="nav-buttons">
+
+                  <div />
+
+                  <button
+                    type="button"
+                    className="next-btn"
+                    onClick={() => {
+                      if (validateEducation()) {
+                        setCurrentStep(2);
+                      }
+                    }}
+                  >
+                    Continue
+                    <span>→</span>
+                  </button>
+
+                </div>
+
+              </div>
+            )}
+
+            {/* ================= EXPERIENCE ================= */}
+
+            {currentStep === 2 && (
+              <div className="profile-step-section">
+
+                <div className="section-heading">
+
+                  <div className="section-heading-icon">
+                    💼
+                  </div>
+
+                  <div>
+                    <h3>Professional Experience</h3>
+                    <p>
+                      Tell us about your professional journey.
+                    </p>
+                  </div>
+
+                </div>
+
+                {experienceList.map((exp, idx) => (
+                  <div
+                    key={idx}
+                    className="profile-entry-block"
+                  >
+
+                    <div className="entry-header">
+
+                      <div>
+                        <span className="entry-number">
+                          {String(idx + 1).padStart(2, '0')}
+                        </span>
+
+                        <strong>
+                          Experience {idx + 1}
+                        </strong>
+                      </div>
+
+                      {experienceList.length > 1 && (
+                        <button
+                          type="button"
+                          className="remove-btn"
+                          onClick={() =>
+                            handleRemoveExperience(idx)
+                          }
+                        >
+                          🗑 Remove
+                        </button>
+                      )}
+
+                    </div>
+
+                    <div className="profile-form-grid">
+
+                      <div className="profile-field">
+
+                        <label>Job Title</label>
+
+                        <input
+                          type="text"
+                          placeholder="e.g. Assistant Professor"
+                          value={exp.title}
+                          onChange={(e) =>
+                            handleExperienceChange(
+                              idx,
+                              'title',
+                              e.target.value
+                            )
+                          }
+                        />
+
+                      </div>
+
+                      <div className="profile-field">
+
+                        <label>Organization</label>
+
+                        <input
+                          type="text"
+                          placeholder="Enter organization name"
+                          value={exp.organization}
+                          onChange={(e) =>
+                            handleExperienceChange(
+                              idx,
+                              'organization',
+                              e.target.value
+                            )
+                          }
+                        />
+
+                      </div>
+
+                      <div className="profile-field">
+
+                        <label>Years of Experience</label>
+
+                        <input
+                          type="text"
+                          placeholder="e.g. 5"
+                          value={exp.years}
+                          onChange={(e) =>
+                            handleExperienceChange(
+                              idx,
+                              'years',
+                              e.target.value
+                            )
+                          }
+                        />
+
+                      </div>
+
+                    </div>
+
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  className="add-entry-btn"
+                  onClick={handleAddExperience}
+                >
+                  <span>+</span>
+                  Add Experience
+                </button>
+
+                <div className="nav-buttons">
+
+                  <button
+                    type="button"
+                    className="back-btn"
+                    onClick={() => setCurrentStep(1)}
+                  >
+                    ← Back
+                  </button>
+
+                  <button
+                    type="button"
+                    className="next-btn"
+                    onClick={() => setCurrentStep(3)}
+                  >
+                    Continue
+                    <span>→</span>
+                  </button>
+
+                </div>
+
+              </div>
+            )}
+
+            {/* ================= PUBLICATIONS ================= */}
+
+            {currentStep === 3 && (
+              <div className="profile-step-section">
+
+                <div className="section-heading">
+
+                  <div className="section-heading-icon">
+                    📚
+                  </div>
+
+                  <div>
+                    <h3>Research Publications</h3>
+                    <p>
+                      Add your publications if you have any.
+                      This section is optional.
+                    </p>
+                  </div>
+
+                  <span className="optional-badge">
+                    Optional
+                  </span>
+
+                </div>
+
+                {publications.map((pub, idx) => (
+                  <div
+                    key={idx}
+                    className="profile-entry-block"
+                  >
+
+                    <div className="entry-header">
+
+                      <div>
+                        <span className="entry-number">
+                          {String(idx + 1).padStart(2, '0')}
+                        </span>
+
+                        <strong>
+                          Publication {idx + 1}
+                        </strong>
+                      </div>
+
+                      {publications.length > 1 && (
+                        <button
+                          type="button"
+                          className="remove-btn"
+                          onClick={() =>
+                            handleRemovePublication(idx)
+                          }
+                        >
+                          🗑 Remove
+                        </button>
+                      )}
+
+                    </div>
+
+                    <div className="profile-form-grid">
+
+                      <div className="profile-field full-width">
+
+                        <label>Publication Title</label>
+
+                        <input
+                          type="text"
+                          placeholder="Enter publication title"
+                          value={pub.title}
+                          onChange={(e) =>
+                            handlePublicationChange(
+                              idx,
+                              'title',
+                              e.target.value
+                            )
+                          }
+                        />
+
+                      </div>
+
+                      <div className="profile-field">
+
+                        <label>Journal / Venue</label>
+
+                        <input
+                          type="text"
+                          placeholder="Enter journal or conference"
+                          value={pub.journal}
+                          onChange={(e) =>
+                            handlePublicationChange(
+                              idx,
+                              'journal',
+                              e.target.value
+                            )
+                          }
+                        />
+
+                      </div>
+
+                      <div className="profile-field">
+
+                        <label>Publication Year</label>
+
+                        <input
+                          type="text"
+                          placeholder="e.g. 2025"
+                          value={pub.year}
+                          onChange={(e) =>
+                            handlePublicationChange(
+                              idx,
+                              'year',
+                              e.target.value
+                            )
+                          }
+                        />
+
+                      </div>
+
+                    </div>
+
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  className="add-entry-btn"
+                  onClick={handleAddPublication}
+                >
+                  <span>+</span>
+                  Add Publication
+                </button>
+
+                <div className="nav-buttons">
+
+                  <button
+                    type="button"
+                    className="back-btn"
+                    onClick={() => setCurrentStep(2)}
+                  >
+                    ← Back
+                  </button>
+
+                  <button
+                    type="button"
+                    className="next-btn"
+                    onClick={() => setCurrentStep(4)}
+                  >
+                    Continue
+                    <span>→</span>
+                  </button>
+
+                </div>
+
+              </div>
+            )}
+
+            {/* ================= PROFILE ================= */}
+
+            {currentStep === 4 && (
+              <div className="profile-step-section">
+
+                <div className="section-heading">
+
+                  <div className="section-heading-icon">
+                    👤
+                  </div>
+
+                  <div>
+                    <h3>Profile Picture</h3>
+                    <p>
+                      Upload a professional photo for your
+                      RPMS profile.
+                    </p>
+                  </div>
+
+                  <span className="required-badge">
+                    Required
+                  </span>
+
+                </div>
+
+                <div className="profile-upload-area">
+
+                  <div className="upload-avatar">
+                    {profilePic ? (
+                      <img
+                        src={URL.createObjectURL(profilePic)}
+                        alt="Profile preview"
+                      />
+                    ) : (
+                      <span>👤</span>
+                    )}
+                  </div>
+
+                  <div className="upload-content">
+
+                    <h4>
+                      {profilePic
+                        ? profilePic.name
+                        : 'Upload your profile photo'}
+                    </h4>
+
+                    <p>
+                      Choose a clear professional image.
+                      JPG, JPEG or PNG recommended.
+                    </p>
+
+                    <label className="upload-btn">
+                      📷 Choose Photo
+
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          setProfilePic(
+                            e.target.files[0]
+                          )
+                        }
+                      />
+                    </label>
+
+                  </div>
+
+                </div>
+
+                <div className="profile-completion-note">
+                  <span>✓</span>
+                  <div>
+                    <strong>Almost there!</strong>
+                    <p>
+                      Your profile information is ready.
+                      Submit to complete your profile setup.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="nav-buttons">
+
+                  <button
+                    type="button"
+                    className="back-btn"
+                    onClick={() => setCurrentStep(3)}
+                  >
+                    ← Back
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="submit-btn"
+                  >
+                    Complete Profile
+                    <span>✓</span>
+                  </button>
+
+                </div>
+
+              </div>
+            )}
+
+          </form>
+
+        </div>
+
+      </div>
+    </>
   );
 }
-
 // import { useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
 // import axios from 'axios';
 // import Swal from 'sweetalert2';
 // import './CompleteProfile.css';
 // import CustomNavbar from './CustomNavbar';
-
+// import { API_BASE_URL } from '../config';
 // export default function CompleteProfile() {
 //   const navigate = useNavigate();
 //   const storedUser = JSON.parse(localStorage.getItem('user'));
 //   const userId = storedUser?.userId;
 
-//   const [step, setStep] = useState(1);
-//   const [profilePic, setProfilePic] = useState(null);
+//   const degreeOptions = [
+//   'Ph.D',
+//   'M.Phil',
+//   'Post Doctoral',
+//   'M.Tech / M.E',
+//   'M.Sc',
+//   'MCA',
+//   'MBA',
+//   'B.Tech / B.E',
+//   'B.Sc',
+//   'BCA',
+//   'Diploma',
+//   'Intermediate / 12th',
+//   'SSC / 10th'
+// ];
+
+//   const [currentStep, setCurrentStep] = useState(1);
 
 //   const [educationList, setEducationList] = useState([
 //     { degree: '', institution: '', year: '' }
@@ -452,7 +972,29 @@ const handleRemovePublication = (idx) => {
 //     { title: '', journal: '', year: '' }
 //   ]);
 
-//   // ================= HANDLERS =================
+//   const [profilePic, setProfilePic] = useState(null);
+
+//   // ================= VALIDATIONS =================
+
+//   const validateEducation = () => {
+//     for (let edu of educationList) {
+//       if (!edu.degree || !edu.institution || !edu.year) {
+//         Swal.fire('Required', 'Please fill all education fields', 'warning');
+//         return false;
+//       }
+//     }
+//     return true;
+//   };
+
+//   const validateProfilePic = () => {
+//     if (!profilePic) {
+//       Swal.fire('Required', 'Profile picture is mandatory', 'warning');
+//       return false;
+//     }
+//     return true;
+//   };
+
+//   // ================= ADD FUNCTIONS =================
 
 //   const handleAddEducation = () =>
 //     setEducationList([...educationList, { degree: '', institution: '', year: '' }]);
@@ -462,6 +1004,22 @@ const handleRemovePublication = (idx) => {
 
 //   const handleAddPublication = () =>
 //     setPublications([...publications, { title: '', journal: '', year: '' }]);
+
+//   const handleRemoveEducation = (idx) => {
+//   const list = educationList.filter((_, i) => i !== idx);
+//   setEducationList(list);
+// };
+
+// const handleRemovePublication = (idx) => {
+//   const list = publications.filter((_, i) => i !== idx);
+//   setPublications(list);
+// };
+//   const handleRemoveExperience = (idx) => {
+//     const list = experienceList.filter((_, i) => i !== idx);
+//     setExperienceList(list);
+//   };
+
+//   // ================= CHANGE HANDLERS =================
 
 //   const handleEducationChange = (index, field, value) => {
 //     const list = [...educationList];
@@ -481,23 +1039,7 @@ const handleRemovePublication = (idx) => {
 //     setPublications(list);
 //   };
 
-//   const handleRemoveEducation = (index) => {
-//   const list = educationList.filter((_, i) => i !== index);
-//   setEducationList(list.length ? list : [{ degree: '', institution: '', year: '' }]);
-// };
-
-// const handleRemoveExperience = (index) => {
-//   const list = experienceList.filter((_, i) => i !== index);
-//   setExperienceList(list.length ? list : [{ title: '', organization: '', years: '' }]);
-// };
-
-// const handleRemovePublication = (index) => {
-//   const list = publications.filter((_, i) => i !== index);
-//   setPublications(list.length ? list : [{ title: '', journal: '', year: '' }]);
-// };
-
-//   const handleNext = () => setStep(prev => prev + 1);
-//   const handleBack = () => setStep(prev => prev - 1);
+//   // ================= ROUTE =================
 
 //   const getDashboardRoute = (role) => {
 //     switch (role) {
@@ -513,29 +1055,35 @@ const handleRemovePublication = (idx) => {
 
 //   // ================= SUBMIT =================
 
-//   const handleSubmit = async () => {
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     if (!validateProfilePic()) return;
+
 //     try {
+//       const filteredPublications = publications.filter(
+//         (p) => p.title || p.journal || p.year
+//       );
+
 //       const eduStr = educationList
-//         .map(e => `${e.degree} - ${e.institution} (${e.year})`)
+//         .map((e) => `${e.degree} - ${e.institution} (${e.year})`)
 //         .join('; ');
 
 //       const expStr = experienceList
-//         .map(e => `${e.title} - ${e.organization} (${e.years} years)`)
+//         .map((e) => `${e.title} - ${e.organization} (${e.years} years)`)
 //         .join('; ');
 
 //       const formData = new FormData();
 //       formData.append('educationDetails', eduStr);
 //       formData.append('experienceDetails', expStr);
-//       formData.append('publications', JSON.stringify(publications));
+//       formData.append('publications', JSON.stringify(filteredPublications));
 //       formData.append('isProfileCompleted', true);
-
-//       if (profilePic) {
-//         formData.append('profilePic', profilePic);
-//       }
+//       formData.append('profilePic', profilePic);
 
 //       await axios.put(
-//         `/api/auth/complete-profile/${userId}`,
-//         formData
+//         `${API_BASE_URL}/api/auth/complete-profile/${userId}`,
+//         formData,
+//         { headers: { 'Content-Type': 'multipart/form-data' } }
 //       );
 
 //       Swal.fire('Success', 'Profile saved successfully', 'success').then(() => {
@@ -544,6 +1092,7 @@ const handleRemovePublication = (idx) => {
 //       });
 
 //     } catch (err) {
+//       console.error(err);
 //       Swal.fire('Error', err.response?.data?.message || 'Profile update failed', 'error');
 //     }
 //   };
@@ -551,161 +1100,244 @@ const handleRemovePublication = (idx) => {
 //   // ================= UI =================
 
 //   return (
-//    <>
-//     <CustomNavbar />
+//     <>
+//       <CustomNavbar />
 //     <div className="complete-profile-wrapper">
-//       <div className="profile-card">
-//         <h2>Complete Your Profile</h2>
+//       <h2>Complete Your Profile</h2>
 
-//         {/* ===== STEP 1 EDUCATION ===== */}
-//         {step === 1 && (
-//           <>
+//       {/* ===== STEPPER ===== */}
+//       <div className="stepper">
+//         {[1, 2, 3, 4].map((step) => (
+//           <div key={step} className="stepper-item">
+//             <div className={`circle ${currentStep >= step ? 'active' : ''}`}>
+//               {step}
+//             </div>
+//             {step < 4 && (
+//               <div className={`line ${currentStep > step ? 'active' : ''}`} />
+//             )}
+//           </div>
+//         ))}
+//       </div>
+
+//       <div className="step-labels">
+//         <span>Education</span>
+//         <span>Experience</span>
+//         <span>Publications</span>
+//         <span>Profile</span>
+//       </div>
+
+//       <form onSubmit={handleSubmit}>
+
+//         {/* ========= EDUCATION ========= */}
+//         {currentStep === 1 && (
+//           <div className="step-section">
 //             <h3>Education</h3>
+
 //             {educationList.map((edu, idx) => (
-//   <div key={idx} className="entry-row">
+//   <div key={idx} className="entry-block">
+
+//     {/* <label>Degree *</label>
 //     <input
 //       type="text"
-//       placeholder="Degree"
 //       value={edu.degree}
-//       onChange={e => handleEducationChange(idx, 'degree', e.target.value)}
-//       required
-//     />
+//       onChange={(e) =>
+//         handleEducationChange(idx, 'degree', e.target.value)
+//       }
+//     /> */}
+
+//     <label>Degree *</label>
+// <select
+//   value={edu.degree}
+//   onChange={(e) =>
+//     handleEducationChange(idx, 'degree', e.target.value)
+//   }
+// >
+//   <option value="">-- Select Degree --</option>
+//   {degreeOptions.map((deg, i) => (
+//     <option key={i} value={deg}>
+//       {deg}
+//     </option>
+//   ))}
+// </select>
+
+//     <label>Institution *</label>
 //     <input
 //       type="text"
-//       placeholder="Institution"
 //       value={edu.institution}
-//       onChange={e => handleEducationChange(idx, 'institution', e.target.value)}
-//       required
-//     />
-//     <input
-//       type="text"
-//       placeholder="Year"
-//       value={edu.year}
-//       onChange={e => handleEducationChange(idx, 'year', e.target.value)}
-//       required
+//       onChange={(e) =>
+//         handleEducationChange(idx, 'institution', e.target.value)
+//       }
 //     />
 
+//     <label>Year *</label>
+//     <input
+//   type="number"
+//   value={edu.year}
+//   onChange={(e) =>
+//     handleEducationChange(idx, 'year', e.target.value)
+//   }
+// />
+
+//     {/* 🗑️ REMOVE BUTTON */}
 //     {educationList.length > 1 && (
 //       <button
 //         type="button"
 //         className="remove-btn"
 //         onClick={() => handleRemoveEducation(idx)}
 //       >
-//         ❌
+//         🗑️ Remove
 //       </button>
 //     )}
+
 //   </div>
 // ))}
+
 //             <button type="button" onClick={handleAddEducation}>
 //               + Add Education
 //             </button>
 
-//             <div className="nav-buttons">
-//               <button onClick={handleNext}>Next →</button>
-//             </div>
-//           </>
+//             <button
+//               type="button"
+//               onClick={() => {
+//                 if (validateEducation()) setCurrentStep(2);
+//               }}
+//             >
+//               Next →
+//             </button>
+//           </div>
 //         )}
 
-//         {/* ===== STEP 2 EXPERIENCE ===== */}
-//         {step === 2 && (
-//           <>
+//         {/* ========= EXPERIENCE ========= */}
+//         {currentStep === 2 && (
+//           <div className="step-section">
 //             <h3>Experience</h3>
+
 //             {experienceList.map((exp, idx) => (
-//               <div key={idx} className="entry-row">
+//               <div key={idx} className="entry-block">
+//                 <label>Title</label>
 //                 <input
 //                   type="text"
-//                   placeholder="Title"
 //                   value={exp.title}
-//                   onChange={e => handleExperienceChange(idx, 'title', e.target.value)}
-//                   required
+//                   onChange={(e) =>
+//                     handleExperienceChange(idx, 'title', e.target.value)
+//                   }
 //                 />
+
+//                 <label>Organization</label>
 //                 <input
 //                   type="text"
-//                   placeholder="Organization"
 //                   value={exp.organization}
-//                   onChange={e => handleExperienceChange(idx, 'organization', e.target.value)}
-//                   required
+//                   onChange={(e) =>
+//                     handleExperienceChange(idx, 'organization', e.target.value)
+//                   }
 //                 />
+
+//                 <label>Years</label>
 //                 <input
 //                   type="text"
-//                   placeholder="Years"
 //                   value={exp.years}
-//                   onChange={e => handleExperienceChange(idx, 'years', e.target.value)}
-//                   required
+//                   onChange={(e) =>
+//                     handleExperienceChange(idx, 'years', e.target.value)
+//                   }
 //                 />
+
 //                 {experienceList.length > 1 && (
-//   <button
-//     type="button"
-//     className="remove-btn"
-//     onClick={() => handleRemoveExperience(idx)}
-//   >
-//     ❌
-//   </button>
-// )}
+//                   <button
+//                     type="button"
+//                     className="remove-btn"
+//                     onClick={() => handleRemoveExperience(idx)}
+//                   >
+//                     ❌ Remove
+//                   </button>
+//                 )}
 //               </div>
 //             ))}
+
 //             <button type="button" onClick={handleAddExperience}>
 //               + Add Experience
 //             </button>
 
 //             <div className="nav-buttons">
-//               <button onClick={handleBack}>← Back</button>
-//               <button onClick={handleNext}>Next →</button>
+//               <button type="button" onClick={() => setCurrentStep(1)}>
+//                 ← Back
+//               </button>
+//               <button type="button" onClick={() => setCurrentStep(3)}>
+//                 Next →
+//               </button>
 //             </div>
-//           </>
+//           </div>
 //         )}
 
-//         {/* ===== STEP 3 PUBLICATIONS (OPTIONAL) ===== */}
-//         {step === 3 && (
-//           <>
+//         {/* ========= PUBLICATIONS (OPTIONAL) ========= */}
+//         {currentStep === 3 && (
+//           <div className="step-section">
 //             <h3>Publications (Optional)</h3>
+
 //             {publications.map((pub, idx) => (
-//               <div key={idx} className="entry-row">
-//                 <input
-//                   type="text"
-//                   placeholder="Title"
-//                   value={pub.title}
-//                   onChange={e => handlePublicationChange(idx, 'title', e.target.value)}
-//                 />
-//                 <input
-//                   type="text"
-//                   placeholder="Journal"
-//                   value={pub.journal}
-//                   onChange={e => handlePublicationChange(idx, 'journal', e.target.value)}
-//                 />
-//                 <input
-//                   type="text"
-//                   placeholder="Year"
-//                   value={pub.year}
-//                   onChange={e => handlePublicationChange(idx, 'year', e.target.value)}
-//                 />
-//                 {publications.length > 1 && (
-//   <button
-//     type="button"
-//     className="remove-btn"
-//     onClick={() => handleRemovePublication(idx)}
-//   >
-//     ❌
-//   </button>
-// )}
-//               </div>
-//             ))}
+//   <div key={idx} className="entry-block">
+
+//     <label>Title</label>
+//     <input
+//       type="text"
+//       value={pub.title}
+//       onChange={(e) =>
+//         handlePublicationChange(idx, 'title', e.target.value)
+//       }
+//     />
+
+//     <label>Journal</label>
+//     <input
+//       type="text"
+//       value={pub.journal}
+//       onChange={(e) =>
+//         handlePublicationChange(idx, 'journal', e.target.value)
+//       }
+//     />
+
+//     <label>Year</label>
+//     <input
+//       type="text"
+//       value={pub.year}
+//       onChange={(e) =>
+//         handlePublicationChange(idx, 'year', e.target.value)
+//       }
+//     />
+
+//     {/* 🗑️ REMOVE BUTTON */}
+//     {publications.length > 1 && (
+//       <button
+//         type="button"
+//         className="remove-btn"
+//         onClick={() => handleRemovePublication(idx)}
+//       >
+//         🗑️ Remove
+//       </button>
+//     )}
+
+//   </div>
+// ))}
+
 //             <button type="button" onClick={handleAddPublication}>
 //               + Add Publication
 //             </button>
 
 //             <div className="nav-buttons">
-//               <button onClick={handleBack}>← Back</button>
-//               <button onClick={handleNext}>Next →</button>
+//               <button type="button" onClick={() => setCurrentStep(2)}>
+//                 ← Back
+//               </button>
+//               <button type="button" onClick={() => setCurrentStep(4)}>
+//                 Next →
+//               </button>
 //             </div>
-//           </>
+//           </div>
 //         )}
 
-//         {/* ===== STEP 4 PROFILE PIC ===== */}
-//         {step === 4 && (
-//           <>
-//             <h3>Upload Profile Picture</h3>
+//         {/* ========= PROFILE PIC ========= */}
+//         {currentStep === 4 && (
+//           <div className="step-section">
+//             <h3>Profile Picture *</h3>
 
+//             <label>Upload Profile Photo</label>
 //             <input
 //               type="file"
 //               accept="image/*"
@@ -713,193 +1345,15 @@ const handleRemovePublication = (idx) => {
 //             />
 
 //             <div className="nav-buttons">
-//               <button onClick={handleBack}>← Back</button>
-//               <button onClick={handleNext}>Review</button>
+//               <button type="button" onClick={() => setCurrentStep(3)}>
+//                 ← Back
+//               </button>
+//               <button type="submit">Submit Profile</button>
 //             </div>
-//           </>
+//           </div>
 //         )}
-
-//         {/* ===== STEP 5 REVIEW ===== */}
-//         {step === 5 && (
-//           <>
-//             <h3>Review Your Details</h3>
-
-//             <p><strong>Education:</strong> {educationList.length} entries</p>
-//             <p><strong>Experience:</strong> {experienceList.length} entries</p>
-//             <p><strong>Publications:</strong> {publications.length} entries</p>
-//             <p><strong>Profile Pic:</strong> {profilePic ? profilePic.name : 'Not uploaded'}</p>
-
-//             <div className="nav-buttons">
-//               <button onClick={handleBack}>← Back</button>
-//               <button onClick={handleSubmit}>Submit Profile ✅</button>
-//             </div>
-//           </>
-//         )}
-//       </div>
-//     </div>
-//     </>
-//   );
-// }
-
-// import { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import axios from 'axios';
-// import Swal from 'sweetalert2';
-// import './CompleteProfile.css'; // optional for styling
-
-// export default function CompleteProfile() {
-//   const navigate = useNavigate();
-//   const storedUser = JSON.parse(localStorage.getItem('user'));
-//   const userId = storedUser?.userId;
-
-//   const [educationList, setEducationList] = useState([{ degree: '', institution: '', year: '' }]);
-//   const [experienceList, setExperienceList] = useState([{ title: '', organization: '', years: '' }]);
-//   const [publications, setPublications] = useState([{ title: '', journal: '', year: '' }]);
-
-//   const handleAddEducation = () => setEducationList([...educationList, { degree: '', institution: '', year: '' }]);
-//   const handleAddExperience = () => setExperienceList([...experienceList, { title: '', organization: '', years: '' }]);
-//   const handleAddPublication = () => setPublications([...publications, { title: '', journal: '', year: '' }]);
-
-//   const handleEducationChange = (index, field, value) => {
-//     const list = [...educationList];
-//     list[index][field] = value;
-//     setEducationList(list);
-//   };
-
-//   const handleExperienceChange = (index, field, value) => {
-//     const list = [...experienceList];
-//     list[index][field] = value;
-//     setExperienceList(list);
-//   };
-
-//   const handlePublicationChange = (index, field, value) => {
-//     const list = [...publications];
-//     list[index][field] = value;
-//     setPublications(list);
-//   };
-
-
-//   const getDashboardRoute = (role) => {
-//   switch (role) {
-//     case 'faculty': return '/faculty-dashboard';
-//     case 'hod': return '/hod-dashboard';
-//     case 'principal': return '/principal-dashboard';
-//     case 'rdCoordinator': return '/rd-dashboard';
-//     case 'rdDean': return '/rd-dean-dashboard';
-//     case 'admin': return '/mainAdmin-dashboard';
-//     default: return '/';
-//   }
-// };
-
-
-// const handleSubmit = async (e) => {
-//   e.preventDefault();
-
-//   try {
-//     // Convert arrays to string for backend if needed
-//     const eduStr = educationList.map(
-//       (e) => `${e.degree} - ${e.institution} (${e.year})`
-//     ).join('; ');
-
-//     const expStr = experienceList.map(
-//       (e) => `${e.title} - ${e.organization} (${e.years} years)`
-//     ).join('; ');
-
-//     const response = await axios.put(
-//       `/api/auth/complete-profile/${userId}`,
-//       {
-//         educationDetails: eduStr,
-//         experienceDetails: expStr,
-//         publications,
-//         isProfileCompleted: true
-//       }
-//     );
-
-//     Swal.fire('Success', 'Profile saved successfully', 'success').then(() => {
-//       const role = localStorage.getItem('role'); // ✅ get role
-//       navigate(getDashboardRoute(role));
-//     });
-
-//   } catch (err) {
-//     console.error(err);
-//     Swal.fire('Error', err.response?.data?.message || 'Profile update failed', 'error');
-//   }
-// };
-// //   const handleSubmit = async (e) => {
-// //     e.preventDefault();
-
-// //     try {
-// //       await axios.put(`/api/auth/complete-profile/${userId}`, {
-// //         educationDetails: educationList,
-// //         experienceDetails: experienceList,
-// //         publications,
-// //         isProfileCompleted: true
-// //       });
-
-// //       Swal.fire('Success', 'Profile completed successfully!', 'success').then(() => {
-// //         // navigate based on role
-// //         const role = storedUser.role;
-// //         switch (role) {
-// //           case 'faculty':
-// //             navigate('/faculty-dashboard');
-// //             break;
-// //           case 'hod':
-// //             navigate('/hod-dashboard');
-// //             break;
-// //           case 'principal':
-// //             navigate('/principal-dashboard');
-// //             break;
-// //           case 'rdDean':
-// //             navigate('/rd-dean-dashboard');
-// //             break;
-// //           default:
-// //             navigate('/');
-// //         }
-// //       });
-// //     } catch (err) {
-// //       Swal.fire('Error', err.response?.data?.message || 'Failed to complete profile', 'error');
-// //     }
-// //   };
-
-//   return (
-//     <div className="complete-profile-wrapper">
-//       <h2>Complete Your Profile</h2>
-//       <form onSubmit={handleSubmit}>
-//         {/* Education */}
-//         <h3>Education</h3>
-//         {educationList.map((edu, idx) => (
-//           <div key={idx} className="entry-row">
-//             <input type="text" placeholder="Degree" value={edu.degree} onChange={e => handleEducationChange(idx, 'degree', e.target.value)} required />
-//             <input type="text" placeholder="Institution" value={edu.institution} onChange={e => handleEducationChange(idx, 'institution', e.target.value)} required />
-//             <input type="text" placeholder="Year" value={edu.year} onChange={e => handleEducationChange(idx, 'year', e.target.value)} required />
-//           </div>
-//         ))}
-//         <button type="button" onClick={handleAddEducation}>+ Add Education</button>
-
-//         {/* Experience */}
-//         <h3>Experience</h3>
-//         {experienceList.map((exp, idx) => (
-//           <div key={idx} className="entry-row">
-//             <input type="text" placeholder="Title" value={exp.title} onChange={e => handleExperienceChange(idx, 'title', e.target.value)} required />
-//             <input type="text" placeholder="Organization" value={exp.organization} onChange={e => handleExperienceChange(idx, 'organization', e.target.value)} required />
-//             <input type="text" placeholder="Years" value={exp.years} onChange={e => handleExperienceChange(idx, 'years', e.target.value)} required />
-//           </div>
-//         ))}
-//         <button type="button" onClick={handleAddExperience}>+ Add Experience</button>
-
-//         {/* Publications */}
-//         <h3>Publications</h3>
-//         {publications.map((pub, idx) => (
-//           <div key={idx} className="entry-row">
-//             <input type="text" placeholder="Title" value={pub.title} onChange={e => handlePublicationChange(idx, 'title', e.target.value)} required />
-//             <input type="text" placeholder="Journal" value={pub.journal} onChange={e => handlePublicationChange(idx, 'journal', e.target.value)} required />
-//             <input type="text" placeholder="Year" value={pub.year} onChange={e => handlePublicationChange(idx, 'year', e.target.value)} required />
-//           </div>
-//         ))}
-//         <button type="button" onClick={handleAddPublication}>+ Add Publication</button>
-
-//         <button type="submit">Submit Profile</button>
 //       </form>
 //     </div>
+//     </ >
 //   );
 // }

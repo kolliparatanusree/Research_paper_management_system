@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { API_BASE_URL } from '../config';
 import {
   ResponsiveContainer,
   BarChart,
@@ -59,7 +60,7 @@ export default function HodAnalytics({
 
         try {
           const response = await fetch(
-            `/api/analytics/uid-requests/${encodeURIComponent(
+            `${API_BASE_URL}/api/analytics/uid-requests/${encodeURIComponent(
               department
             )}`
           );
@@ -129,7 +130,7 @@ export default function HodAnalytics({
 
         try {
           const response = await fetch(
-            `/api/analytics/publications/${encodeURIComponent(
+            `${API_BASE_URL}/api/analytics/publications/${encodeURIComponent(
               department
             )}`
           );

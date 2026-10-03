@@ -5,6 +5,7 @@ import axios from 'axios';
 import CustomNavbar from './CustomNavbar';
 import Swal from 'sweetalert2';
 import './Login.css';
+import { API_BASE_URL } from '../config';
 import { LuEye, LuEyeOff } from "react-icons/lu";
 export default function Login() {
   const [userId, setUserId] = useState('');
@@ -52,7 +53,7 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      await axios.post('/api/auth/forgot-password', {
+      await axios.post(`${API_BASE_URL}/api/auth/forgot-password`, {
         email
       });
 
@@ -70,6 +71,9 @@ export default function Login() {
       });
 
     } catch (err) {
+       console.log("FORGOT PASSWORD ERROR:", err);
+  console.log("STATUS:", err.response?.status);
+  console.log("DATA:", err.response?.data);
       Swal.fire({
         title: 'Error',
         text:
@@ -89,7 +93,7 @@ export default function Login() {
 
     try {
       const res = await axios.post(
-        '/api/auth/login',
+        `${API_BASE_URL}/api/auth/login`,
         {
           userId,
           password
@@ -152,7 +156,9 @@ export default function Login() {
       });
 
     } catch (err) {
-
+console.log("FORGOT PASSWORD ERROR:", err);
+  console.log("STATUS:", err.response?.status);
+  console.log("DATA:", err.response?.data);
       Swal.fire({
         title: 'Login Failed',
         text:

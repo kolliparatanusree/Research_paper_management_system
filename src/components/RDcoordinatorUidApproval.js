@@ -6,7 +6,7 @@ import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-
+import { API_BASE_URL } from "../config.js";
 import {
   FiActivity,
   FiBookOpen,
@@ -83,7 +83,7 @@ export default function RDcoordinatorUidApproval({
        * /api/faculty/${userId}
        */
       const profileRes = await fetch(
-        `/api/faculty/${rdCoordinatorId}`
+        `${API_BASE_URL}/api/faculty/${rdCoordinatorId}`
       );
 
       if (!profileRes.ok) {
@@ -102,7 +102,7 @@ export default function RDcoordinatorUidApproval({
        * RD Coordinator pending UID requests
        */
       const requestRes = await fetch(
-        `/api/rdcoordinator/uid-requests/${rdCoordinatorId}`
+        `${API_BASE_URL}/api/rdcoordinator/uid-requests/${rdCoordinatorId}`
       );
 
       if (!requestRes.ok) {
@@ -142,7 +142,7 @@ export default function RDcoordinatorUidApproval({
 
   const handleAction = async (id, status) => {
     try {
-      let url = `/api/rdcoordinator/uid-request/${id}/accept/${rdCoordinatorId}`;
+      let url = `${API_BASE_URL}/api/rdcoordinator/uid-request/${id}/accept/${rdCoordinatorId}`;
 
       let body = null;
 
@@ -163,7 +163,7 @@ export default function RDcoordinatorUidApproval({
           return;
         }
 
-        url = `/api/rdcoordinator/uid-request/${id}/reject/${rdCoordinatorId}`;
+        url = `${API_BASE_URL}/api/rdcoordinator/uid-request/${id}/reject/${rdCoordinatorId}`;
 
         body = JSON.stringify({
           reason: finalReason,
@@ -675,7 +675,7 @@ export default function RDcoordinatorUidApproval({
          * this URL.
          */
         const res = await fetch(
-          "/api/rdcoordinator/send-report",
+          `${API_BASE_URL}/api/rdcoordinator/send-report`,
           {
             method: "POST",
 
@@ -1926,13 +1926,13 @@ export default function RDcoordinatorUidApproval({
 //         setLoading(true);
 
 //         if (!department) {
-//           const profileRes = await fetch(`/api/faculty/${rdCoordinatorId}`);
+//           const profileRes = await fetch(`${API_BASE_URL}/api/faculty/${rdCoordinatorId}`);
 //           const profileData = await profileRes.json();
 //           setDepartment(profileData.department);
 //         }
 
 //         const requestRes = await fetch(
-//           `/api/rdcoordinator/uid-requests/${rdCoordinatorId}`
+//           `${API_BASE_URL}/api/rdcoordinator/uid-requests/${rdCoordinatorId}`
 //         );
 
 //         if (!requestRes.ok) throw new Error('Failed to fetch UID requests');
@@ -1973,14 +1973,14 @@ export default function RDcoordinatorUidApproval({
 
 //   const handleAction = async (id, status) => {
 //     try {
-//       let url = `/api/rdcoordinator/uid-request/${id}/accept/${rdCoordinatorId}`;
+//       let url = `${API_BASE_URL}/api/rdcoordinator/uid-request/${id}/accept/${rdCoordinatorId}`;
 //       let body = null;
 
 //       if (status === 'reject') {
 //         const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
 //         if (!finalReason) return Swal.fire('Error', 'Provide reason', 'error');
 
-//         url = `/api/rdcoordinator/uid-request/${id}/reject/${rdCoordinatorId}`;
+//         url = `${API_BASE_URL}/api/rdcoordinator/uid-request/${id}/reject/${rdCoordinatorId}`;
 //         body = JSON.stringify({ reason: finalReason });
 //       }
 
@@ -2180,14 +2180,14 @@ export default function RDcoordinatorUidApproval({
 // //       try {
 // //         // If department not passed as prop, fetch from RD Coordinator profile
 // //         if (!department) {
-// //           const profileRes = await fetch(`/api/faculty/${rdCoordinatorId}`);
+// //           const profileRes = await fetch(`${API_BASE_URL}/api/faculty/${rdCoordinatorId}`);
 // //           const profileData = await profileRes.json();
 // //           setDepartment(profileData.department);
 // //         }
 
 // //         // Fetch pending UID requests for this department
 // //         const requestRes = await fetch(
-// //           `/api/rdcoordinator/uid-requests/${rdCoordinatorId}`
+// //           `${API_BASE_URL}/api/rdcoordinator/uid-requests/${rdCoordinatorId}`
 // //         );
 
 // //         if (!requestRes.ok) throw new Error('Failed to fetch UID requests');
@@ -2207,14 +2207,14 @@ export default function RDcoordinatorUidApproval({
 
 // //   const handleAction = async (id, status) => {
 // //     try {
-// //       let url = `/api/rdcoordinator/uid-request/${id}/accept/${rdCoordinatorId}`;
+// //       let url = `${API_BASE_URL}/api/rdcoordinator/uid-request/${id}/accept/${rdCoordinatorId}`;
 // //       let body = null;
 
 // //       if (status === 'reject') {
 // //         const finalReason = rejectReason === 'Other' ? customReason : rejectReason;
 // //         if (!finalReason) return Swal.fire('Error', 'Please provide a reason', 'error');
 
-// //         url = `/api/rdcoordinator/uid-request/${id}/reject/${rdCoordinatorId}`;
+// //         url = `${API_BASE_URL}/api/rdcoordinator/uid-request/${id}/reject/${rdCoordinatorId}`;
 // //         body = JSON.stringify({ reason: finalReason });
 // //       }
 

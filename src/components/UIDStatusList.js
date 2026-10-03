@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "./UIDStatusList.css";
 import Swal from "sweetalert2";
-
+import { API_BASE_URL } from "../config.js";
 export default function UIDStatusList({ facultyId }) {
   const [allRequests, setAllRequests] = useState([]);
   const [rejectedRequests, setRejectedRequests] = useState([]);
@@ -65,8 +65,8 @@ export default function UIDStatusList({ facultyId }) {
       try {
         const [uidResponse, rejectedResponse] =
           await Promise.all([
-            fetch(`/api/faculty/uid-requests/${facultyId}`),
-            fetch(`/api/faculty/rejected-uids/${facultyId}`),
+            fetch(`${API_BASE_URL}/api/faculty/uid-requests/${facultyId}`),
+            fetch(`${API_BASE_URL}/api/faculty/rejected-uids/${facultyId}`),
           ]);
 
         if (!uidResponse.ok || !rejectedResponse.ok) {
@@ -440,7 +440,7 @@ export default function UIDStatusList({ facultyId }) {
 
     try {
       const res = await fetch(
-        `/api/faculty/uid-request/${editingRequest._id}/edit/${facultyId}`,
+        `${API_BASE_URL}/api/faculty/uid-request/${editingRequest._id}/edit/${facultyId}`,
         {
           method: "PUT",
           headers: {

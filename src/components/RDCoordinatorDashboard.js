@@ -7,7 +7,7 @@ import HODUIDStatusList from "./HODUIDStatusList";
 
 import axios from "axios";
 import Swal from "sweetalert2";
-
+import { API_BASE_URL } from "../config.js";
 import ProfileSection from "./faculty/ProfileSection";
 import DepartmentPublicationsSection from "./DepartmentPublicationsSection";
 import HodFacultySection from "./HodFacultySection";
@@ -49,7 +49,7 @@ export default function RDCoordinatorDashboard() {
 
     if (!userId) return;
 
-    fetch(`/api/notifications/${userId}`)
+    fetch(`${API_BASE_URL}/api/notifications/${userId}`)
       .then((res) => res.json())
       .then((data) => {
 
@@ -79,7 +79,7 @@ export default function RDCoordinatorDashboard() {
     try {
 
       const res = await fetch(
-        `/api/auth/notifications/unread-count/${userId}`
+        `${API_BASE_URL}/api/auth/notifications/unread-count/${userId}`
       );
 
       const data = await res.json();
@@ -134,7 +134,7 @@ export default function RDCoordinatorDashboard() {
         setLoadingProfile(true);
 
         const res = await axios.get(
-          `/api/faculty/${userId}`
+          `${API_BASE_URL}/api/faculty/${userId}`
         );
 
         const data = res.data;
@@ -211,17 +211,17 @@ export default function RDCoordinatorDashboard() {
 
           // Same faculty count as HOD
           axios.get(
-            `/api/faculty/count/${department}`
+            `${API_BASE_URL}/api/faculty/count/${department}`
           ),
 
           // RD COORDINATOR pending UID
           axios.get(
-            `/api/rdcoordinator/uid/pending/${department}`
+            `${API_BASE_URL}/api/rdcoordinator/uid/pending/${department}`
           ),
 
           // RD COORDINATOR approved UID
           axios.get(
-            `/api/rdcoordinator/uid/approved/${department}`
+            `${API_BASE_URL}/api/rdcoordinator/uid/approved/${department}`
           ),
 
         ]);
@@ -393,7 +393,7 @@ export default function RDCoordinatorDashboard() {
     try {
 
       await axios.put(
-        `/api/auth/notifications/mark-read/${userId}`
+        `${API_BASE_URL}/api/auth/notifications/mark-read/${userId}`
       );
 
       setNotifCount(0);
@@ -1790,10 +1790,12 @@ export default function RDCoordinatorDashboard() {
 
             <img
               src={
-                rdProfile?.profilePic
-                  ? `/${rdProfile.profilePic}`
-                  : "/default-profile.png"
-              }
+  rdProfile?.profilePic
+    ? rdProfile.profilePic.startsWith("http")
+      ? rdProfile.profilePic
+      : `${API_BASE_URL}/${rdProfile.profilePic.replace(/^\/+/, "")}`
+    : "/default-profile.png"
+}
               alt="RD Coordinator"
               onError={(e) => {
 
@@ -1972,12 +1974,14 @@ export default function RDCoordinatorDashboard() {
             >
 
               <img
-                src={
-                  rdProfile?.profilePic
-                    ? `/${rdProfile.profilePic}`
-                    : "/default-profile.png"
-                }
-                alt="Profile"
+  src={
+    rdProfile?.profilePic
+      ? rdProfile.profilePic.startsWith("http")
+        ? rdProfile.profilePic
+        : `${API_BASE_URL}/${rdProfile.profilePic.replace(/^\/+/, "")}`
+      : "/default-profile.png"
+  }
+  alt="Profile"
                 onError={(e) => {
 
                   e.target.src =
@@ -2220,7 +2224,7 @@ export default function RDCoordinatorDashboard() {
 //     if (!userId) return;
 
 //     axios
-//       .get(`/api/auth/notifications/unread-count/${userId}`)
+//       .get(`${API_BASE_URL}/api/auth/notifications/unread-count/${userId}`)
 //       .then((res) => setNotifCount(res.data.count))
 //       .catch((err) => console.error(err));
 //   }, 10000);
@@ -2230,7 +2234,7 @@ export default function RDCoordinatorDashboard() {
 //   // Fetch notifications
 //   // useEffect(() => {
 //   //   if (!userId) return;
-//   //   axios.get(`/api/notifications/${userId}`)
+//   //   axios.get(`${API_BASE_URL}/api/notifications/${userId}`)
 //   //     .then(res => setNotifications(res.data))
 //   //     .catch(err => console.error(err));
 //   // }, []);
@@ -2240,14 +2244,14 @@ export default function RDCoordinatorDashboard() {
 //     if (!profile?.department) return;
 //     const department = profile.department;
 
-//     axios.get(`/api/faculty/count/${department}`)
+//     axios.get(`${API_BASE_URL}/api/faculty/count/${department}`)
 //       .then(res => setFacultyCount(res.data.count));
 
 //     // Pending UID requests for RD Coordinator (after HOD approval)
-//     axios.get(`/api/rdcoordinator/uid/pending/${department}`)
+//     axios.get(`${API_BASE_URL}/api/rdcoordinator/uid/pending/${department}`)
 //       .then(res => setPendingUidCount(res.data.count));
 
-//     axios.get(`/api/rdcoordinator/uid/approved/${department}`)
+//     axios.get(`${API_BASE_URL}/api/rdcoordinator/uid/approved/${department}`)
 //       .then(res => setApprovedUidCount(res.data.count));
 
 //   }, [profile]);
@@ -2270,7 +2274,7 @@ export default function RDCoordinatorDashboard() {
 //         });
 
 //         setLoadingProfile(true);
-//         const res = await axios.get(`/api/faculty/${userId}`);
+//         const res = await axios.get(`${API_BASE_URL}/api/faculty/${userId}`);
 //         const data = res.data;
 
 //         setProfile({
@@ -2357,7 +2361,7 @@ export default function RDCoordinatorDashboard() {
 //   setNotifCount(0);
 
 //   try {
-//     await axios.put(`/api/auth/notifications/mark-read/${userId}`);
+//     await axios.put(`${API_BASE_URL}/api/auth/notifications/mark-read/${userId}`);
 //   } catch (err) {
 //     console.error(err);
 //   }

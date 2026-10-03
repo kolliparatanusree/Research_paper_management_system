@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import FacultyAnalytics from "./FacultyAnalytics";
 import PublicationsSection from './faculty/PublicationsSection';
 import logo from "./logo2.jpeg";
+import { API_BASE_URL } from '../config';
 import { Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -121,7 +122,7 @@ const overallProgress =
   // fetch counts
   const fetchCounts = async () => {
     try {
-      const res = await fetch(`/api/dashboard/counts/${facultyId}`);
+      const res = await fetch(`${API_BASE_URL}/api/dashboard/counts/${facultyId}`);
       const data = await res.json();
       setCounts(data);
     } catch (err) {
@@ -130,7 +131,7 @@ const overallProgress =
   };
 
   useEffect(() => {
-  fetch(`/api/auth/notifications/unread-count/${facultyId}`)
+  fetch(`${API_BASE_URL}/api/auth/notifications/unread-count/${facultyId}`)
     .then(res => res.json())
     .then(data => setNotifCount(data.count))
     .catch(err => console.error(err));
@@ -139,7 +140,7 @@ const overallProgress =
   // fetch faculty details
   useEffect(() => {
     const fetchDetails = async () => {
-      const res = await fetch(`/api/faculty/${facultyId}`);
+      const res = await fetch(`${API_BASE_URL}/api/faculty/${facultyId}`);
       const data = await res.json();
       setFacultyDetails({ ...data, facultyId: data.userId });
     };
@@ -407,10 +408,12 @@ const overallProgress =
 
           <img
             src={
-              facultyDetails?.profilePic
-                ? `/${facultyDetails.profilePic}`
-                : "/default-profile.png"
-            }
+  facultyDetails?.profilePic
+    ? facultyDetails.profilePic.startsWith("http")
+      ? facultyDetails.profilePic
+      : `${API_BASE_URL}/${facultyDetails.profilePic.replace(/^\/+/, "")}`
+    : "/default-profile.png"
+}
             alt="Faculty"
             onError={(e) => {
               e.target.src = "/default-profile.png";
@@ -482,10 +485,12 @@ const overallProgress =
 </button>
 
     {/* Small Profile Pic */}
-   <img
+  <img
   src={
     facultyDetails?.profilePic
-      ? `/${facultyDetails.profilePic}`
+      ? facultyDetails.profilePic.startsWith("http")
+        ? facultyDetails.profilePic
+        : `${API_BASE_URL}/${facultyDetails.profilePic.replace(/^\/+/, "")}`
       : "/default-profile.png"
   }
   alt="Profile"

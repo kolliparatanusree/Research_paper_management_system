@@ -1,6 +1,6 @@
 import "./LandingPage.css";
 import CustomNavbar from "./CustomNavbar";
-
+import { API_BASE_URL } from "../config.js";
 import {
   VerticalTimeline,
   VerticalTimelineElement,
@@ -46,7 +46,7 @@ export default function LandingPage() {
       try {
 
         const response = await fetch(
-          "/api/dashboard/landing-analytics"
+          `${API_BASE_URL}/api/dashboard/landing-analytics`
         );
 
         if (!response.ok) {

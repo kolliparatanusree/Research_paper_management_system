@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import "./PublicationsSection.css";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-
+import { API_BASE_URL } from "../../config.js";
 export default function PublicationsSection({ userId }) {
   const [publications, setPublications] = useState([]);
   const [selectedPub, setSelectedPub] = useState(null);
@@ -21,7 +21,7 @@ export default function PublicationsSection({ userId }) {
         setLoading(true);
 
         const res = await fetch(
-          `/api/faculty/publication-history/${userId}`
+          `${API_BASE_URL}/api/faculty/publication-history/${userId}`
         );
 
         if (!res.ok) {
@@ -1220,7 +1220,7 @@ export default function PublicationsSection({ userId }) {
 //     const fetchPublications = async () => {
 //       try {
 //         const res = await fetch(
-//           `/api/faculty/publication-history/${userId}`
+//           `${API_BASE_URL}/api/faculty/publication-history/${userId}`
 //         );
 //         const data = await res.json();
 //         setPublications(data.publicationHistory || []);
@@ -1362,7 +1362,7 @@ export default function PublicationsSection({ userId }) {
 // //     const fetchPublications = async () => {
 // //       try {
 // //         const res = await fetch(
-// //           `/api/faculty/publication-history/${userId}`
+// //           `${API_BASE_URL}/api/faculty/publication-history/${userId}`
 // //         );
 // //         const data = await res.json();
 // //         setPublications(data.publicationHistory || []);
@@ -1457,7 +1457,7 @@ export default function PublicationsSection({ userId }) {
 // // //     const fetchPublications = async () => {
 // // //       try {
 // // //         const res = await axios.get(
-// // //           `/api/faculty/publication-history/${userId}`
+// // //           `${API_BASE_URL}/api/faculty/publication-history/${userId}`
 // // //         );
 
 // // //         console.log("API RESPONSE:", res.data);

@@ -3,7 +3,7 @@ import axios from "axios";
 import "./HodFacultySection.css";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
-
+import { API_BASE_URL } from '../config';
 import {
   Search,
   Users,
@@ -111,11 +111,11 @@ const fetchFaculty = async () => {
 
     const [facultyRes, publicationRes] = await Promise.all([
       axios.get(
-        `/api/hod/faculty?dept=${encodeURIComponent(dept)}`
+        `${API_BASE_URL}/api/hod/faculty?dept=${encodeURIComponent(dept)}`
       ),
 
       axios.get(
-        `/api/faculty/department-publications/${encodeURIComponent(
+        `${API_BASE_URL}/api/faculty/department-publications/${encodeURIComponent(
           dept
         )}`
       ),
@@ -166,7 +166,7 @@ const fetchFaculty = async () => {
         if (userId) {
           try {
             const coAuthorRes = await axios.get(
-              `/api/faculty/coauthors/${encodeURIComponent(
+              `${API_BASE_URL}/api/faculty/coauthors/${encodeURIComponent(
                 userId
               )}`
             );
@@ -239,11 +239,11 @@ const fetchFaculty = async () => {
 
   //     const [facultyRes, publicationRes] = await Promise.all([
   //       axios.get(
-  //         `/api/hod/faculty?dept=${encodeURIComponent(dept)}`
+  //         `${API_BASE_URL}/api/hod/faculty?dept=${encodeURIComponent(dept)}`
   //       ),
 
   //       axios.get(
-  //         `/api/faculty/department-publications/${encodeURIComponent(
+  //         `${API_BASE_URL}/api/faculty/department-publications/${encodeURIComponent(
   //           dept
   //         )}`
   //       ),
@@ -365,22 +365,36 @@ const fetchFaculty = async () => {
     }`.toUpperCase();
   };
 
+  // const getProfileImage = (faculty) => {
+  //   if (!faculty?.profilePic) {
+  //     return "/default-profile.png";
+  //   }
+
+  //   if (
+  //     faculty.profilePic.startsWith("http://") ||
+  //     faculty.profilePic.startsWith("https://") ||
+  //     faculty.profilePic.startsWith("/")
+  //   ) {
+  //     return faculty.profilePic;
+  //   }
+
+  //   return `/${faculty.profilePic}`;
+  // };
+
   const getProfileImage = (faculty) => {
-    if (!faculty?.profilePic) {
-      return "/default-profile.png";
-    }
+  if (!faculty?.profilePic) {
+    return "/default-profile.png";
+  }
 
-    if (
-      faculty.profilePic.startsWith("http://") ||
-      faculty.profilePic.startsWith("https://") ||
-      faculty.profilePic.startsWith("/")
-    ) {
-      return faculty.profilePic;
-    }
+  if (
+    faculty.profilePic.startsWith("http://") ||
+    faculty.profilePic.startsWith("https://")
+  ) {
+    return faculty.profilePic;
+  }
 
-    return `/${faculty.profilePic}`;
-  };
-
+  return `${API_BASE_URL}/${faculty.profilePic.replace(/^\/+/, "")}`;
+};
   const getPublicationYear = (publication) => {
     /*
      * Some publication records already have a year field.
@@ -596,15 +610,15 @@ const fetchFaculty = async () => {
         coRes,
       ] = await Promise.all([
         axios.get(
-          `/api/hod/faculty-details/${facultyUserId}`
+          `${API_BASE_URL}/api/hod/faculty-details/${facultyUserId}`
         ),
 
         axios.get(
-          `/api/faculty/publications/${facultyUserId}`
+          `${API_BASE_URL}/api/faculty/publications/${facultyUserId}`
         ),
 
         axios.get(
-          `/api/faculty/coauthors/${facultyUserId}`
+          `${API_BASE_URL}/api/faculty/coauthors/${facultyUserId}`
         ),
       ]);
 

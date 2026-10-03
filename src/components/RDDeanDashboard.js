@@ -52,6 +52,40 @@ export default function RDDeanDashboard() {
   const [rdDeanProfile, setRdDeanProfile] =
     useState(null);
 
+    const getProfileImageUrl = (profilePic) => {
+  if (!profilePic) return null;
+
+  if (typeof profilePic === "object") {
+    profilePic =
+      profilePic.url ||
+      profilePic.path ||
+      profilePic.filename ||
+      profilePic.filePath ||
+      "";
+  }
+
+  if (!profilePic) return null;
+
+  const imagePath = String(profilePic).trim();
+
+  if (imagePath.startsWith("data:image")) {
+    return imagePath;
+  }
+
+  if (
+    imagePath.startsWith("http://") ||
+    imagePath.startsWith("https://")
+  ) {
+    return imagePath;
+  }
+
+  const cleanBase = API_BASE_URL.replace(/\/$/, "");
+  const cleanPath = imagePath.startsWith("/")
+    ? imagePath
+    : `/${imagePath}`;
+
+  return `${cleanBase}${cleanPath}`;
+};
   const [loadingProfile, setLoadingProfile] =
     useState(true);
 
@@ -92,51 +126,51 @@ export default function RDDeanDashboard() {
       return;
     }
 
-    const getProfileImageUrl = (profilePic) => {
-      if (!profilePic) return null;
+    // const getProfileImageUrl = (profilePic) => {
+    //   if (!profilePic) return null;
 
-      if (typeof profilePic === "object") {
-        profilePic =
-          profilePic.url ||
-          profilePic.path ||
-          profilePic.filename ||
-          profilePic.filePath ||
-          "";
-      }
+    //   if (typeof profilePic === "object") {
+    //     profilePic =
+    //       profilePic.url ||
+    //       profilePic.path ||
+    //       profilePic.filename ||
+    //       profilePic.filePath ||
+    //       "";
+    //   }
 
-      if (!profilePic) return null;
+    //   if (!profilePic) return null;
 
-      const imagePath = String(profilePic).trim();
+    //   const imagePath = String(profilePic).trim();
 
-      if (imagePath.startsWith("data:image")) {
-        return imagePath;
-      }
+    //   if (imagePath.startsWith("data:image")) {
+    //     return imagePath;
+    //   }
 
-      if (
-        imagePath.startsWith("http://") ||
-        imagePath.startsWith("https://")
-      ) {
-        return imagePath;
-      }
+    //   if (
+    //     imagePath.startsWith("http://") ||
+    //     imagePath.startsWith("https://")
+    //   ) {
+    //     return imagePath;
+    //   }
 
-      const baseUrl =
-        API_BASE_URL;
+    //   const baseUrl =
+    //     API_BASE_URL;
 
-      const cleanBase = baseUrl.replace(/\/$/, "");
+    //   const cleanBase = baseUrl.replace(/\/$/, "");
 
-      const cleanPath = imagePath.startsWith("/")
-        ? imagePath
-        : `/${imagePath}`;
+    //   const cleanPath = imagePath.startsWith("/")
+    //     ? imagePath
+    //     : `/${imagePath}`;
 
-      return `${cleanBase}${cleanPath}`;
-    };
+    //   return `${cleanBase}${cleanPath}`;
+    // };
 
     const fetchProfile = async () => {
       try {
         setLoadingProfile(true);
 
         const res = await axios.get(
-          `/api/faculty/${userId}`
+          `${API_BASE_URL}/api/faculty/${userId}`
         );
 
         const data = res.data;
@@ -264,7 +298,7 @@ export default function RDDeanDashboard() {
                 try {
                   const response =
                     await axios.get(
-                      `/api/faculty/${faculty.userId}`
+                      `${API_BASE_URL}/api/faculty/${faculty.userId}`
                     );
 
                   const profile =
@@ -284,13 +318,14 @@ export default function RDDeanDashboard() {
                       profile?.department ||
                       faculty.department,
 
-                    profilePic:
-                      profile?.profilePic ||
-                      profile?.profilePicture ||
-                      profile?.profileImage ||
-                      profile?.avatar ||
-                      profile?.image ||
-                      null,
+                    profilePic: getProfileImageUrl(
+  profile?.profilePic ||
+  profile?.profilePicture ||
+  profile?.profileImage ||
+  profile?.avatar ||
+  profile?.image ||
+  null
+),
                   };
                 } catch (error) {
                   console.error(
@@ -333,7 +368,7 @@ export default function RDDeanDashboard() {
 
     try {
       const res = await axios.get(
-        `/api/notifications/${userId}?role=rdDean`
+        `${API_BASE_URL}/api/notifications/${userId}?role=rdDean`
       );
 
       if (Array.isArray(res.data)) {
@@ -354,7 +389,7 @@ export default function RDDeanDashboard() {
 
     try {
       const res = await axios.get(
-        `/api/auth/notifications/unread-count/${userId}`
+        `${API_BASE_URL}/api/auth/notifications/unread-count/${userId}`
       );
 
       setNotifCount(
@@ -388,7 +423,7 @@ export default function RDDeanDashboard() {
       setLoadingPids(true);
 
       const res = await axios.get(
-        "/api/principal/approved-papers"
+        `${API_BASE_URL}/api/principal/approved-papers`
       );
 
       setApprovedPids(
@@ -633,7 +668,7 @@ export default function RDDeanDashboard() {
 
       try {
         await axios.put(
-          `/api/auth/notifications/mark-read/${userId}`
+          `${API_BASE_URL}/api/auth/notifications/mark-read/${userId}`
         );
 
         setNotifCount(0);
@@ -3615,7 +3650,7 @@ export default function RDDeanDashboard() {
 //   setShowNotifications(!showNotifications);
 
 //   if (!showNotifications) {
-//     await fetch(`/api/auth/notifications/mark-read/${userId}`, {
+//     await fetch(`${API_BASE_URL}/api/auth/notifications/mark-read/${userId}`, {
 //       method: 'PUT'
 //     });
 //   }
@@ -3625,7 +3660,7 @@ export default function RDDeanDashboard() {
 //   const userId = localStorage.getItem('userId');
 //   if (!userId) return;
 
-//   fetch(`/api/notifications/${userId}`)
+//   fetch(`${API_BASE_URL}/api/notifications/${userId}`)
 //     .then(res => res.json())
 //     .then(data => setNotifications(data))
 //     .catch(err => console.error(err));
@@ -3712,7 +3747,7 @@ export default function RDDeanDashboard() {
 //   useEffect(() => {
 //   const fetchAnalytics = async () => {
 //     try {
-//       const res = await fetch("/api/dashboard/analytics");
+//       const res = await fetch(`${API_BASE_URL}/api/dashboard/analytics");
 //       const data = await res.json();
 
 //       setMonthlyData(data.monthly || []);
@@ -3796,7 +3831,7 @@ export default function RDDeanDashboard() {
 
 
 //       try {
-//         const res = await fetch(`/api/admin/document-submission/${id}/reject`, {
+//         const res = await fetch(`${API_BASE_URL}/api/admin/document-submission/${id}/reject`, {
 //           method: 'PUT',
 //           headers: { 'Content-Type': 'application/json' },
 //           body: JSON.stringify({ reason })
@@ -3815,7 +3850,7 @@ export default function RDDeanDashboard() {
 //     }
 
 //     try {
-//       const res = await fetch(`/api/admin/document-submission/${id}/accept`, {
+//       const res = await fetch(`${API_BASE_URL}/api/admin/document-submission/${id}/accept`, {
 //         method: 'PUT'
 //       });
 
@@ -3905,7 +3940,7 @@ export default function RDDeanDashboard() {
 //   body = JSON.stringify({ reason });
 // }
 
-// const res = await fetch(`/api/admin/uid-request/${id}/${status}`, {
+// const res = await fetch(`${API_BASE_URL}/api/admin/uid-request/${id}/${status}`, {
 //   method: 'PUT',
 //   headers: { 'Content-Type': 'application/json' },
 //   body

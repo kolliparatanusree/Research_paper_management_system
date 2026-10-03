@@ -7,7 +7,7 @@ import React, {
 
 import "./UIDStatusList.css";
 import Swal from "sweetalert2";
-
+import { API_BASE_URL } from "../config.js";
 export default function HODUIDStatusList({ userId }) {
   /* =====================================================
      STATE
@@ -104,7 +104,7 @@ export default function HODUIDStatusList({ userId }) {
          */
 
         const response = await fetch(
-          `/api/hod/uid-status/${encodeURIComponent(userId)}`
+          `${API_BASE_URL}/api/hod/uid-status/${encodeURIComponent(userId)}`
         );
 
         if (!response.ok) {

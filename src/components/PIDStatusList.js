@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./UIDStatusList.css";
 import Swal from "sweetalert2";
-
+import { API_BASE_URL } from "../config.js";
 export default function PIDStatusList({ facultyId }) {
   const [submissions, setSubmissions] = useState([]);
 
@@ -75,7 +75,7 @@ export default function PIDStatusList({ facultyId }) {
 
       try {
         const response = await fetch(
-          `/api/faculty/pid-status/${facultyId}`
+          `${API_BASE_URL}/api/faculty/pid-status/${facultyId}`
         );
 
         if (!response.ok) {
@@ -319,7 +319,7 @@ export default function PIDStatusList({ facultyId }) {
 
     try {
       const response = await fetch(
-        `/api/faculty/pid-status/${facultyId}`
+        `${API_BASE_URL}/api/faculty/pid-status/${facultyId}`
       );
 
       if (!response.ok) {
@@ -1185,7 +1185,7 @@ export default function PIDStatusList({ facultyId }) {
 
 //     try {
 //       const res = await fetch(
-//         `/api/faculty/pid-status/${facultyId}`
+//         `${API_BASE_URL}/api/faculty/pid-status/${facultyId}`
 //       );
 
 //       if (!res.ok) {
@@ -1796,7 +1796,7 @@ export default function PIDStatusList({ facultyId }) {
 
 
 // //     try {
-// //       const res = await fetch(`/api/faculty/pid-status/${facultyId}`);
+// //       const res = await fetch(`${API_BASE_URL}/api/faculty/pid-status/${facultyId}`);
 // //       const data = await res.json();
 // //       setSubmissions(data);
 // //     } catch (err) {
@@ -1832,7 +1832,7 @@ export default function PIDStatusList({ facultyId }) {
 // //   //   const fetchSubmissions = async () => {
 // //   //     setLoading(true); // Start loading
 // //   //     try {
-// //   //       const res = await fetch(`/api/faculty/pid-status/${facultyId}`);
+// //   //       const res = await fetch(`${API_BASE_URL}/api/faculty/pid-status/${facultyId}`);
 // //   //       const data = await res.json();
 // //   //       setSubmissions(data);
 // //   //     } catch (err) {

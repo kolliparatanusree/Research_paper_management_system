@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import "./DepartmentPublicationsSection.css";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { API_BASE_URL } from '../config';
 import { motion } from "framer-motion";
 import {
   Download,
@@ -69,7 +70,7 @@ export default function DepartmentPublicationsSection({ department }) {
     try {
       setLoading(true);
 
-      let url = `/api/faculty/department-publications/${encodeURIComponent(
+      let url = `${API_BASE_URL}/api/faculty/department-publications/${encodeURIComponent(
         department
       )}?`;
 
@@ -123,7 +124,7 @@ export default function DepartmentPublicationsSection({ department }) {
   useEffect(() => {
     const fetchComparison = async () => {
       try {
-        const res = await fetch("/api/faculty/department-comparison");
+        const res = await fetch(`${API_BASE_URL}/api/faculty/department-comparison`);
 
         if (!res.ok) {
           throw new Error("Failed to fetch comparison");
@@ -148,7 +149,7 @@ export default function DepartmentPublicationsSection({ department }) {
   useEffect(() => {
     const fetchTrend = async () => {
       try {
-        const res = await fetch("/api/faculty/department-trends");
+        const res = await fetch(`${API_BASE_URL}/api/faculty/department-trends`);
 
         if (!res.ok) {
           throw new Error("Failed to fetch trends");
@@ -173,7 +174,7 @@ export default function DepartmentPublicationsSection({ department }) {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const res = await fetch("/api/faculty/college-leaderboard");
+        const res = await fetch(`${API_BASE_URL}/api/faculty/college-leaderboard`);
 
         if (!res.ok) {
           throw new Error("Failed to fetch leaderboard");
@@ -2240,7 +2241,7 @@ export default function DepartmentPublicationsSection({ department }) {
 //   useEffect(() => {
 //   const fetchComparison = async () => {
 //     try {
-//       const res = await fetch("/api/faculty/department-comparison");
+//       const res = await fetch(`${API_BASE_URL}/api/faculty/department-comparison");
 //       const data = await res.json();
 //       setDeptComparison(data || []);
 //     } catch (err) {
@@ -2256,7 +2257,7 @@ export default function DepartmentPublicationsSection({ department }) {
 //   const fetchTrend = async () => {
 //     try {
 //       const res = await fetch(
-//         "/api/faculty/department-trends"
+//         `${API_BASE_URL}/api/faculty/department-trends"
 //       );
 //       const data = await res.json();
 //       setTrendData(Array.isArray(data) ? data : []);
@@ -2272,7 +2273,7 @@ export default function DepartmentPublicationsSection({ department }) {
 //   // FETCH
 //   const fetchPublications = async () => {
 //     try {
-//       let url = `/api/faculty/department-publications/${department}?`;
+//       let url = `${API_BASE_URL}/api/faculty/department-publications/${department}?`;
 
 //       if (startDate) url += `startDate=${startDate}&`;
 //       if (endDate) url += `endDate=${endDate}&`;
@@ -2301,7 +2302,7 @@ export default function DepartmentPublicationsSection({ department }) {
 //   const fetchLeaderboard = async () => {
 //     try {
 //       const res = await fetch(
-//         "/api/faculty/college-leaderboard"
+//         `${API_BASE_URL}/api/faculty/college-leaderboard"
 //       );
 //       const data = await res.json();
 //       setLeaderboard(Array.isArray(data) ? data : []);
