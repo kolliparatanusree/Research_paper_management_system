@@ -96,7 +96,6 @@ export default function HODUIDStatusList({ userId }) {
          * Do NOT put the ngrok URL here.
          *
          * React proxy:
-         * /api -> http://localhost:5000
          *
          * This works on:
          * localhost

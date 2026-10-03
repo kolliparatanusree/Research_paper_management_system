@@ -40,8 +40,7 @@ import {
   LabelList,
 } from "recharts";
 
-const API_BASE_URL = "http://localhost:5000";
-export default function PrincipalDashboard() {
+import { API_BASE_URL } from "../config";export default function PrincipalDashboard() {
   const navigate = useNavigate();
 
   /* =========================================================
@@ -135,8 +134,7 @@ export default function PrincipalDashboard() {
 
   // Existing API base URL
   const baseUrl =
-    API_BASE_URL ||
-    "http://localhost:5000";
+    API_BASE_URL;
 
   // Remove duplicate slashes
   const cleanBase = baseUrl.replace(/\/$/, "");
@@ -152,7 +150,7 @@ export default function PrincipalDashboard() {
         setLoadingProfile(true);
 
         const res = await axios.get(
-          `/api/faculty/${userId}`
+           `${API_BASE_URL}/api/faculty/${userId}`
         );
 
         const data = res.data;
@@ -274,7 +272,7 @@ useEffect(() => {
               // Use the same API path style as the rest
               // of your PrincipalDashboard.
               const response = await axios.get(
-                `/api/faculty/${faculty.userId}`
+                `${API_BASE_URL}/api/faculty/${faculty.userId}`
               );
 
               console.log(
@@ -363,8 +361,7 @@ useEffect(() => {
 
     try {
       const res = await axios.get(
-        `/api/notifications/${userId}?role=principal`
-      );
+`${API_BASE_URL}/api/notifications/${userId}?role=principal`      );
 
       if (Array.isArray(res.data)) {
         setNotifications(res.data);
@@ -384,7 +381,7 @@ useEffect(() => {
 
     try {
       const res = await axios.get(
-        `/api/auth/notifications/unread-count/${userId}`
+        `${API_BASE_URL}/api/auth/notifications/unread-count/${userId}`
       );
 
       setNotifCount(
@@ -418,7 +415,7 @@ useEffect(() => {
       setLoadingPids(true);
 
       const res = await axios.get(
-        "/api/principal/approved-papers"
+        `${API_BASE_URL}/api/principal/approved-papers`
       );
 
       setApprovedPids(
@@ -660,7 +657,7 @@ useEffect(() => {
 
       try {
         await axios.put(
-          `/api/auth/notifications/mark-read/${userId}`
+          `${API_BASE_URL}/api/auth/notifications/mark-read/${userId}`
         );
 
         setNotifCount(0);
@@ -716,11 +713,19 @@ useEffect(() => {
      PROFILE IMAGE
   ========================================================= */
 
-  const profileImage =
-    principalProfile?.profilePic
-      ? `/${principalProfile.profilePic}`
-      : "/default-profile.png";
+  // const profileImage =
+  //   principalProfile?.profilePic
+  //     ? `/${principalProfile.profilePic}`
+  //     : "/default-profile.png";
 
+const profileImage =
+  principalProfile?.profilePic
+    ? (
+        principalProfile.profilePic.startsWith("http")
+          ? principalProfile.profilePic
+          : `${API_BASE_URL}/${principalProfile.profilePic.replace(/^\/+/, "")}`
+      )
+    : "/default-profile.png";
   /* =========================================================
      DASHBOARD
   ========================================================= */

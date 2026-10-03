@@ -24,25 +24,9 @@ import {
   Pie,
   Cell,
   AreaChart,
-  Area,
-  LineChart,
-  Line,
-  RadarChart,
-  Radar,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  ComposedChart,
-  ScatterChart,
-  Scatter,
-  ZAxis,
-  FunnelChart,
-  Funnel,
-  LabelList,
+  Area
 } from "recharts";
-
-const API_BASE_URL = "http://localhost:5000";
-
+import { API_BASE_URL } from "../config";
 export default function RDDeanDashboard() {
   const navigate = useNavigate();
 
@@ -136,8 +120,7 @@ export default function RDDeanDashboard() {
       }
 
       const baseUrl =
-        API_BASE_URL ||
-        "http://localhost:5000";
+        API_BASE_URL;
 
       const cleanBase = baseUrl.replace(/\/$/, "");
 

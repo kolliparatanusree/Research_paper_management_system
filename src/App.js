@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './components/LandingPage.js';
-import FacultyLogin from './components/FacultyLogin';
 import AdminLogin from './components/AdminLogin';
 import AdminRegister from './components/AdminRegister';
 import FacultyDashboard from './components/FacultyDashboard';
@@ -12,7 +11,6 @@ import HODRegister from './components/HODRegister.js';
 import HodDashboard from './components/HodDashboard.js';
 // import CustomNavbar from './components/CustomNavbar.js';
 import HodUidApproval from './components/HodUidApproval.js';
-import PrincipalLogin from './components/PrincipalLogin.js';
 import PrincipalDashboard from './components/PrincipalDashboard.js';
 import AdminDashboard from './components/AdminDashboard.js';
 import Instructions from './components/Instructions.js';
@@ -27,14 +25,12 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/admin-login" element={<AdminLogin />} />
-         <Route path="/principal-login" element={<PrincipalLogin/>} />
         <Route path="/login" element={<Login />} />
         <Route path="/hod-login" element={<HODLogin/>} />
         <Route path="/admin-register" element={<AdminRegister />} />
         <Route path="/rd-dean-dashboard" element={<RDDeanDashboard />} />
         <Route path="/principal-dashboard" element={<PrincipalDashboard />} />  
         <Route path="/hod-register" element={<HODRegister />} />
-        <Route path="/faculty-login" element={<FacultyLogin />} />
         <Route path="/register" element={<Register />} />
         <Route path="/faculty-dashboard" element={<FacultyDashboard />} />
         <Route path="/hod-dashboard" element={<HodDashboard/>} />

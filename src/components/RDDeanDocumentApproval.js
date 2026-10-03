@@ -21,7 +21,8 @@ import {
 
 import "./RDDeanDocumentApproval.css";
 
-const API_BASE_URL = "";
+// const API_BASE_URL = "";
+import { API_BASE_URL } from "../config";
 
 const rejectionReasons = [
   "Incomplete document",

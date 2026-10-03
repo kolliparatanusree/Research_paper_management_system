@@ -41,15 +41,10 @@ import "./FacultyAnalytics.css";
 // API
 // ============================================================
 
-const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || "";
+// const API_BASE_URL =
+//   process.env.REACT_APP_API_BASE_URL || "";
 
-
-// ============================================================
-// FALLBACK DATA
-// Used only while the backend endpoint is being connected.
-// Once the API returns data, the real faculty data is used.
-// ============================================================
+import { API_BASE_URL } from "../config";
 
 const emptyAnalytics = {
   summary: {
