@@ -10,6 +10,7 @@ import ProfileSection from './faculty/ProfileSection';
 import DashboardCounts from '../components/faculty/DashboardCounts';
 import NotificationsSection from './NotificationsSection';
 import Swal from 'sweetalert2';
+import FacultyAnalytics from "./FacultyAnalytics";
 import PublicationsSection from './faculty/PublicationsSection';
 import logo from "./logo2.jpeg";
 import { Doughnut } from 'react-chartjs-2';
@@ -181,7 +182,7 @@ const overallProgress =
     <>
       {/* <CustomNavbar /> */}
       <div className="dashboard1-container">
-        <div className={`sidebar1 ${sidebarOpen ? 'open' : ''}`}>
+        {/* <div className={`sidebar1 ${sidebarOpen ? 'open' : ''}`}>
           <nav className="menu">
             <ul>
               <img src={logo} alt="Logo" className="logo1" />
@@ -219,7 +220,236 @@ const overallProgress =
               <li className="btn" onClick={() => {handleLogout(); setSidebarOpen(false);}} style={{ color: 'white', marginTop: '0px', cursor: 'pointer', fontSize: '20px' }}>🔚 Logout</li>
             </ul>
           </nav>
+        </div> */}
+        {/* =====================================================
+    FACULTY SIDEBAR
+===================================================== */}
+
+<div className={`sidebar1 ${sidebarOpen ? 'open' : ''}`}>
+
+  <nav className="menu">
+
+    {/* ---------- BRAND ---------- */}
+    <div className="sidebar1-brand">
+
+      <div className="sidebar1-logo-wrapper">
+        <img
+          src={logo}
+          alt="RPMS"
+          className="logo1"
+        />
+      </div>
+
+      <div className="sidebar1-brand-text">
+        <strong>RPMS</strong>
+        <span>Research Management</span>
+      </div>
+
+    </div>
+
+
+    {/* ---------- ROLE ---------- */}
+    <div className="sidebar1-role">
+      <span className="sidebar1-role-dot"></span>
+      Faculty Portal
+    </div>
+
+
+    {/* ---------- MAIN ---------- */}
+    <div className="sidebar1-section-title">
+      MAIN
+    </div>
+
+
+    <ul className="sidebar1-menu">
+
+      {/* Dashboard */}
+      <li
+        className={activeSection === 'dashboard' ? 'active' : ''}
+        onClick={() => {
+          setActiveSection('dashboard');
+          setSidebarOpen(false);
+        }}
+      >
+        <span className="sidebar1-icon">📊</span>
+        <span className="sidebar1-label">Dashboard</span>
+      </li>
+
+
+      {/* Request UID */}
+      <li
+        className={activeSection === 'request-uid' ? 'active' : ''}
+        onClick={() => {
+          setActiveSection('request-uid');
+          setSidebarOpen(false);
+        }}
+      >
+        <span className="sidebar1-icon">📄</span>
+        <span className="sidebar1-label">Request UID</span>
+      </li>
+
+
+      {/* UID Status */}
+      <li
+        className={activeSection === 'uid-status' ? 'active' : ''}
+        onClick={() => {
+          setActiveSection('uid-status');
+          setSidebarOpen(false);
+        }}
+      >
+        <span className="sidebar1-icon">🔄</span>
+        <span className="sidebar1-label">UID Status</span>
+      </li>
+
+
+      {/* Submit Documents */}
+      <li
+        className={activeSection === 'indexing' ? 'active' : ''}
+        onClick={() => {
+          setActiveSection('indexing');
+          setSidebarOpen(false);
+        }}
+      >
+        <span className="sidebar1-icon">📤</span>
+        <span className="sidebar1-label">Submit Documents</span>
+      </li>
+
+
+      {/* PID Status */}
+      <li
+        className={activeSection === 'my-submissions' ? 'active' : ''}
+        onClick={() => {
+          setActiveSection('my-submissions');
+          setSidebarOpen(false);
+        }}
+      >
+        <span className="sidebar1-icon">📋</span>
+        <span className="sidebar1-label">PID Status</span>
+      </li>
+
+
+      {/* Publications */}
+      <li
+        className={activeSection === 'publications' ? 'active' : ''}
+        onClick={() => {
+          setActiveSection('publications');
+          setSidebarOpen(false);
+        }}
+      >
+        <span className="sidebar1-icon">📚</span>
+        <span className="sidebar1-label">Publications</span>
+      </li>
+      <li
+  className={activeSection === 'analytics' ? 'active' : ''}
+  onClick={() => {
+    setActiveSection('analytics');
+    setSidebarOpen(false);
+  }}
+>
+  <span className="sidebar1-icon">📊</span>
+  <span className="sidebar1-label">Analytics</span>
+</li>
+
+    </ul>
+
+
+    {/* ---------- ACCOUNT ---------- */}
+    <div className="sidebar1-section-title sidebar1-account-title">
+      ACCOUNT
+    </div>
+
+
+    <ul className="sidebar1-menu sidebar1-account-menu">
+
+      {/* Notifications */}
+      <li
+        className={activeSection === 'notifications' ? 'active' : ''}
+        onClick={() => {
+          setActiveSection('notifications');
+          setNotifCount(0);
+          setSidebarOpen(false);
+        }}
+      >
+        <span className="sidebar1-icon">🔔</span>
+
+        <span className="sidebar1-label">
+          Notifications
+        </span>
+
+        {notifCount > 0 && (
+          <span className="sidebar1-count">
+            {notifCount}
+          </span>
+        )}
+      </li>
+
+
+      {/* Profile */}
+      <li
+        className={activeSection === 'profile' ? 'active' : ''}
+        onClick={() => {
+          setActiveSection('profile');
+          setSidebarOpen(false);
+        }}
+      >
+        <span className="sidebar1-icon">👤</span>
+        <span className="sidebar1-label">Profile</span>
+      </li>
+
+    </ul>
+
+
+    {/* ---------- SIDEBAR BOTTOM ---------- */}
+    <div className="sidebar1-bottom">
+
+      {facultyDetails && (
+        <div className="sidebar1-user">
+
+          <img
+            src={
+              facultyDetails?.profilePic
+                ? `/${facultyDetails.profilePic}`
+                : "/default-profile.png"
+            }
+            alt="Faculty"
+            onError={(e) => {
+              e.target.src = "/default-profile.png";
+            }}
+          />
+
+          <div className="sidebar1-user-info">
+
+            <strong>
+              {facultyDetails.fullName || "Faculty"}
+            </strong>
+
+            <span>
+              {facultyDetails.department || "Faculty"}
+            </span>
+
+          </div>
+
         </div>
+      )}
+
+
+      {/* Logout */}
+      <div
+        className="sidebar1-logout"
+        onClick={() => {
+          handleLogout();
+          setSidebarOpen(false);
+        }}
+      >
+        <span className="sidebar1-icon">↪</span>
+        <span className="sidebar1-label">Logout</span>
+      </div>
+
+    </div>
+
+  </nav>
+
+</div>
           
               <button
   className="mobile-menu-btn"
@@ -273,6 +503,9 @@ const overallProgress =
           {/* ✅ Dashboard counts panel */}
          {activeSection === 'publications' && facultyDetails && (
   <PublicationsSection userId={facultyId} />
+)}
+{activeSection === "analytics" && (
+  <FacultyAnalytics userId={facultyId} />
 )}
        {activeSection === 'dashboard' && (
   <div className="faculty1-dashboard">
@@ -371,7 +604,7 @@ const overallProgress =
         </div>
       </div>
 
-      <div className="summary1-card pending-card">
+      <div className="summary1-card pending-card1">
         <div className="summary1-icon">⏳</div>
         <div>
           <h4>Pending UIDs</h4>
@@ -949,217 +1182,10 @@ const overallProgress =
   )}
 
 </div>
-
-    {/* ================= PENDING ACTIONS =================
-    <div className="dashboard-panel pending-actions-panel">
-
-      <div className="panel-header">
-        <div>
-          <h3>Pending Actions</h3>
-          <p>Items that may require your attention</p>
-        </div>
-      </div>
-
-      <div className="pending-actions">
-
-        {counts.pendingUIDs > 0 ? (
-          <div className="pending-action warning">
-            <span className="pending-action-icon">⏳</span>
-
-            <div>
-              <strong>
-                {counts.pendingUIDs} UID
-                {counts.pendingUIDs > 1 ? 's' : ''} pending
-              </strong>
-
-              <p>
-                Your UID request
-                {counts.pendingUIDs > 1 ? 's are' : ' is'} currently
-                awaiting processing.
-              </p>
-            </div>
-
-            <button
-              onClick={() => setActiveSection('uid-status')}
-            >
-              View
-            </button>
-          </div>
-        ) : (
-          <div className="no-pending">
-            <span>✅</span>
-            <div>
-              <strong>No pending UID requests</strong>
-              <p>All your UID requests have been processed.</p>
-            </div>
-          </div>
-        )}
-
-
-        {counts.pendingPIDs > 0 ? (
-          <div className="pending-action danger">
-            <span className="pending-action-icon">📄</span>
-
-            <div>
-              <strong>
-                {counts.pendingPIDs} PID
-                {counts.pendingPIDs > 1 ? 's' : ''} pending
-              </strong>
-
-              <p>
-                Your research submission
-                {counts.pendingPIDs > 1 ? 's are' : ' is'} awaiting
-                processing.
-              </p>
-            </div>
-
-            <button
-              onClick={() => setActiveSection('my-submissions')}
-            >
-              View
-            </button>
-          </div>
-        ) : (
-          <div className="no-pending">
-            <span>✅</span>
-            <div>
-              <strong>No pending PID submissions</strong>
-              <p>Your research submissions are up to date.</p>
-            </div>
-          </div>
-        )}
-
-      </div>
-
-    </div> */}
-
   </div>
 )}
        
-          {/* {activeSection === 'dashboard' && (
-            <div
-              className="dashboard-counts"
-              style={{
-                display: 'flex',
-                gap: '1rem',
-                marginBottom: '1.5rem',
-                flexWrap: 'wrap'
-              }}
-            >
-              
-              <div
-                className="count-card"
-                style={{
-                  background: 'linear-gradient(145deg, #10b981, #34d399)',
-                  color: 'white',
-                  padding: '1rem',
-                  height: '150px',
-                  borderRadius: '15px',
-                  flex: 1,
-                  boxShadow: '0 10px 20px rgba(0,0,0,0.25), inset 0 2px 4px rgba(255,255,255,0.2)',
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                }}
-              >
-                <h4>Total UIDs</h4>
-                <p style={{ fontSize: '20px' }}>{counts.approvedUIDs + counts.pendingUIDs}</p>
-              </div>
-
-              
-              <div
-                className="count-card"
-                style={{
-                  background: 'linear-gradient(145deg, #3b82f6, #60a5fa)',
-                  color: 'white',
-                  padding: '1rem',
-                  height: '150px',
-                  borderRadius: '15px',
-                  flex: 1,
-                  boxShadow: '0 10px 20px rgba(0,0,0,0.25), inset 0 2px 4px rgba(255,255,255,0.2)',
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                }}
-              >
-                <h4>Total PIDs</h4>
-                <p style={{ fontSize: '20px' }}>{counts.approvedPIDs + counts.pendingPIDs}</p>
-              </div>
-
-              <div
-                className="count-card"
-                style={{
-                  background: 'linear-gradient(145deg, #dba00b, #e4bb17)',
-                  color: 'white',
-                  padding: '1rem',
-                  height: '150px',
-                  borderRadius: '15px',
-                  flex: 1,
-                  boxShadow: '0 10px 20px rgba(0,0,0,0.25), inset 0 2px 4px rgba(255,255,255,0.2)',
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                }}
-              >
-                <h4>Approved UIDs</h4>
-                <p style={{ fontSize: '20px' }}>{counts.approvedUIDs}</p>
-              </div>
-
-              
-              <div
-                className="count-card"
-                style={{
-                  background: 'linear-gradient(145deg, #ef4444, #f87171)',
-                  color: 'white',
-                  padding: '1rem',
-                  height: '150px',
-                  borderRadius: '15px',
-                  flex: 1,
-                  boxShadow: '0 10px 20px rgba(0,0,0,0.25), inset 0 2px 4px rgba(255,255,255,0.2)',
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                }}
-              >
-                <h4>Pending UIDs</h4>
-                <p style={{ fontSize: '20px' }}>{counts.pendingUIDs}</p>
-              </div>
-
-             
-              <div
-                className="count-card"
-                style={{
-                  background: 'linear-gradient(145deg, #6366f1, #a5b4fc)',
-                  color: 'white',
-                  padding: '1rem',
-                  borderRadius: '15px',
-                  height: '150px',
-                  flex: 1,
-                  boxShadow: '0 10px 20px rgba(0,0,0,0.25), inset 0 2px 4px rgba(255,255,255,0.2)',
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                }}
-              >
-                <h4>Approved PIDs</h4>
-                <p style={{ fontSize: '20px' }}>{counts.approvedPIDs}</p>
-              </div>
-
-             
-              <div
-                className="count-card"
-                style={{
-                  background: 'linear-gradient(145deg, #1e40af, #3b82f6)',
-                  color: 'white',
-                  padding: '1rem',
-                  borderRadius: '15px',
-                  height: '150px',
-                  flex: 1,
-                  boxShadow: '0 10px 20px rgba(0,0,0,0.25), inset 0 2px 4px rgba(255,255,255,0.2)',
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                }}
-              >
-                <h4>Pending PIDs</h4>
-                <p style={{ fontSize: '20px' }}>{counts.pendingPIDs}</p>
-              </div>
-            </div>
-          )} */}
+       
           {activeSection === 'profile' && <ProfileSection facultyDetails={facultyDetails} />}
           {activeSection === 'request-uid' && <RequestUIDForm facultyDetails={facultyDetails} />}
           {activeSection === 'uid-status' && facultyDetails && <UIDStatusList facultyId={facultyId} />}

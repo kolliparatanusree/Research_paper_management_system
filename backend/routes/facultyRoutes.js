@@ -49,6 +49,523 @@ const facultyController = require('../controllers/facultyController');
 //   }
 // });
 
+// ============================================================
+// FACULTY PERSONAL ANALYTICS
+// ============================================================
+
+router.get("/analytics/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "User ID is required",
+      });
+    }
+
+    // ----------------------------------------------------------
+    // GET FACULTY UID REQUESTS
+    // ----------------------------------------------------------
+
+  const uidRequests = await HodUidRequest.find({
+  $or: [
+    { userId: userId },
+    { facultyId: userId }
+  ]
+}).lean();
+    // ----------------------------------------------------------
+    // GET FACULTY DOCUMENTS / PUBLICATIONS
+    // ----------------------------------------------------------
+
+    const allDocuments = await DocumentUpload.find({
+      userId,
+    }).lean();
+
+    // ----------------------------------------------------------
+    // ONLY PID-ASSIGNED RECORDS ARE PUBLICATIONS
+    // ----------------------------------------------------------
+
+    const hasAssignedPid = (item) => {
+      const pid = item?.pid;
+
+      return (
+        pid !== null &&
+        pid !== undefined &&
+        String(pid).trim() !== "" &&
+        String(pid).trim().toLowerCase() !== "not assigned"
+      );
+    };
+
+    const publications = allDocuments.filter(hasAssignedPid);
+
+    // ----------------------------------------------------------
+    // DATE HELPER
+    // ----------------------------------------------------------
+
+    const getDate = (item) => {
+      const value =
+        item?.uploadedAt ||
+        item?.createdAt ||
+        item?.updatedAt;
+
+      if (!value) return null;
+
+      const date = new Date(value);
+
+      return Number.isNaN(date.getTime())
+        ? null
+        : date;
+    };
+
+    // ==========================================================
+    // SUMMARY
+    // ==========================================================
+
+    const approvedUIDs = uidRequests.filter(
+      (item) =>
+        item.hodAccept === true &&
+        item.principalAccept === true &&
+        item.adminAccept === true &&
+        item.uid
+    ).length;
+
+    const pendingUIDs =
+      uidRequests.length - approvedUIDs;
+
+    const approvedPIDs =
+      publications.length;
+
+    const pendingPIDs = Math.max(
+      0,
+      allDocuments.length - approvedPIDs
+    );
+
+    // ==========================================================
+    // PUBLICATION TYPES
+    // ==========================================================
+
+    const typeMap = {};
+
+    publications.forEach((item) => {
+      const type =
+        item.type ||
+        item.publicationType ||
+        "Other";
+
+      typeMap[type] =
+        (typeMap[type] || 0) + 1;
+    });
+
+    const publicationTypes =
+      Object.entries(typeMap).map(
+        ([name, value]) => ({
+          name,
+          value,
+        })
+      );
+
+    // ==========================================================
+    // YEARLY OUTPUT
+    // ==========================================================
+
+    const yearlyMap = {};
+
+    publications.forEach((item) => {
+      const date = getDate(item);
+
+      const year =
+        item.year ||
+        (date ? date.getFullYear() : null);
+
+      if (!year) return;
+
+      yearlyMap[year] =
+        (yearlyMap[year] || 0) + 1;
+    });
+
+    const yearlyOutput =
+      Object.entries(yearlyMap)
+        .map(([year, value]) => ({
+          label: String(year),
+          value,
+        }))
+        .sort(
+          (a, b) =>
+            Number(a.label) -
+            Number(b.label)
+        );
+
+    // ==========================================================
+    // MONTHLY ACTIVITY
+    // ==========================================================
+
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    const monthlyMap = {};
+
+    months.forEach((month) => {
+      monthlyMap[month] = 0;
+    });
+
+    publications.forEach((item) => {
+      const date = getDate(item);
+
+      if (!date) return;
+
+      const month =
+        months[date.getMonth()];
+
+      monthlyMap[month]++;
+    });
+
+    const monthlyActivity =
+      months.map((month) => ({
+        label: month,
+        value: monthlyMap[month],
+      }));
+
+    // ==========================================================
+    // PUBLICATION TREND
+    // ==========================================================
+
+    const publicationTrend =
+      monthlyActivity;
+
+    // ==========================================================
+    // RESEARCH GROWTH
+    // ==========================================================
+
+    const researchGrowth =
+      yearlyOutput;
+
+    // ==========================================================
+    // CO-AUTHOR ANALYTICS
+    // ==========================================================
+
+    let soloPapers = 0;
+    let coAuthoredPapers = 0;
+    let totalCollaborators = 0;
+
+    publications.forEach((item) => {
+      const authors =
+        item?.coAuthors?.authors || [];
+
+      if (
+        Array.isArray(authors) &&
+        authors.length > 0
+      ) {
+        coAuthoredPapers++;
+        totalCollaborators +=
+          authors.length;
+      } else {
+        soloPapers++;
+      }
+    });
+
+    const collaboration = [
+      {
+        label: "Solo",
+        value: soloPapers,
+      },
+      {
+        label: "Collaborative",
+        value: coAuthoredPapers,
+      },
+    ];
+
+    // ==========================================================
+    // UID APPROVAL JOURNEY
+    // ==========================================================
+
+    const requested =
+      uidRequests.length;
+
+    const hodApproved =
+      uidRequests.filter(
+        (item) =>
+          item.hodAccept === true
+      ).length;
+
+    const rdApproved =
+      uidRequests.filter(
+        (item) =>
+          item.hodAccept === true &&
+          (
+            item.RDCordinatorAccept === true ||
+            item.rdCoordinatorAccept === true ||
+            item.rdAccept === true
+          )
+      ).length;
+
+    const principalApproved =
+      uidRequests.filter(
+        (item) =>
+          item.hodAccept === true &&
+          item.principalAccept === true
+      ).length;
+
+    const uidIssued =
+      uidRequests.filter(
+        (item) =>
+          item.hodAccept === true &&
+          item.principalAccept === true &&
+          item.adminAccept === true &&
+          item.uid
+      ).length;
+
+    const percentage = (value) =>
+      requested > 0
+        ? Math.round(
+            (value / requested) * 100
+          )
+        : 0;
+
+    const uidJourney = [
+      {
+        label: "Requested",
+        value: requested,
+        percentage: requested > 0 ? 100 : 0,
+      },
+      {
+        label: "HOD Approved",
+        value: hodApproved,
+        percentage: percentage(hodApproved),
+      },
+      {
+        label: "RD Approved",
+        value: rdApproved,
+        percentage: percentage(rdApproved),
+      },
+      {
+        label: "Principal Approved",
+        value: principalApproved,
+        percentage: percentage(principalApproved),
+      },
+      {
+        label: "UID Issued",
+        value: uidIssued,
+        percentage: percentage(uidIssued),
+      },
+    ];
+
+    // ==========================================================
+    // RESEARCH TYPES
+    // ==========================================================
+
+    const researchTypes =
+      publicationTypes.map((item) => ({
+        label: item.name,
+        value: item.value,
+      }));
+
+    // ==========================================================
+    // APPROVAL STATUS
+    // ==========================================================
+
+    const rejectedUIDs =
+      uidRequests.filter(
+        (item) =>
+          item.rejected === true ||
+          item.status === "Rejected"
+      ).length;
+
+    const rejectedPIDs =
+      allDocuments.filter(
+        (item) =>
+          item.rejected === true ||
+          item.status === "Rejected"
+      ).length;
+
+    const approvalStatus = [
+      {
+        label: "UID",
+        approved: approvedUIDs,
+        pending: pendingUIDs,
+        rejected: rejectedUIDs,
+      },
+      {
+        label: "PID",
+        approved: approvedPIDs,
+        pending: pendingPIDs,
+        rejected: rejectedPIDs,
+      },
+    ];
+
+    // ==========================================================
+    // GROWTH RATE
+    // ==========================================================
+
+    const growthRate = yearlyOutput.map(
+      (current, index) => {
+        if (index === 0) {
+          return {
+            label: current.label,
+            value: 0,
+          };
+        }
+
+        const previous =
+          yearlyOutput[index - 1];
+
+        const previousValue =
+          Number(previous.value) || 0;
+
+        const currentValue =
+          Number(current.value) || 0;
+
+        let growth = 0;
+
+        if (previousValue === 0) {
+          growth =
+            currentValue > 0 ? 100 : 0;
+        } else {
+          growth =
+            ((currentValue -
+              previousValue) /
+              previousValue) *
+            100;
+        }
+
+        return {
+          label: current.label,
+          value: Number(
+            growth.toFixed(1)
+          ),
+        };
+      }
+    );
+
+    // ==========================================================
+    // RECENT PUBLICATIONS
+    // ==========================================================
+
+    const recentPublications =
+      [...publications]
+        .sort((a, b) => {
+          const dateA =
+            getDate(a)?.getTime() || 0;
+
+          const dateB =
+            getDate(b)?.getTime() || 0;
+
+          return dateB - dateA;
+        })
+        .slice(0, 8)
+        .map((item) => ({
+          _id: item._id,
+
+          title:
+            item.paperTitle ||
+            item.title ||
+            item.journal ||
+            "Untitled Publication",
+
+          journal:
+            item.journal ||
+            item.conference ||
+            item.publisher ||
+            "Not Available",
+
+          type:
+            item.type ||
+            item.publicationType ||
+            "Other",
+
+          year:
+            item.year ||
+            getDate(item)?.getFullYear() ||
+            "—",
+
+          uid:
+            item.uid ||
+            "Not Assigned",
+
+          pid:
+            item.pid ||
+            "Not Assigned",
+
+          status:
+            item.adminAccept === true
+              ? "Approved"
+              : item.status ||
+                "Approved",
+        }));
+
+    // ==========================================================
+    // FINAL RESPONSE
+    // ==========================================================
+
+    res.json({
+      summary: {
+        totalPublications:
+          publications.length,
+
+        approvedUIDs,
+
+        pendingUIDs,
+
+        approvedPIDs,
+
+        pendingPIDs,
+
+        coAuthoredPapers,
+
+        researchYears:
+          yearlyOutput.length,
+
+        totalCollaborators,
+      },
+
+      publicationTrend,
+
+      publicationTypes,
+
+      yearlyOutput,
+
+      uidJourney,
+
+      collaboration,
+
+      researchGrowth,
+
+      researchTypes,
+
+      approvalStatus,
+
+      monthlyActivity,
+
+      growthRate,
+
+      recentPublications,
+    });
+
+  } catch (error) {
+    console.error(
+      "Faculty analytics error:",
+      error
+    );
+
+    res.status(500).json({
+      message:
+        "Failed to generate faculty analytics",
+      error: error.message,
+    });
+  }
+});
+
 router.get("/publications/:userId", async (req, res) => {
   try {
     const data = await DocumentUpload.find({
