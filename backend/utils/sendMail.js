@@ -26,7 +26,7 @@ module.exports = sendMail;
 //     service: 'gmail',
 //     auth: {
 //       user: 'rpmssvecw@gmail.com',
-//       pass: 'opdh fgkm seaa qsvy'
+//       pass: 'szhi xxcu mrts pgso'
 //     }
 //   });
 

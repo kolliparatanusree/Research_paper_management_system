@@ -13,11 +13,19 @@ const user = require('../models/User');
 
 
 // ✅ Email Transporter Setup
+// const transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: 'rpmssvecw@gmail.com',
+//     pass: 'szhi xxcu mrts pgso' // Use App Password
+//   }
+// });
+
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
-    user: 'rpmssvecw@gmail.com',
-    pass: 'opdh fgkm seaa qsvy' // Use App Password
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS
   }
 });
 const emailToSend = '22b01a4625@svecw.edu.in';

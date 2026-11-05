@@ -10,15 +10,21 @@ const createNotification = require("../utils/createNotification");
 const DocumentUpload = require('../models/DocumentUpload');
 const user  = require('../models/User');
 
+// const transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: 'rpmssvecw@gmail.com',         // Replace with your email
+//     pass: 'szhi xxcu mrts pgso'
+//              // Use Gmail App Password
+//   }
+// });
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
-    user: 'rpmssvecw@gmail.com',         // Replace with your email
-    pass: 'opdh fgkm seaa qsvy'
-             // Use Gmail App Password
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS
   }
 });
-
 // 3️⃣ Get all published papers (all depts)
 router.get("/approved-papers", async (req, res) => {
   try {

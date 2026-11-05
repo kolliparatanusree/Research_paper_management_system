@@ -9,14 +9,20 @@ const nodemailer = require('nodemailer');
 const Notification = require("../models/Notification");
 
 // Email transporter
+// const transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: 'rpmssvecw@gmail.com',
+//     pass: 'szhi xxcu mrts pgso'
+//   }
+// });
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
-    user: 'rpmssvecw@gmail.com',
-    pass: 'opdh fgkm seaa qsvy'
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS
   }
 });
-
 // ✅ GET pending UID requests for RD Coordinator (HOD approved, RD pending)
 router.get('/uid-requests/:userId', async (req, res) => {
   try {

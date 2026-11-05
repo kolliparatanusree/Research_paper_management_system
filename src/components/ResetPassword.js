@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-
+import { API_BASE_URL } from '../config';
 export default function ResetPassword() {
   const navigate = useNavigate();
   const location = useLocation(); // ✅ MUST be inside component
@@ -20,7 +20,7 @@ export default function ResetPassword() {
     }
 
     try {
-      await axios.post('/api/auth/reset-password', {
+      await axios.post(`${API_BASE_URL}/api/auth/reset-password`, {
         email,
         otp,
         newPassword

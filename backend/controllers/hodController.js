@@ -39,11 +39,18 @@ const sendReportEmail = async (req, res) => {
     const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
 
     // 📧 3. Email setup
-    const transporter = nodemailer.createTransport({
-  service: 'gmail',
+//     const transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: 'rpmssvecw@gmail.com',
+//     pass: 'szhi xxcu mrts pgso'
+//   }
+// });
+const transporter = nodemailer.createTransport({
+  service: "gmail",
   auth: {
-    user: 'rpmssvecw@gmail.com',
-    pass: 'opdh fgkm seaa qsvy'
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS
   }
 });
     // 📤 4. Send email

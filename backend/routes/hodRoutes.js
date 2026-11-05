@@ -16,14 +16,20 @@ router.post("/send-report", sendReportEmail);
 // const router = express.Router();
 const { isHOD } = require('../middleware/auth'); 
 // Email transporter
+// const transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: 'rpmssvecw@gmail.com',
+//     pass: 'szhi xxcu mrts pgso'
+//   }
+// });
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
-    user: 'rpmssvecw@gmail.com',
-    pass: 'opdh fgkm seaa qsvy'
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS
   }
 });
-
 
 router.get("/uid/approved/:department", async (req, res) => {
   try {
